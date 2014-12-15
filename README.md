@@ -1,4 +1,4 @@
-Joulu_2014-15
-=============
+Joulu_2014 TIRA HARJOITUSTYÖ
+============================
 
-Vuodenvaihde 2014-15 Tiralabra. Ohjaajat Toni Annala sekä Kristiina Paloheimo
+Tämän harjoitustyön aiheena on salausalgoritmi, tarkemmin RSA.
