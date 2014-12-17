@@ -23,11 +23,13 @@
     self = [super init];
     if (self == nil) return self;
     //Here we implement the class-specific initialization:
+    self.NFA=[[RONFA alloc]initWithRegEx:regEx];
     return self;
 }
 
 -(NSTextCheckingResult*) checkString:(NSString *)input {
     NSTextCheckingResult* result = [[NSTextCheckingResult init] alloc];
+    //here we construct the result from the automaton:
     return result;
 }
 

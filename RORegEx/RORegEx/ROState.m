@@ -8,6 +8,15 @@
 
 #import "ROState.h"
 
+@interface ROState ()
+@end
+
 @implementation ROState
+
+-(ROState *)getNextState:(NSString *)character {
+    //The default implementation is to match the given character:
+    if ([character isEqualToString:self.matchingCharacter]) return self.nextState;
+    else return self;
+}
 
 @end
