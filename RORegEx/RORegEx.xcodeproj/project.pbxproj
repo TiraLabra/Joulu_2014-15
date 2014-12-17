@@ -1,0 +1,395 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		3207E96A1A41AAEE001F81C1 /* ROState.h in Headers */ = {isa = PBXBuildFile; fileRef = 3207E9681A41AAEE001F81C1 /* ROState.h */; };
+		3207E96B1A41AAEE001F81C1 /* ROState.m in Sources */ = {isa = PBXBuildFile; fileRef = 3207E9691A41AAEE001F81C1 /* ROState.m */; };
+		3207E96E1A41ADEE001F81C1 /* RONFA.h in Headers */ = {isa = PBXBuildFile; fileRef = 3207E96C1A41ADEE001F81C1 /* RONFA.h */; };
+		3207E96F1A41ADEE001F81C1 /* RONFA.m in Sources */ = {isa = PBXBuildFile; fileRef = 3207E96D1A41ADEE001F81C1 /* RONFA.m */; };
+		3207E9721A41C960001F81C1 /* NSString+RORegEx.h in Headers */ = {isa = PBXBuildFile; fileRef = 3207E9701A41C960001F81C1 /* NSString+RORegEx.h */; };
+		3207E9731A41C960001F81C1 /* NSString+RORegEx.m in Sources */ = {isa = PBXBuildFile; fileRef = 3207E9711A41C960001F81C1 /* NSString+RORegEx.m */; };
+		32C8599D1A403BD300969BF9 /* RORegEx.h in Headers */ = {isa = PBXBuildFile; fileRef = 32C8599C1A403BD300969BF9 /* RORegEx.h */; };
+		32C8599F1A403BD300969BF9 /* RORegEx.m in Sources */ = {isa = PBXBuildFile; fileRef = 32C8599E1A403BD300969BF9 /* RORegEx.m */; };
+		32C859A51A403BD300969BF9 /* libRORegEx.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 32C859991A403BD300969BF9 /* libRORegEx.a */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		32C859A61A403BD300969BF9 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 32C859911A403BD300969BF9 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 32C859981A403BD300969BF9;
+			remoteInfo = RORegEx;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		3207E9681A41AAEE001F81C1 /* ROState.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ROState.h; sourceTree = "<group>"; };
+		3207E9691A41AAEE001F81C1 /* ROState.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ROState.m; sourceTree = "<group>"; };
+		3207E96C1A41ADEE001F81C1 /* RONFA.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RONFA.h; sourceTree = "<group>"; };
+		3207E96D1A41ADEE001F81C1 /* RONFA.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RONFA.m; sourceTree = "<group>"; };
+		3207E9701A41C960001F81C1 /* NSString+RORegEx.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+RORegEx.h"; sourceTree = "<group>"; };
+		3207E9711A41C960001F81C1 /* NSString+RORegEx.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+RORegEx.m"; sourceTree = "<group>"; };
+		32C859991A403BD300969BF9 /* libRORegEx.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRORegEx.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		32C8599C1A403BD300969BF9 /* RORegEx.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RORegEx.h; sourceTree = "<group>"; };
+		32C8599E1A403BD300969BF9 /* RORegEx.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RORegEx.m; sourceTree = "<group>"; };
+		32C859A41A403BD300969BF9 /* RORegExTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RORegExTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		32C859AA1A403BD300969BF9 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		32C859961A403BD300969BF9 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		32C859A11A403BD300969BF9 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				32C859A51A403BD300969BF9 /* libRORegEx.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		32C859901A403BD300969BF9 = {
+			isa = PBXGroup;
+			children = (
+				32C8599B1A403BD300969BF9 /* RORegEx */,
+				32C859A81A403BD300969BF9 /* RORegExTests */,
+				32C8599A1A403BD300969BF9 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		32C8599A1A403BD300969BF9 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				32C859991A403BD300969BF9 /* libRORegEx.a */,
+				32C859A41A403BD300969BF9 /* RORegExTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		32C8599B1A403BD300969BF9 /* RORegEx */ = {
+			isa = PBXGroup;
+			children = (
+				32C8599C1A403BD300969BF9 /* RORegEx.h */,
+				32C8599E1A403BD300969BF9 /* RORegEx.m */,
+				3207E9681A41AAEE001F81C1 /* ROState.h */,
+				3207E9691A41AAEE001F81C1 /* ROState.m */,
+				3207E96C1A41ADEE001F81C1 /* RONFA.h */,
+				3207E96D1A41ADEE001F81C1 /* RONFA.m */,
+				3207E9701A41C960001F81C1 /* NSString+RORegEx.h */,
+				3207E9711A41C960001F81C1 /* NSString+RORegEx.m */,
+			);
+			path = RORegEx;
+			sourceTree = "<group>";
+		};
+		32C859A81A403BD300969BF9 /* RORegExTests */ = {
+			isa = PBXGroup;
+			children = (
+				32C859A91A403BD300969BF9 /* Supporting Files */,
+			);
+			path = RORegExTests;
+			sourceTree = "<group>";
+		};
+		32C859A91A403BD300969BF9 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				32C859AA1A403BD300969BF9 /* Info.plist */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		32C859971A403BD300969BF9 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				3207E96E1A41ADEE001F81C1 /* RONFA.h in Headers */,
+				3207E96A1A41AAEE001F81C1 /* ROState.h in Headers */,
+				32C8599D1A403BD300969BF9 /* RORegEx.h in Headers */,
+				3207E9721A41C960001F81C1 /* NSString+RORegEx.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		32C859981A403BD300969BF9 /* RORegEx */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 32C859AD1A403BD300969BF9 /* Build configuration list for PBXNativeTarget "RORegEx" */;
+			buildPhases = (
+				32C859951A403BD300969BF9 /* Sources */,
+				32C859961A403BD300969BF9 /* Frameworks */,
+				32C859971A403BD300969BF9 /* Headers */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = RORegEx;
+			productName = RORegEx;
+			productReference = 32C859991A403BD300969BF9 /* libRORegEx.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+		32C859A31A403BD300969BF9 /* RORegExTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 32C859B01A403BD300969BF9 /* Build configuration list for PBXNativeTarget "RORegExTests" */;
+			buildPhases = (
+				32C859A01A403BD300969BF9 /* Sources */,
+				32C859A11A403BD300969BF9 /* Frameworks */,
+				32C859A21A403BD300969BF9 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				32C859A71A403BD300969BF9 /* PBXTargetDependency */,
+			);
+			name = RORegExTests;
+			productName = RORegExTests;
+			productReference = 32C859A41A403BD300969BF9 /* RORegExTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		32C859911A403BD300969BF9 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0610;
+				ORGANIZATIONNAME = "Riku Oja";
+				TargetAttributes = {
+					32C859981A403BD300969BF9 = {
+						CreatedOnToolsVersion = 6.1.1;
+					};
+					32C859A31A403BD300969BF9 = {
+						CreatedOnToolsVersion = 6.1.1;
+					};
+				};
+			};
+			buildConfigurationList = 32C859941A403BD300969BF9 /* Build configuration list for PBXProject "RORegEx" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = 32C859901A403BD300969BF9;
+			productRefGroup = 32C8599A1A403BD300969BF9 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				32C859981A403BD300969BF9 /* RORegEx */,
+				32C859A31A403BD300969BF9 /* RORegExTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		32C859A21A403BD300969BF9 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		32C859951A403BD300969BF9 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				3207E9731A41C960001F81C1 /* NSString+RORegEx.m in Sources */,
+				3207E96F1A41ADEE001F81C1 /* RONFA.m in Sources */,
+				32C8599F1A403BD300969BF9 /* RORegEx.m in Sources */,
+				3207E96B1A41AAEE001F81C1 /* ROState.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		32C859A01A403BD300969BF9 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		32C859A71A403BD300969BF9 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 32C859981A403BD300969BF9 /* RORegEx */;
+			targetProxy = 32C859A61A403BD300969BF9 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		32C859AB1A403BD300969BF9 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.10;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		32C859AC1A403BD300969BF9 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.10;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		32C859AE1A403BD300969BF9 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				EXECUTABLE_PREFIX = lib;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		32C859AF1A403BD300969BF9 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				EXECUTABLE_PREFIX = lib;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+		32C859B11A403BD300969BF9 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(DEVELOPER_FRAMEWORKS_DIR)",
+					"$(inherited)",
+				);
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				INFOPLIST_FILE = RORegExTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		32C859B21A403BD300969BF9 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(DEVELOPER_FRAMEWORKS_DIR)",
+					"$(inherited)",
+				);
+				INFOPLIST_FILE = RORegExTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		32C859941A403BD300969BF9 /* Build configuration list for PBXProject "RORegEx" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				32C859AB1A403BD300969BF9 /* Debug */,
+				32C859AC1A403BD300969BF9 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		32C859AD1A403BD300969BF9 /* Build configuration list for PBXNativeTarget "RORegEx" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				32C859AE1A403BD300969BF9 /* Debug */,
+				32C859AF1A403BD300969BF9 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		32C859B01A403BD300969BF9 /* Build configuration list for PBXNativeTarget "RORegExTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				32C859B11A403BD300969BF9 /* Debug */,
+				32C859B21A403BD300969BF9 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 32C859911A403BD300969BF9 /* Project object */;
+}

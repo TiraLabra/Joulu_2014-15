@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDESourceControlProjectFavoriteDictionaryKey</key>
+	<false/>
+	<key>IDESourceControlProjectIdentifier</key>
+	<string>A9BA4678-7C9B-4207-9B89-340A9832EE09</string>
+	<key>IDESourceControlProjectName</key>
+	<string>RORegEx</string>
+	<key>IDESourceControlProjectOriginsDictionary</key>
+	<dict>
+		<key>63055F2B5104C4F37C7A0F7736418024F98BFD19</key>
+		<string>https://github.com/Rikuoja/Joulu_2014-15.git</string>
+	</dict>
+	<key>IDESourceControlProjectPath</key>
+	<string>RORegEx/RORegEx.xcodeproj</string>
+	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
+	<dict>
+		<key>63055F2B5104C4F37C7A0F7736418024F98BFD19</key>
+		<string>../../..</string>
+	</dict>
+	<key>IDESourceControlProjectURL</key>
+	<string>https://github.com/Rikuoja/Joulu_2014-15.git</string>
+	<key>IDESourceControlProjectVersion</key>
+	<integer>111</integer>
+	<key>IDESourceControlProjectWCCIdentifier</key>
+	<string>63055F2B5104C4F37C7A0F7736418024F98BFD19</string>
+	<key>IDESourceControlProjectWCConfigurations</key>
+	<array>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.git</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>63055F2B5104C4F37C7A0F7736418024F98BFD19</string>
+			<key>IDESourceControlWCCName</key>
+			<string>Joulu_2014-15</string>
+		</dict>
+	</array>
+</dict>
+</plist>
