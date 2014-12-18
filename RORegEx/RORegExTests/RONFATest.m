@@ -38,19 +38,27 @@
 
 - (void)testLetterMatch {
     RONFA* NFA = [[RONFA alloc] initWithRegEx:@"a"];
-    XCTAssert(NSEqualRanges([NFA findMatch:@"a"],NSMakeRange(0, 1)), @"");
-    
+    XCTAssert(NSEqualRanges([NFA findMatch:@"a"],NSMakeRange(0, 1)), @"Matches single letters");
 }
 
 - (void)testLetterMisMatch {
     RONFA* NFA = [[RONFA alloc] initWithRegEx:@"a"];
-    XCTAssert(NSEqualRanges([NFA findMatch:@"b"],NSMakeRange(0, 0)), @"");
-    
+    XCTAssert(NSEqualRanges([NFA findMatch:@"b"],NSMakeRange(0, 0)), @"Recognizes letter mismatch");
 }
 
 - (void)testStringPartialFirstMatch {
-    RONFA* NFA = [[RONFA alloc] initWithRegEx:@"a"];
-    XCTAssert(NSEqualRanges([NFA findMatch:@"blaa"],NSMakeRange(2, 1)), @"");
+    RONFA* NFA = [[RONFA alloc] initWithRegEx:@"aa"];
+    XCTAssert(NSEqualRanges([NFA findMatch:@"blaa"],NSMakeRange(2, 2)), @"Returns correct partial match");
+}
+
+- (void)testStringMatch {
+    RONFA* NFA = [[RONFA alloc] initWithRegEx:@"blaa"];
+    XCTAssert(NSEqualRanges([NFA findMatch:@"blaa"],NSMakeRange(0, 4)), @"Returns correct complete string match");
+}
+
+- (void)testStringMisMatch {
+    RONFA* NFA = [[RONFA alloc] initWithRegEx:@"blaa"];
+    XCTAssert(NSEqualRanges([NFA findMatch:@"blab"],NSMakeRange(0, 0)), @"Recognizes string mismatch");
 }
 
 - (void)testPerformanceExample {

@@ -69,9 +69,9 @@
             }
         }
     }
-    //rewind the automaton (or not!):
+    //rewind the automaton (or not, for multiple pattern matching!):
     //self.currentState=self.initialState;
-    if (started) return NSMakeRange(startIndex, endIndex-startIndex);
+    if (endIndex!=0) return NSMakeRange(startIndex, endIndex-startIndex);
     else return NSMakeRange(0, 0);
 }
 
