@@ -26,7 +26,7 @@
  *
  *  @param input The string to be processed.
  *
- *  @return An NSTextCheckingResult object containing the parts of input that match the regular expression.
+ *  @return An NSTextCheckingResult object describing the ranges of input that match the regular expression.
  */
 -(NSTextCheckingResult*) checkString:(NSString *)input;
 

@@ -28,10 +28,28 @@
 }
 
 -(NSTextCheckingResult*) checkString:(NSString *)input {
-    NSTextCheckingResult* result = [[NSTextCheckingResult init] alloc];
     //here we construct the result from the automaton:
-    NSRange range = [self.NFA findMatch:input];
-    return result;
+    //either we have to hard code the possible amount of matches or do the memory management manually:
+    NSRange ranges[100];
+    //this is the starting location for repetitive searcing:
+    NSUInteger start = 0;
+    int i=0;
+    while (true) {
+        ranges[i] = [self.NFA findMatch:input];
+        //if there is no match, quit:
+        if (NSEqualRanges(ranges[i],NSMakeRange(0, 0))) break;
+        //move the range to the right location:
+        ranges[i].location=ranges[i].location+start;
+        //mark the next starting location:
+        start=ranges[i].location+ranges[i].length;
+        //we repeat looking for the pattern until we are at the end of the string:
+        input=[input substringFromIndex:start];
+        //reset the automaton:
+        [self.NFA rewind];
+        i++;
+    }
+    //construct the ugly result object:
+    return [NSTextCheckingResult regularExpressionCheckingResultWithRanges:ranges count:i regularExpression:[NSRegularExpression regularExpressionWithPattern:input options:0 error:nil]];
 }
 
 @end

@@ -14,7 +14,7 @@
 
 @interface RONFA : NSObject
 /**
- *  Initializes the automaton.
+ *  Initializes the automaton and sets it in the initial state.
  *
  *  @param regEx The regular expression required to construct the automaton.
  *
@@ -22,12 +22,16 @@
  */
 - (id)initWithRegEx:(NSString *)regEx;
 /**
- *  Returns the first range in the NSString that corresponds to the expression of the NFA, or a range of (0,0) if there is no match.
+ *  Returns the next range in the NSString that corresponds to the expression of the NFA, or a range of (0,0) if there is no match.
  *
  *  @param regEx The regular expression used to construct the NFA.
  *
- *  @return The first range in the string that matches the expression.
+ *  @return The next range in the string that matches the expression.
  */
 -(NSRange)findMatch:(NSString *)string;
+/**
+ *  Rewinds the automaton to its initial state.
+ */
+-(void)rewind;
 
 @end

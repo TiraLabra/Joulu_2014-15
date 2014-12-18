@@ -14,6 +14,7 @@
 		3207E9721A41C960001F81C1 /* NSString+RORegEx.h in Headers */ = {isa = PBXBuildFile; fileRef = 3207E9701A41C960001F81C1 /* NSString+RORegEx.h */; };
 		3207E9731A41C960001F81C1 /* NSString+RORegEx.m in Sources */ = {isa = PBXBuildFile; fileRef = 3207E9711A41C960001F81C1 /* NSString+RORegEx.m */; };
 		3207E9751A42FFD5001F81C1 /* RONFATest.m in Sources */ = {isa = PBXBuildFile; fileRef = 3207E9741A42FFD5001F81C1 /* RONFATest.m */; };
+		3207E9771A433B52001F81C1 /* RORegExTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 3207E9761A433B52001F81C1 /* RORegExTest.m */; };
 		32C8599D1A403BD300969BF9 /* RORegEx.h in Headers */ = {isa = PBXBuildFile; fileRef = 32C8599C1A403BD300969BF9 /* RORegEx.h */; };
 		32C8599F1A403BD300969BF9 /* RORegEx.m in Sources */ = {isa = PBXBuildFile; fileRef = 32C8599E1A403BD300969BF9 /* RORegEx.m */; };
 		32C859A51A403BD300969BF9 /* libRORegEx.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 32C859991A403BD300969BF9 /* libRORegEx.a */; };
@@ -37,6 +38,7 @@
 		3207E9701A41C960001F81C1 /* NSString+RORegEx.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+RORegEx.h"; sourceTree = "<group>"; };
 		3207E9711A41C960001F81C1 /* NSString+RORegEx.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+RORegEx.m"; sourceTree = "<group>"; };
 		3207E9741A42FFD5001F81C1 /* RONFATest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RONFATest.m; sourceTree = "<group>"; };
+		3207E9761A433B52001F81C1 /* RORegExTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RORegExTest.m; sourceTree = "<group>"; };
 		32C859991A403BD300969BF9 /* libRORegEx.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRORegEx.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		32C8599C1A403BD300969BF9 /* RORegEx.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RORegEx.h; sourceTree = "<group>"; };
 		32C8599E1A403BD300969BF9 /* RORegEx.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RORegEx.m; sourceTree = "<group>"; };
@@ -99,6 +101,7 @@
 		32C859A81A403BD300969BF9 /* RORegExTests */ = {
 			isa = PBXGroup;
 			children = (
+				3207E9761A433B52001F81C1 /* RORegExTest.m */,
 				3207E9741A42FFD5001F81C1 /* RONFATest.m */,
 				32C859A91A403BD300969BF9 /* Supporting Files */,
 			);
@@ -226,6 +229,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3207E9771A433B52001F81C1 /* RORegExTest.m in Sources */,
 				3207E9751A42FFD5001F81C1 /* RONFATest.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

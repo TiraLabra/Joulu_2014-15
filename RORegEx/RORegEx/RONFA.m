@@ -44,7 +44,7 @@
     //after the loop, the ending state indicates we have a pattern:
     self.currentState.finality=YES;
     //after initialization, return the automaton to the beginning for running:
-    self.currentState=self.initialState;
+    [self rewind];
     return self;
 }
 
@@ -69,10 +69,12 @@
             }
         }
     }
-    //rewind the automaton (or not, for multiple pattern matching!):
-    //self.currentState=self.initialState;
     if (endIndex!=0) return NSMakeRange(startIndex, endIndex-startIndex);
     else return NSMakeRange(0, 0);
+}
+
+-(void)rewind {
+    self.currentState=self.initialState;
 }
 
 @end
