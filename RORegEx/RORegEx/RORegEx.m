@@ -30,6 +30,7 @@
 -(NSTextCheckingResult*) checkString:(NSString *)input {
     NSTextCheckingResult* result = [[NSTextCheckingResult init] alloc];
     //here we construct the result from the automaton:
+    NSRange range = [self.NFA findMatch:input];
     return result;
 }
 

@@ -13,9 +13,17 @@
 
 @implementation ROState
 
+-(id) init {
+    self = [super init];
+    if (self == nil) return self;
+    //Here we implement the class-specific initialization:
+    self.nextStates = [[NSMutableArray alloc] init];
+    return self;
+}
+
 -(ROState *)getNextState:(NSString *)character {
     //The default implementation is to match the given character:
-    if ([character isEqualToString:self.matchingCharacter]) return self.nextState;
+    if ([character isEqualToString:self.matchingCharacter]) return self.nextStates[0];
     else return self;
 }
 

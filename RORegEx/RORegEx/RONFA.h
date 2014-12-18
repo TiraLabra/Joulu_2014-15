@@ -21,5 +21,13 @@
  *  @return Returns an NFA.
  */
 - (id)initWithRegEx:(NSString *)regEx;
+/**
+ *  Returns the first range in the NSString that corresponds to the expression of the NFA, or a range of (0,0) if there is no match.
+ *
+ *  @param regEx The regular expression used to construct the NFA.
+ *
+ *  @return The first range in the string that matches the expression.
+ */
+-(NSRange)findMatch:(NSString *)string;
 
 @end

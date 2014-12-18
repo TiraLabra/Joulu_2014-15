@@ -14,13 +14,9 @@
 
 @interface ROState : NSObject
 /**
- *  @brief The default next state for the automaton.
+ *  @brief The array containing all the possible next states in a nondeterministic automaton.
  */
-@property (strong, nonatomic) ROState* nextState;
-/**
- *  @brief The alternative next state for the automaton, for NFA where we can have options where to move. This property may be nil, if only one successive state is required.
- */
-@property (strong, nonatomic) ROState* alternateState;
+@property (strong, nonatomic) NSMutableArray* nextStates;
 /**
  *  @brief The break condition of the automaton, indicating a pattern match. Default is NO.
  */
