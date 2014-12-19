@@ -17,4 +17,6 @@ public interface IPersistentVector<T> {
     public PersistentVector assoc(); 
 
     public T peek(); 
+    
+    public T get(int index);
 }
