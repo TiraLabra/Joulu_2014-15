@@ -8,6 +8,13 @@
  *
  * @author laurikin
  */
-public interface IPersistentVector {
-    
+public interface IPersistentVector<T> {
+
+    public PersistentVector pop(); 
+
+    public PersistentVector conj(); 
+
+    public PersistentVector assoc(); 
+
+    public T peek(); 
 }
