@@ -40,6 +40,30 @@
     XCTAssert(NSEqualRanges([regEx checkString:@"a"].range,expected.range), @"Matches a single letter");
 }
 
+- (void)testTwoMatches {
+    NSString* pattern=@"a";
+    NSRange expectedRange[2]={NSMakeRange(0,1),NSMakeRange(1, 1)};
+    RORegEx* regEx= [[RORegEx alloc] initWith:pattern];
+    //construct the ugly expected result object:
+    NSTextCheckingResult* expected = [NSTextCheckingResult regularExpressionCheckingResultWithRanges:expectedRange count:2 regularExpression:[NSRegularExpression regularExpressionWithPattern:pattern options:0 error:nil]];
+    NSTextCheckingResult* result = [regEx checkString:@"aa"];
+    XCTAssert([result numberOfRanges]==[expected numberOfRanges], @"Correct number of returned matches");
+    XCTAssert(NSEqualRanges(result.range,expected.range), @"Correct first match");
+    XCTAssert(NSEqualRanges([result rangeAtIndex:1],[expected rangeAtIndex:1]), @"Correct second match");
+}
+
+- (void)testMultipleStringMatches {
+    NSString* pattern=@"laa";
+    NSRange expectedRange[3]={NSMakeRange(1,3),NSMakeRange(5, 3),NSMakeRange(9,3)};
+    RORegEx* regEx= [[RORegEx alloc] initWith:pattern];
+    //construct the ugly expected result object:
+    NSTextCheckingResult* expected = [NSTextCheckingResult regularExpressionCheckingResultWithRanges:expectedRange count:3 regularExpression:[NSRegularExpression regularExpressionWithPattern:pattern options:0 error:nil]];
+    NSTextCheckingResult* result = [regEx checkString:@"Blaablaablaablah"];
+    XCTAssert([result numberOfRanges]==[expected numberOfRanges], @"Correct number of returned matches");
+    XCTAssert(NSEqualRanges(result.range,expected.range), @"Correct first match");
+    XCTAssert(NSEqualRanges([result rangeAtIndex:1],[expected rangeAtIndex:1]), @"Correct second match");
+    XCTAssert(NSEqualRanges([result rangeAtIndex:2],[expected rangeAtIndex:2]), @"Correct third match");
+}
 
 - (void)testPerformanceExample {
     // This is an example of a performance test case.

@@ -17,11 +17,17 @@
 /**
  *  The current state of the automaton, used in both constructing and running the automaton.
  */
-@property (strong, nonatomic)ROState* currentState;
+//Pointers to all the other states are contained in initialState.
+@property (weak, nonatomic)ROState* currentState;
 /**
- *  The predefined regexp operators that are not treated as literals:
+ *  The predefined regexp operators that are not treated as literals.
  */
 @property NSCharacterSet* operators;
+/**
+ *  Contains all the states of the automaton that indicate a pattern match, i.e. those that have finality=YES.
+ */
+//Note that the array contains strong references and the array must be strong. Hence, retain cycles of states pointing back to the NFA must be avoided.
+@property (strong, nonatomic)NSMutableArray* finalStates;
 @end
 
 @implementation RONFA
@@ -35,14 +41,15 @@
         //Here, we have the default behavior of matching the character:
         if ([character rangeOfCharacterFromSet:self.operators].location == NSNotFound) {
             self.currentState.matchingCharacter = character;
-            //we do not need to explicitly create pointers to the successive states, as the pointers form a tree starting from the initial state:
+            //we do not need to explicitly create pointers to the successive states, as the pointers form a tree starting from initialState:
             [self.currentState.nextStates addObject:[[ROState alloc] init]];
             //we move on to the state matched by the character:
             self.currentState=self.currentState.nextStates.lastObject;
         }
     }
-    //after the loop, the ending state indicates we have a pattern:
+    //after the loop, the ending state indicates that we have a pattern:
     self.currentState.finality=YES;
+    [self.finalStates addObject:self.currentState];
     //after initialization, return the automaton to the beginning for running:
     [self rewind];
     return self;

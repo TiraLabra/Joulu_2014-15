@@ -33,19 +33,21 @@
     NSRange ranges[100];
     //this is the starting location for repetitive searcing:
     NSUInteger start = 0;
+    NSString* originalInput = input.copy;
     int i=0;
     while (true) {
+        //repeat looking for the pattern until we are at the end of the string:
+        if (start > originalInput.length) break;
+        input=[originalInput substringFromIndex:start];
         ranges[i] = [self.NFA findMatch:input];
+        //reset the automaton:
+        [self.NFA rewind];
         //if there is no match, quit:
         if (NSEqualRanges(ranges[i],NSMakeRange(0, 0))) break;
         //move the range to the right location:
         ranges[i].location=ranges[i].location+start;
         //mark the next starting location:
         start=ranges[i].location+ranges[i].length;
-        //we repeat looking for the pattern until we are at the end of the string:
-        input=[input substringFromIndex:start];
-        //reset the automaton:
-        [self.NFA rewind];
         i++;
     }
     //construct the ugly result object:
