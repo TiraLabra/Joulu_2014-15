@@ -22,9 +22,9 @@
 }
 
 -(ROState *)getNextState:(NSString *)character {
-    //The default implementation is to match the given character:
-    if ([character isEqualToString:self.matchingCharacter]) return self.nextStates[0];
-    else return self;
+    //The default implementation is to match the given character. The ordering depends on the NFA:
+    if ([character isEqualToString:self.matchingCharacter]) return self.nextStates[1];
+    else return self.nextStates [0];
 }
 
 @end

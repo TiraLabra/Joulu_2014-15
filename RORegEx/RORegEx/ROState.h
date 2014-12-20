@@ -14,7 +14,7 @@
 
 @interface ROState : NSObject
 /**
- *  @brief The array containing all the possible next states in a nondeterministic automaton.
+ *  @brief The array containing all the possible next states in a nondeterministic automaton. The ordering of the states depends on the NFA.
  */
 @property (strong, nonatomic) NSMutableArray* nextStates;
 /**
@@ -26,7 +26,7 @@
  */
 @property (strong, nonatomic) NSString* matchingCharacter;
 /**
- *  Returns the next state, depending on the input character.
+ *  Returns the next state, depending on the input character. Should this logic actually be implemented in the NFA instead of the state????
  *
  *  @param character The character to be processed.
  *

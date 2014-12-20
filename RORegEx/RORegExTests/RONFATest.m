@@ -61,6 +61,12 @@
     XCTAssert(NSEqualRanges([NFA findMatch:@"blab"],NSMakeRange(0, 0)), @"Recognizes string mismatch");
 }
 
+- (void)testExtraLetters {
+    RONFA* NFA = [[RONFA alloc] initWithRegEx:@"baa"];
+    XCTAssert(NSEqualRanges([NFA findMatch:@"blaa"],NSMakeRange(0, 0)), @"Notices extra letters");
+}
+
+
 - (void)testPerformanceExample {
     // This is an example of a performance test case.
     [self measureBlock:^{

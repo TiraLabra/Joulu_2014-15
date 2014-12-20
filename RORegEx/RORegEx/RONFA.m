@@ -14,10 +14,14 @@
  *  The starting state of the automaton.
  */
 @property (strong, nonatomic)ROState* initialState;
+//Pointers to all the other states are contained in initialState.
+/**
+ *  The state from which the automaton arrived to the current state. The same as currentState if we had an epsilon transition.
+ */
+@property (weak, nonatomic)ROState* previousState;
 /**
  *  The current state of the automaton, used in both constructing and running the automaton.
  */
-//Pointers to all the other states are contained in initialState.
 @property (weak, nonatomic)ROState* currentState;
 /**
  *  The predefined regexp operators that are not treated as literals.
@@ -36,13 +40,20 @@
     self.operators = [NSCharacterSet characterSetWithCharactersInString:@""];
     self.initialState=[[ROState alloc] init];
     self.currentState=self.initialState;
+    //in the beginning, we have epsilon transition so the previous state is the current one:
+    self.previousState=self.currentState;
     for (int i=0; i<regEx.length; i++) {
         NSString* character=[regEx substringWithRange:NSMakeRange(i, 1)];
         //Here, we have the default behavior of matching the character:
         if ([character rangeOfCharacterFromSet:self.operators].location == NSNotFound) {
             self.currentState.matchingCharacter = character;
-            //we do not need to explicitly create pointers to the successive states, as the pointers form a tree starting from initialState:
+            //we do not need to explicitly create pointers to the successive states, as the pointers form a tree starting from initialState
+            //if the character doesn't match, we must go back to the previous state:
+            [self.currentState.nextStates addObject:self.previousState];
+            //otherwise, we move to a new state:
             [self.currentState.nextStates addObject:[[ROState alloc] init]];
+            //save the current state as the previous one:
+            self.previousState=self.currentState;
             //we move on to the state matched by the character:
             self.currentState=self.currentState.nextStates.lastObject;
         }
