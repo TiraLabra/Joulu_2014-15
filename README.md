@@ -15,35 +15,46 @@ This is why persistent vector should never be used with mutable values.
 
 `PersistentVector<T>` exposes the following public methods
 
-returns the number of items in the vector
+
 ```java
     public int count ();
 ```
+returns the number of items in the vector
 
-returns the last value in vector
+***
+
 ```java
     public T peek ();
 ```
+returns the last value in vector
 
-returns a new PersistentVector that is the old vector minus the last value
+***
+
 ```java
     public PersistentVector pop () {}
 ```
+returns a new PersistentVector that is the old vector minus the last value
 
-returns a new PersistentVector with the given value added to its last index
+***
+
 ```java
     public PersistentVector conj (T value) {}
 ```
+returns a new PersistentVector with the given value added to its last index
 
-associates the given index with the given value and returns the new PersistentVector
+***
+
 ```java
     public PersistentVector assoc (int index, T value) {}
 ```
+associates the given index with the given value and returns the new PersistentVector
 
-returns the value associated with the given index
+***
+
 ```java
     public T get(int index) {}
 ```
+returns the value associated with the given index
 
 ## implementation
 
