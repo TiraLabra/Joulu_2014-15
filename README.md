@@ -78,3 +78,10 @@ red ones belong to the new vector, and the ones colored magenta are shared betwe
 
 ![alt text](https://dl.dropboxusercontent.com/u/56014373/adding%20to%20the%20vector.jpeg "adding to a persistent vector")
 
+### Updating elements
+
+As with adding elements, when we want to update a vector we create a new vector
+that shares all unchanged data with the old one. Here's a diagram for that.
+
+![alt text](https://dl.dropboxusercontent.com/u/56014373/updating%20vector.jpeg "adding to a persistent vector")
+
