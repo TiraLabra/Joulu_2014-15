@@ -50,12 +50,14 @@
             //we do not need to explicitly create pointers to the successive states, as the pointers form a tree starting from initialState
             //if the character doesn't match, we must go back to the previous state:
             [self.currentState.nextStates addObject:self.previousState];
+            //an alternate nondeterministic outcome for non-match:
+            [self.currentState.nextStates addObject:self.currentState];
             //otherwise, we move to a new state:
             [self.currentState.nextStates addObject:[[ROState alloc] init]];
             //save the current state as the previous one:
             self.previousState=self.currentState;
             //we move on to the state matched by the character:
-            self.currentState=self.currentState.nextStates.lastObject;
+            self.currentState=self.currentState.nextStates[2];
         }
     }
     //after the loop, the ending state indicates that we have a pattern:
@@ -74,7 +76,13 @@
         NSString* character=[string substringWithRange:NSMakeRange(i, 1)];
         //Here, we have the default behavior of matching the character:
         if ([character rangeOfCharacterFromSet:self.operators].location == NSNotFound) {
-            self.currentState = [self.currentState getNextState:character];
+            //because of nondeterminism, at non-match we have several options:
+            if (character != self.currentState.matchingCharacter) {
+                self.currentState = self.currentState.nextStates.firstObject;
+                //implement nondeterminism by forking:
+            }
+            //at match we only have one option:
+            else self.currentState = self.currentState.nextStates.lastObject;
             //if we had a first match, save the start index:
             if (!started && self.currentState != self.initialState) {
                 started=YES;
