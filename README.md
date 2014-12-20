@@ -2,8 +2,8 @@
 
 Persistent vector is a built-in data structure of the clojure programming language.
 The philosophy of clojure is to never use mutable objects. Mutability in idiomatic clojure
-is restricted to reference pointers. To accomplish this goal a language needs an *immutable*
-and *efficient* collection type that implements a set of operations similar to those of ArrayList in Java.
+is restricted to reference pointers. To accomplish this goal a language needs an **immutable**
+and **efficient** collection type that implements a set of operations similar to those of ArrayList in Java.
 
 Persistent vector does just that. It cannot be mutated. When conj is called on a persistent vector.
 it returns a new vector that is equal to the old vector with the new item added to its last index.
