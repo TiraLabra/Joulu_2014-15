@@ -66,6 +66,11 @@
     XCTAssert(NSEqualRanges([NFA findMatch:@"blaa"],NSMakeRange(0, 0)), @"Notices extra letters");
 }
 
+- (void)testNondeterminism {
+    RONFA* NFA = [[RONFA alloc] initWithRegEx:@"baa"];
+    XCTAssert(NSEqualRanges([NFA findMatch:@"bbaa"],NSMakeRange(1, 3)), @"Allows nondeterminism");
+}
+
 
 - (void)testPerformanceExample {
     // This is an example of a performance test case.
