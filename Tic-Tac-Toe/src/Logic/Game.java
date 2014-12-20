@@ -4,16 +4,28 @@ import Interface.TextInterface;
 import java.util.ArrayList;
 
 /**
+ * The logic class of the program that operates both the moves and the  move evaluations
  *
- * @author Teemu
+ * @author Teemu Salminen <teemujsalminen@gmail.com>
  */
 public class Game {
-
+    
+    /**
+     * Creates the game board and initiates the first move
+     *
+     * @param size the size of the game board as given by the user (3x3, 5x5, 7x7 or 9x9)
+     */
     public Game(int size) {
         int[][] originalBoard = new int[size][size];
         makeMove(originalBoard, 1);
     }
-
+    
+    /**
+     * Makes a move on the game board (either given by the user or evaluated as the best possible move by the algorithm)
+     *
+     * @param board the current game board
+     * @param whosTurn which player's turn it is currently (1 or 2)
+     */
     public static void makeMove(int[][] board, int whosTurn) {
         boolean gameOver = false;
         boolean containsSpace = false;
@@ -27,7 +39,15 @@ public class Game {
                     // the result is a WIN
                     return;
                 }
+                if (j == 1 && board[i][j] == board[i][j + 1] && board[i][j] == board[i][j + 2] && board[i][j] == board[i][j + 3] && board[i][j] != 0) {
+                    // the result is a WIN
+                    return;
+                }
                 if (i == 0 && board[i][j] == board[i + 1][j] && board[i][j] == board[i + 2][j] && board[i][j] == board[i + 3][j] && board[i][j] != 0) {
+                    // the result is a WIN
+                    return;
+                }
+                if (i == 1 && board[i][j] == board[i + 1][j] && board[i][j] == board[i + 2][j] && board[i][j] == board[i + 3][j] && board[i][j] != 0) {
                     // the result is a WIN
                     return;
                 }
@@ -35,7 +55,15 @@ public class Game {
                     // the result is a WIN
                     return;
                 }
+                if (i == 4 && j == 0 && board[i][j] == board[i - 1][j + 1] && board[i][j] == board[i - 2][j + 2] && board[i][j] == board[i - 3][j + 3] && board[i][j] != 0) {
+                    // the result is a WIN
+                    return;
+                }
                 if (i == 0 && j == 0 && board[i][j] == board[i + 1][j + 1] && board[i][j] == board[i + 2][j + 2] && board[i][j] == board[i + 3][j + 3] && board[i][j] != 0) {
+                    // the result is a WIN
+                    return;
+                }
+                if (i == 1 && j == 1 && board[i][j] == board[i + 1][j + 1] && board[i][j] == board[i + 2][j + 2] && board[i][j] == board[i + 3][j + 3] && board[i][j] != 0) {
                     // the result is a WIN
                     return;
                 }
@@ -52,7 +80,7 @@ public class Game {
         int bestValue = Integer.MIN_VALUE;
         int besti = 0;
         int bestj = 0;
-        ArrayList<Integer> unavailableSpots = new ArrayList<Integer>();
+        ArrayList<String> unavailableSpots = new ArrayList<String>();
 
         if (whosTurn == 2 || whosTurn == 1) {
             for (int i = 0; i < board.length; i++) {
@@ -66,38 +94,8 @@ public class Game {
                         }
                         newBoard[i][j] = 0;
                     } else {
-                        if (i == 0 && j == 0) {
-                            unavailableSpots.add(1);
-                        } else if (i == 0 && j == 1) {
-                            unavailableSpots.add(2);
-                        } else if (i == 0 && j == 2) {
-                            unavailableSpots.add(3);
-                        } else if (i == 0 && j == 3) {
-                            unavailableSpots.add(4);
-                        } else if (i == 1 && j == 0) {
-                            unavailableSpots.add(5);
-                        } else if (i == 1 && j == 1) {
-                            unavailableSpots.add(6);
-                        } else if (i == 1 && j == 2) {
-                            unavailableSpots.add(7);
-                        } else if (i == 1 && j == 3) {
-                            unavailableSpots.add(8);
-                        } else if (i == 2 && j == 0) {
-                            unavailableSpots.add(9);
-                        } else if (i == 2 && j == 1) {
-                            unavailableSpots.add(10);
-                        } else if (i == 2 && j == 2) {
-                            unavailableSpots.add(11);
-                        } else if (i == 2 && j == 3) {
-                            unavailableSpots.add(12);
-                        } else if (i == 3 && j == 0) {
-                            unavailableSpots.add(13);
-                        } else if (i == 3 && j == 1) {
-                            unavailableSpots.add(14);
-                        } else if (i == 3 && j == 2) {
-                            unavailableSpots.add(15);
-                        } else if (i == 3 && j == 3) {
-                            unavailableSpots.add(16);
+                        if (newBoard[i][j] == 1 || newBoard[i][j] == 2) {
+                            unavailableSpots.add(i + " " + j);
                         }
                     }
                 }
@@ -122,45 +120,22 @@ public class Game {
             newBoard[besti][bestj] = whosTurn;
             makeMove(newBoard, 1);
         } else {
-            int move = TextInterface.getMove(unavailableSpots);
-            if (move == 1) {
-                newBoard[0][0] = 1;
-            } else if (move == 2) {
-                newBoard[0][1] = 1;
-            } else if (move == 3) {
-                newBoard[0][2] = 1;
-            } else if (move == 4) {
-                newBoard[0][3] = 1;
-            } else if (move == 5) {
-                newBoard[1][0] = 1;
-            } else if (move == 6) {
-                newBoard[1][1] = 1;
-            } else if (move == 7) {
-                newBoard[1][2] = 1;
-            } else if (move == 8) {
-                newBoard[1][3] = 1;
-            } else if (move == 9) {
-                newBoard[2][0] = 1;
-            } else if (move == 10) {
-                newBoard[2][1] = 1;
-            } else if (move == 11) {
-                newBoard[2][2] = 1;
-            } else if (move == 12) {
-                newBoard[2][3] = 1;
-            } else if (move == 13) {
-                newBoard[3][0] = 1;
-            } else if (move == 14) {
-                newBoard[3][1] = 1;
-            } else if (move == 15) {
-                newBoard[3][2] = 1;
-            } else if (move == 16) {
-                newBoard[3][3] = 1;
-            }
+            String move = TextInterface.getMove(unavailableSpots);
+            newBoard[Integer.parseInt("" + move.charAt(0)) - 1][Integer.parseInt("" + move.charAt(2)) - 1] = 1;
             makeMove(newBoard, 2);
         }
 
     }
-
+    
+    /**
+     * Evaluates the minmax value of a potential move in the current board state
+     *
+     * @param board the current game board
+     * @param whosTurn the player whose next possible moves are being evaluated (1 or 2)
+     * @param count how many turns ahead of the current board state the evaluation currently is
+     * 
+     * @return minMaxSum the minmax value of this potential move in the current board state
+     */
     private static int evaluateMove(int[][] board, int whosTurn, int count) {
 
         boolean gameOver = false;
@@ -180,7 +155,25 @@ public class Game {
                         return 1;
                     }
                 }
+                if (j == 1 && board[i][j] == board[i][j + 1] && board[i][j] == board[i][j + 2] && board[i][j] == board[i][j + 3] && board[i][j] != 0) {
+                    if ((whosTurn == 1 && count % 2 == 0) || (whosTurn == 2 && count % 2 == 1)) {
+                        // the result is a LOSS
+                        return -1;
+                    } else {
+                        // the result is a WIN
+                        return 1;
+                    }
+                }
                 if (i == 0 && board[i][j] == board[i + 1][j] && board[i][j] == board[i + 2][j] && board[i][j] == board[i + 3][j] && board[i][j] != 0) {
+                    if ((whosTurn == 1 && count % 2 == 0) || (whosTurn == 2 && count % 2 == 1)) {
+                        // the result is a LOSS
+                        return -1;
+                    } else {
+                        // the result is a WIN
+                        return 1;
+                    }
+                }
+                if (i == 1 && board[i][j] == board[i + 1][j] && board[i][j] == board[i + 2][j] && board[i][j] == board[i + 3][j] && board[i][j] != 0) {
                     if ((whosTurn == 1 && count % 2 == 0) || (whosTurn == 2 && count % 2 == 1)) {
                         // the result is a LOSS
                         return -1;
@@ -198,7 +191,25 @@ public class Game {
                         return 1;
                     }
                 }
+                if (i == 4 && j == 0 && board[i][j] == board[i - 1][j + 1] && board[i][j] == board[i - 2][j + 2] && board[i][j] == board[i - 3][j + 3] && board[i][j] != 0) {
+                    if ((whosTurn == 1 && count % 2 == 0) || (whosTurn == 2 && count % 2 == 1)) {
+                        // the result is a LOSS
+                        return -1;
+                    } else {
+                        // the result is a WIN
+                        return 1;
+                    }
+                }
                 if (i == 0 && j == 0 && board[i][j] == board[i + 1][j + 1] && board[i][j] == board[i + 2][j + 2] && board[i][j] == board[i + 3][j + 3] && board[i][j] != 0) {
+                    if ((whosTurn == 1 && count % 2 == 0) || (whosTurn == 2 && count % 2 == 1)) {
+                        // the result is a LOSS
+                        return -1;
+                    } else {
+                        // the result is a WIN
+                        return 1;
+                    }
+                }
+                if (i == 1 && j == 1 && board[i][j] == board[i + 1][j + 1] && board[i][j] == board[i + 2][j + 2] && board[i][j] == board[i + 3][j + 3] && board[i][j] != 0) {
                     if ((whosTurn == 1 && count % 2 == 0) || (whosTurn == 2 && count % 2 == 1)) {
                         // the result is a LOSS
                         return -1;
@@ -217,6 +228,7 @@ public class Game {
 
         if (count == 5) {
             // heuristics... depending on the sum of evaluation board give 1, 0 or -1?
+            // perhaps only evaluate middle/border locations at start and then locations next to already occupied ones..?
             return 0;
         }
 

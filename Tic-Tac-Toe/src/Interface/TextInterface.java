@@ -5,15 +5,21 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 /**
+ * The text interface class for the program
  *
- * @author Teemu
+ * @author Teemu Salminen <teemujsalminen@gmail.com>
  */
 public class TextInterface {
 
     private static Scanner reader = new Scanner(System.in);
-
+    private static int size;
+    
+    /**
+     * Creates the game and sets the size of the board
+     */
     public TextInterface() {
-        int size = 4;
+        size = 5;
+        System.out.println("The program runs quite slowly right now - patience, it gets faster after the first turns!");
 
 //        System.out.println("Board size? (number x number): ");
 //        try {
@@ -23,11 +29,17 @@ public class TextInterface {
 
         Game game = new Game(size);
     }
-
+    
+    /**
+     * Shows the current board state and the evaluated minmax values of each possible move
+     *
+     * @param board the current game board
+     * @param evaluationBoard the evaluated minmax values of each possible move
+     */
     public static void showBoardState(int[][] board, int[][] evaluationBoard) {
-        
+
         // SHOW BOARD STATE:
-        
+
         System.out.println("------");
         for (int i = 0; i < board.length; i++) {
             for (int j = 0; j < board.length; j++) {
@@ -42,7 +54,7 @@ public class TextInterface {
             System.out.println("");
         }
 
-        // SHOW MINMAX VALUES OF CHOICES:
+        // SHOW MINMAX VALUES OF POTENTIAL MOVES:
 
         System.out.println("------");
         for (int i = 0; i < board.length; i++) {
@@ -52,18 +64,31 @@ public class TextInterface {
             System.out.println("");
         }
     }
+    
+    /**
+     * Fetches the next move from the user
+     *
+     * @param unavailableSpots areas of the board that are already occupied
+     *
+     * @return move the next move as given by the user
+     */
+    public static String getMove(ArrayList<String> unavailableSpots) {
+        int moveX = 0;
+        int moveY = 0;
 
-    public static int getMove(ArrayList<Integer> unavailableSpots) {
-        int move = 0;
-        System.out.println("make your move (1-16):");
-        while ((move != 1 && move != 2 && move != 3 && move != 4 && move != 5 && move != 6 && move != 7 && move != 8 && move != 9
-                && move != 10 && move != 11 && move != 12 && move != 13 && move != 14 && move != 15 && move != 16)
-                || unavailableSpots.contains(move)) {
+        System.out.println("make your move (XY position such as '1 3'):");
+        while (moveX > size || moveY > size || moveX < 1 || moveY < 1 || unavailableSpots.contains((moveX - 1) + " " + (moveY - 1)))  {
             try {
-                move = Integer.parseInt(reader.next());
+                moveX = Integer.parseInt(reader.next());
+                moveY = Integer.parseInt(reader.next());
             } catch (Exception ex) {
             }
         }
+        String move = moveX + " " + moveY;
         return move;
     }
+    
+//    public static void announceVictory(int player) {
+//        System.out.println("Player " + player + " won!!!");
+//    }
 }

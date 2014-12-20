@@ -3,8 +3,9 @@ package tic.tac.toe;
 import Interface.TextInterface;
 
 /**
+ * The main class of the program (launches the interface)
  *
- * @author Teemu
+ * @author Teemu Salminen <teemujsalminen@gmail.com>
  */
 public class TicTacToe {
 
