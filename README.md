@@ -67,6 +67,16 @@ Each value is equal to the index it is associated with. For example, calling get
 
 ![alt text](https://dl.dropboxusercontent.com/u/56014373/persistent%20vector.jpeg "Structure of a persistent vector")
 
+### Finding elements
+
+To find elements in the vector, we use bit partitioning. Another, more formal name for
+this data structure is a *persistent bit-partitioned vector trie*. In the example above the vector is 4 levels deep
+and has a branching factor of true. Thus we need a total of 4 bits to represent an index in this vector,
+one for each level. For example, let's say we want to find the 4th index of this vector. First we take the binary
+number of 4 which is 10, the we add padding to make it 4 bits long (0010). Starting from the left we take a left
+turn every time we see 0 and a right when we see 1. If you look at the diagram above you'll notice that this takes
+us to index 4 of the vector where we find the value 4.
+
 ### Adding elements
 
 Now, how do we add an element to this vector? If we were not concerned with mutability,
@@ -84,4 +94,16 @@ As with adding elements, when we want to update a vector we create a new vector
 that shares all unchanged data with the old one. Here's a diagram for that.
 
 ![alt text](https://dl.dropboxusercontent.com/u/56014373/updating%20vector.jpeg "adding to a persistent vector")
+
+### How to make it efficient
+
+This is all good in terms of persistency, but it's still not very efficient. Let's look at how we can improve efficiency.
+First of all lets increase the branching factor. Our current implementation only has two elements.
+That means the look up time for any element would be O(log n). If we increase the branching factor we are already
+better off as the tree will stay more shallow. The clojure implementation has a branching factor of 32. Hence a worst
+case look up time of O(log32 n). Another easy optimization is to keep the depth of the tree to minimum.
+
+The maximum depth for a tree with a branching factor of 32 in this setup is 6. This is derived from the fact that we use
+32 bit integers to represent the indeces (5 bits for each level 2^5 = 32 and 32/5 = 6). However, we should make sure
+never to use more levels than necessary.
 
