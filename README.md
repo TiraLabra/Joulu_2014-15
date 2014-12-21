@@ -1,4 +1,4 @@
-Joulu_2014-15
+﻿A*
 =============
 
-Vuodenvaihde 2014-15 Tiralabra. Ohjaajat Toni Annala sekä Kristiina Paloheimo
+Pythonilla toteutettu A* reitinhaku.
