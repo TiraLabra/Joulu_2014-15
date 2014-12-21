@@ -1,0 +1,5 @@
+Toteutin säännöllistä lauseketta esittävän tietorakenteen, ja sitä vastaavan säännöllisen lausekkeen näyttämisen tavallisessa merkkijonomuodossa. Toteutin kokonaan derivaattojen avulla toimivan matchaamisen.
+
+Aiheesta lukemalla opin alkeet säännöllisten lauseiden tulkkaamisessa käytetyistä algoritmeistä.
+
+Seuraavaksi alan toteuttamaan parsimista, NFA-pohjaista matchaamisalgoritmia, ja testien kirjoittamisen.
