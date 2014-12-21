@@ -12,9 +12,9 @@ public interface IPersistentVector<T> {
 
     public PersistentVector pop(); 
 
-    public PersistentVector conj(); 
+    public PersistentVector conj(T element); 
 
-    public PersistentVector assoc(); 
+    public PersistentVector assoc(int ind, T element); 
 
     public T peek(); 
     
