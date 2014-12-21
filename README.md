@@ -1,3 +1,17 @@
+### Huom!
+Lukiessanne tätä tekstiä huomannette kaksi asiaa.
+
+1. Teksti on englanniksi.
+
+   En viitsinyt käyttää aikaa suomennosten keksimiseen/etsimiseen.
+   Jos on pakko, niin suomennan.
+   
+2. Teksti on kirjoitettu tutoriaalin muotoon. Tähän on kaksi syytä.
+
+   Ensiksikin toivon, että se helpottaa ohjaajaa ymmärtämään harjoitustyön aiheen ja motivaation helpommin.
+   Toiseksi, kirjoitin sen samalla kun opiskelin itse tietorakennetta, ja huomaan että opin parhaiten,
+   kun kirjoitan itselleni ikään kuin *muistiinpanot* tähän muotoon.
+
 # Persistent Vector
 
 Persistent vector is a built-in data structure of the clojure programming language.
