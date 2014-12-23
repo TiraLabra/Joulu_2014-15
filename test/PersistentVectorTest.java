@@ -25,7 +25,7 @@ public class PersistentVectorTest {
     }
 
     @Test
-    public void callingConstructorWithNoParametersShouldInitializeAnEmptyVector() {
+    public void testConstructorWithoutParameters() {
         assertEquals(0, v.count());
     }
     
@@ -36,9 +36,80 @@ public class PersistentVectorTest {
     }
 
     @Test
-    public void testGetAfterAddingOneItem() {
+    public void testAddingOneItem() {
         PersistentVector<Integer> v2 = v.conj(1);
         assertEquals(new Integer(1), v2.get(0));
+    }
+
+    @Test
+    public void testPeekAfterAddingOneItem() {
+        PersistentVector<Integer> v2 = v.conj(1);
+        assertEquals(new Integer(1), v2.peek());
+    }
+
+    @Test
+    public void testPersistencyAfterAddingOneItem() {
+        PersistentVector<Integer> v2 = v.conj(1);
+        assertEquals(null, v.peek());
+        assertEquals(0, v.count());
+    }
+
+    @Test
+    public void testAssocAfterAddingOneItem() {
+        PersistentVector<Integer> v2 = v.conj(1);
+        PersistentVector<Integer> v3 = v.assoc(0, 2);
+        assertEquals(new Integer(2), v3.get(0));
+    }
+
+    @Test
+    public void testPersistencyAfterOneAssoc() {
+        PersistentVector<Integer> v2 = v.conj(1);
+        PersistentVector<Integer> v3 = v.assoc(0, 2);
+        assertEquals(new Integer(1), v2.get(0));
+    }
+
+    @Test
+    public void testPopAfterAddingOneItem() {
+        PersistentVector<Integer> v2 = v.conj(1).pop();
+        assertEquals(null, v2.get(0));
+        assertEquals(0, v2.count());
+    }
+
+    @Test
+    public void testPersistancyAfterPoppingOneItem() {
+        PersistentVector<Integer> v2 = v.conj(1);
+        v2.pop();
+        assertEquals(new Integer(1), v2.get(0));
+        assertEquals(1, v2.count());
+    }
+
+    @Test
+    public void testCountAfterAddingThreeItems() {
+        PersistentVector<Integer> v2 = v.conj(1).conj(2).conj(3);
+        assertEquals(3, v2.count());
+    }
+
+    @Test
+    public void testAddingThreeItems() {
+        PersistentVector<Integer> v2 = v.conj(1).conj(2).conj(3);
+        assertEquals(new Integer(1), v2.get(0));
+        assertEquals(new Integer(2), v2.get(1));
+        assertEquals(new Integer(3), v2.get(2));
+    }
+
+    @Test
+    public void testPopAfterAddingThreeItems() {
+        PersistentVector<Integer> v2 = v.conj(1).conj(2).conj(3).pop();
+        assertEquals(new Integer(1), v2.get(0));
+        assertEquals(new Integer(2), v2.get(1));
+        assertEquals(null, v2.get(2));
+        assertEquals(2, v2.count());
+    }
+
+    @Test
+    public void testPeekAfterAddingThreeItems() {
+        PersistentVector<Integer> v2 = v.conj(1).conj(2).conj(3);
+        assertEquals(new Integer(3), v2.peek());
     }
 
 }
