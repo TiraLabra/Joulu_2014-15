@@ -30,6 +30,21 @@ public class PersistentVectorTest {
     }
     
     @Test
+    public void testGetOnEmptyVector() {
+        assertEquals(null, v.get(0));
+    }
+
+    @Test
+    public void testCountOnEmptyVector() {
+        assertEquals(0, v.count());
+    }
+
+    @Test
+    public void testPeekOnEmptyVector() {
+        assertEquals(null, v.peek());
+    }
+
+    @Test
     public void testCountAfterAddingOneItem() {
         PersistentVector<Integer> v2 = v.conj(1);
         assertEquals(1, v2.count());
