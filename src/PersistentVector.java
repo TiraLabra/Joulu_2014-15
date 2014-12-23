@@ -15,7 +15,7 @@ public class PersistentVector<T> implements IPersistentVector<T> {
 
     private final int BRANCHING_FACTOR = 32;
     private int count = 0;
-    private Node root;
+    private final Node root;
 
     public PersistentVector () {
         this.root = new Node();
