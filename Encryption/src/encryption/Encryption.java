@@ -7,10 +7,13 @@
 package encryption;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.InputStream;
 import java.io.Reader;
+import java.util.ArrayList;
 
 /**
  *
@@ -19,6 +22,7 @@ import java.io.Reader;
 public class Encryption {
 
     private static String input = new String();
+    private static Long muodostettuInt;
     
     private static void generateInt(){
         if ( !input.isEmpty() ){
@@ -33,9 +37,42 @@ public class Encryption {
                 i++;
             }
             System.out.println("Kokonaisluku: " + kokonaisluku);
-            
+            muodostettuInt = kokonaisluku;
         }
         System.out.println("No data to generate integer");
+    }
+
+private static void generateString()
+    {   
+        ArrayList<String> array_str = new ArrayList<>();
+
+        if ( muodostettuInt != null && muodostettuInt > 0){
+
+            while ( muodostettuInt > 0 ){
+                long tmp = muodostettuInt%256;
+                String tmp_ch = "" + (char)tmp;
+                array_str.add(tmp_ch);
+                muodostettuInt -= tmp;
+                muodostettuInt /= 256;
+            }
+        }
+
+        File fout = new File("testi.txt");
+        try{
+            FileWriter fwr = new FileWriter(fout);
+            BufferedWriter bwr = new BufferedWriter(fwr);
+            int i = 0;
+            while (i < array_str.size() ){
+                bwr.write(array_str.get(i));
+                i++;
+            }    
+            bwr.close();
+        }
+        catch ( Exception ex ){
+            System.out.println("File writing failed: " + ex.getMessage());
+        }
+
+
     }
     
     private static void readContents(File fileToRead) throws Exception{
@@ -81,6 +118,7 @@ public class Encryption {
                 try {
                     readContents(file);
                     generateInt();
+                    generateString();
                 }catch (Exception ex) {
                     System.out.println(ex.getMessage());
                 }
