@@ -1,3 +1,17 @@
+### Huom!
+Lukiessanne tätä tekstiä huomannette kaksi asiaa.
+
+1. Teksti on englanniksi.
+
+   En viitsinyt käyttää aikaa suomennosten keksimiseen/etsimiseen.
+   Jos on pakko, niin suomennan.
+   
+2. Teksti on kirjoitettu tutoriaalin muotoon. Tähän on kaksi syytä.
+
+   Ensiksikin toivon, että se helpottaa ohjaajaa ymmärtämään harjoitustyön aiheen ja motivaation helpommin.
+   Toiseksi, kirjoitin sen samalla kun opiskelin itse tietorakennetta, ja huomaan että opin parhaiten,
+   kun kirjoitan itselleni ikään kuin *muistiinpanot* tähän muotoon.
+
 # Persistent Vector
 
 Persistent vector is a built-in data structure of the clojure programming language.
@@ -98,12 +112,11 @@ that shares all unchanged data with the old one. Here's a diagram for that.
 ### How to make it efficient
 
 This is all good in terms of persistency, but it's still not very efficient. Let's look at how we can improve efficiency.
-First of all lets increase the branching factor. Our current implementation only has two elements.
+First of all, lets increase the branching factor. Our current implementation only has two elements per node.
 That means the look up time for any element would be O(log n). If we increase the branching factor we are already
-better off as the tree will stay more shallow. The clojure implementation has a branching factor of 32. Hence a worst
-case look up time of O(log32 n). Another easy optimization is to keep the depth of the tree to minimum.
+better off as the tree will stay more shallow. The clojure implementation has a branching factor of 32. Hence a worst case look up time of O(log32 n).
 
-The maximum depth for a tree with a branching factor of 32 in this setup is 6. This is derived from the fact that we use
-32 bit integers to represent the indeces (5 bits for each level 2^5 = 32 and 32/5 = 6). However, we should make sure
-never to use more levels than necessary.
+Another easy optimization is to keep the depth of the tree to a minimum. The maximum depth for a tree with a branching
+factor of 32 in this setup is 6. This is derived from the fact that we use 32 bit integers to represent the indeces
+(5 bits for each level 2^5 = 32 and 32/5 = 6). However, we should make sure never to use more levels than necessary.
 
