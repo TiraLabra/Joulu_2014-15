@@ -127,4 +127,19 @@ public class PersistentVectorTest {
         assertEquals(new Integer(3), v2.peek());
     }
 
+    @Test
+    public void testAdding_33_Items() {
+        for (int i = 0; i < 33; i++) {
+            v = v.conj(i);
+        }
+        assertEquals(new Integer(32), v.get(32));
+    }
+
+    @Test
+    public void testAdding_103_Items() {
+        for (int i = 0; i < 103; i++) {
+            v = v.conj(i);
+        }
+        assertEquals(new Integer(103), v.get(103));
+    }
 }
