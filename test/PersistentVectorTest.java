@@ -148,6 +148,16 @@ public class PersistentVectorTest {
     }
 
     @Test
+    public void testAssocAfterAdding_103_Items() {
+        for (int i = 0; i < 103; i++) {
+            v = v.conj(i);
+        }
+        PersistentVector<Integer> v2 = v.assoc(89, 42);
+        assertEquals(89, v.get(89));
+        assertEquals(new Integer(42), v2.get(89));
+    }
+
+    @Test
     public void testAdding_1025_Items() {
         for (int i = 0; i < 1025; i++) {
             v = v.conj(i);

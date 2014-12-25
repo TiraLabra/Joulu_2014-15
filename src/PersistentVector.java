@@ -45,9 +45,9 @@ public class PersistentVector<T> implements IPersistentVector<T> {
             p.root.setNode(0, this.root);
             p.depth = this.depth + 1;
             p.count = this.count;
-            p.root = doConj(element, p.depth * 5, p.root);
+            p.root = doAssoc(element, p.depth * 5, p.root, p.count);
         } else {
-            p.root = doConj(element, this.depth * 5, this.root);
+            p.root = doAssoc(element, this.depth * 5, this.root, this.count);
             p.depth = this.depth;
         }
 
@@ -59,7 +59,9 @@ public class PersistentVector<T> implements IPersistentVector<T> {
     @Override
     public PersistentVector assoc(int ind, T element) {
         PersistentVector p = new PersistentVector();
-        p.root.setValue(ind, element);
+        p.root = doAssoc(element, this.depth * 5, this.root, ind);
+        p.count = this.count + 1;
+        p.depth = this.depth;
         return p;
     }
 
@@ -87,11 +89,10 @@ public class PersistentVector<T> implements IPersistentVector<T> {
         return node.getValue(index & mask);
     }
 
-    private Node doConj(T el, int level, Node<T> node) {
+    private Node doAssoc(T el, int level, Node<T> node, int index) {
         //create a new node for each step in the path
         //recursively call add return the root
         int mask = BRANCHING_FACTOR - 1;
-        int index = this.count;
 
         if (level > 0) {
             Node<T> newNode = new InternalNode<T>();
@@ -100,7 +101,7 @@ public class PersistentVector<T> implements IPersistentVector<T> {
             }
             int ind = (index >>> level) & mask;
             Node<T> nextNode = newNode.getNode(ind);
-            newNode.setNode(ind, doConj(el, level - 5, nextNode));
+            newNode.setNode(ind, doAssoc(el, level - 5, nextNode, index));
             return newNode;
         } else {
             Node<T> newNode = new LeafNode<T>();
