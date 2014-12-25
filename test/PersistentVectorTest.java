@@ -158,6 +158,14 @@ public class PersistentVectorTest {
     }
 
     @Test
+    public void testPeekAfterAdding_103_Items() {
+        for (int i = 0; i < 103; i++) {
+            v = v.conj(i);
+        }
+        assertEquals(102, v.peek());
+    }
+
+    @Test
     public void testAdding_1025_Items() {
         for (int i = 0; i < 1025; i++) {
             v = v.conj(i);

@@ -69,7 +69,7 @@ public class PersistentVector<T> implements IPersistentVector<T> {
     public T peek() {
         if (count < 1) return null;
 
-        return this.root.getValue(this.count - 1);
+        return this.get(this.count - 1);
     }
 
     @Override
