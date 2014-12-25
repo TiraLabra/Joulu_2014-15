@@ -38,14 +38,21 @@ public class PersistentVector<T> implements IPersistentVector<T> {
     @Override
     public PersistentVector conj(T element) {
         PersistentVector p = new PersistentVector();
-        p.root.setAllValues(this.root.copyValues());
-        if (this.count < BRANCHING_FACTOR) {
-            p.root.setValue(this.count, element);
+
+        // full level
+        if (this.count >= 1 << (this.depth + 1) * 5) {
+            p.root = new InternalNode<>();
+            p.root.setNode(0, this.root);
+            p.depth = this.depth + 1;
+            p.count = this.count;
+            p.root = doConj(element, p.depth * 5, p.root);
         } else {
-            p.createNewLevel();
-            p.root.getNode(1).setValue(0, element);
+            p.root = doConj(element, this.depth * 5, this.root);
+            p.depth = this.depth;
         }
+
         p.count = this.count + 1;
+
         return p;
     }
 
@@ -68,14 +75,6 @@ public class PersistentVector<T> implements IPersistentVector<T> {
         return findValue(index);
     }
 
-    private void createNewLevel() {
-        Node<T> newRoot = new InternalNode<T>();
-        newRoot.setNode(0, this.root);
-        newRoot.setNode(1, new LeafNode<T>());
-        this.root = newRoot;
-        this.depth++;
-    }
-
     private T findValue(int index) {
         Node<T> node = this.root;
         int mask = BRANCHING_FACTOR - 1;
@@ -88,6 +87,32 @@ public class PersistentVector<T> implements IPersistentVector<T> {
         return node.getValue(index & mask);
     }
 
+    private Node doConj(T el, int level, Node<T> node) {
+        //create a new node for each step in the path
+        //recursively call add return the root
+        int mask = BRANCHING_FACTOR - 1;
+        int index = this.count;
+
+        if (level > 0) {
+            Node<T> newNode = new InternalNode<T>();
+            if (node != null) {
+                newNode.setAllNodes(node.copyNodes());
+            }
+            int ind = (index >>> level) & mask;
+            Node<T> nextNode = newNode.getNode(ind);
+            newNode.setNode(ind, doConj(el, level - 5, nextNode));
+            return newNode;
+        } else {
+            Node<T> newNode = new LeafNode<T>();
+            if (node != null) {
+                newNode.setAllValues(node.copyValues());
+            }
+            newNode.setValue(index & mask, el);
+            return newNode;
+        }
+
+    }
+
    
 
 
@@ -97,7 +122,9 @@ public class PersistentVector<T> implements IPersistentVector<T> {
         abstract void setValue(int ind, T element);
         abstract void setNode(int ind, Node node);
         abstract T[] copyValues();
+        abstract Node[] copyNodes();
         abstract void setAllValues(T[] elements);
+        abstract void setAllNodes(Node[] elements);
     }
 
     private class LeafNode<T> extends Node {
@@ -136,10 +163,17 @@ public class PersistentVector<T> implements IPersistentVector<T> {
         void setNode(int ind, Node node) {
         }
 
+        @Override
+        Node[] copyNodes() { return null; }
+
+        @Override
+        void setAllNodes(Node[] elements) {
+        }
+
     }
 
     private class InternalNode<T> extends Node {
-        private final Node[] elements;
+        private Node[] elements;
 
         public InternalNode () {
             this.elements = new Node[32];//(new Object[BRANCHING_FACTOR]);
@@ -172,6 +206,17 @@ public class PersistentVector<T> implements IPersistentVector<T> {
         void setNode(int ind, Node node) {
             this.elements[ind] = node;
         }
+
+        @Override
+        Node[] copyNodes() {
+            return Arrays.copyOf(this.elements, BRANCHING_FACTOR);
+        }
+
+        @Override
+        void setAllNodes(Node[] elements) {
+            this.elements = (Node[]) elements;
+        }
+
 
     }
 

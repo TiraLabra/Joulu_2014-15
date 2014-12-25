@@ -132,7 +132,9 @@ public class PersistentVectorTest {
         for (int i = 0; i < 33; i++) {
             v = v.conj(i);
         }
-        assertEquals(new Integer(32), v.get(32));
+        for (int i = 0; i < 33; i++) {
+            assertEquals(i, v.get(i));
+        }
     }
 
     @Test
@@ -140,6 +142,19 @@ public class PersistentVectorTest {
         for (int i = 0; i < 103; i++) {
             v = v.conj(i);
         }
-        assertEquals(new Integer(103), v.get(103));
+        for (int i = 0; i < 103; i++) {
+            assertEquals(i, v.get(i));
+        }
     }
+
+    @Test
+    public void testAdding_1025_Items() {
+        for (int i = 0; i < 1025; i++) {
+            v = v.conj(i);
+        }
+        for (int i = 0; i < 1025; i++) {
+            assertEquals(i, v.get(i));
+        }
+    }
+
 }
