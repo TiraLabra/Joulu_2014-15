@@ -8,9 +8,11 @@
  *
  * @author laurikin
  */
-public interface IPersistentCollection<T> {
+public interface IPersistentCollection<K, V> {
     
-    public IPersistentCollection<T> assoc(int ind, T element); 
+    public IPersistentCollection<K, V> assoc(K key, V element); 
+
+    public V get(K key);
 
     public int count();
 }

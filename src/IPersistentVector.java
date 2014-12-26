@@ -17,5 +17,4 @@ public interface IPersistentVector<T> {
 
     public T peek(); 
     
-    public T get(int index);
 }

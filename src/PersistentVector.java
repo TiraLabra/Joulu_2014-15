@@ -10,8 +10,9 @@ import java.util.Arrays;
 /**
  *
  * @author laurikin
+ * @param <T>
  */
-public class PersistentVector<T> implements IPersistentVector<T>, IPersistentCollection<T> {
+public class PersistentVector<T> implements IPersistentVector<T>, IPersistentCollection<Integer, T> {
 
     private final int BRANCHING_FACTOR = 32;
     private int count = 0;
@@ -66,7 +67,7 @@ public class PersistentVector<T> implements IPersistentVector<T>, IPersistentCol
     }
 
     @Override
-    public PersistentVector<T> assoc(int ind, T element) {
+    public PersistentVector<T> assoc(Integer ind, T element) {
         PersistentVector p = new PersistentVector();
         p.root = doAssoc(element, this.depth * 5, this.root, ind);
         p.count = this.count + 1;
@@ -82,7 +83,7 @@ public class PersistentVector<T> implements IPersistentVector<T>, IPersistentCol
     }
 
     @Override
-    public T get(int index) {
+    public T get(Integer index) {
         if (index >= count || index < 0) return null;
 
         return findValue(index);

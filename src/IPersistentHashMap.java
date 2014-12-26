@@ -8,6 +8,5 @@
  *
  * @author laurikin
  */
-public interface IPersistentHashMap {
-    
+public interface IPersistentHashMap<K, V> {
 }
