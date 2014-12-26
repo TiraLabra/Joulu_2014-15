@@ -27,16 +27,24 @@ public class PersistentVector<T> implements IPersistentVector<T> {
     }
 
     @Override
-    public PersistentVector pop() {
+    public PersistentVector<T> pop() {
         PersistentVector p = new PersistentVector();
-        p.root.setAllValues(this.root.copyValues());
-        p.root.setValue(this.count - 1, null);
+        p.root = doPop(this.depth * 5, this.root, this.count - 1);
+
+        // check if one level can be removed
+        if (this.count == (1 << (this.depth * 5)) + 1) {
+            p.root = p.root.getNode(0);
+            p.depth = this.depth - 1;
+        } else {
+            p.depth = this.depth;
+        }
+
         p.count = this.count - 1;
         return p;
     }
 
     @Override
-    public PersistentVector conj(T element) {
+    public PersistentVector<T> conj(T element) {
         PersistentVector p = new PersistentVector();
 
         // full level
@@ -57,7 +65,7 @@ public class PersistentVector<T> implements IPersistentVector<T> {
     }
 
     @Override
-    public PersistentVector assoc(int ind, T element) {
+    public PersistentVector<T> assoc(int ind, T element) {
         PersistentVector p = new PersistentVector();
         p.root = doAssoc(element, this.depth * 5, this.root, ind);
         p.count = this.count + 1;
@@ -74,6 +82,7 @@ public class PersistentVector<T> implements IPersistentVector<T> {
 
     @Override
     public T get(int index) {
+        if (index >= count || index < 0) return null;
         return findValue(index);
     }
 
@@ -87,6 +96,30 @@ public class PersistentVector<T> implements IPersistentVector<T> {
         }
 
         return node.getValue(index & mask);
+    }
+
+    private Node doPop(int level, Node<T> node, int index) {
+        //create a new node for each step in the path
+        //recursively call add return the root
+        int mask = BRANCHING_FACTOR - 1;
+
+        if (level > 0) {
+            Node<T> newNode = new InternalNode<T>();
+            if (node != null) {
+                newNode.setAllNodes(node.copyNodes());
+            }
+            int ind = (index >>> level) & mask;
+            Node<T> nextNode = newNode.getNode(ind);
+            newNode.setNode(ind, doPop(level - 5, nextNode, index));
+            return newNode;
+        } else {
+            Node<T> newNode = new LeafNode<T>();
+            if (node != null) {
+                newNode.setAllValues(node.copyValues());
+            }
+            newNode.setValue(index & mask, null);
+            return newNode;
+        }
     }
 
     private Node doAssoc(T el, int level, Node<T> node, int index) {

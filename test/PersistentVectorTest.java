@@ -14,7 +14,7 @@ import static org.junit.Assert.*;
  */
 public class PersistentVectorTest {
 
-    public PersistentVector v;
+    public PersistentVector<Integer> v;
     
     public PersistentVectorTest() {
     }
@@ -133,8 +133,35 @@ public class PersistentVectorTest {
             v = v.conj(i);
         }
         for (int i = 0; i < 33; i++) {
-            assertEquals(i, v.get(i));
+            assertEquals(new Integer(i), v.get(i));
         }
+    }
+
+    @Test
+    public void testPopAfterAdding_33_Items() {
+        for (int i = 0; i < 33; i++) {
+            v = v.conj(i);
+        }
+        PersistentVector<Integer> v2 = v.pop();
+        for (int i = 0; i < 32; i++) {
+            assertEquals(new Integer(i), v2.get(i));
+            assertEquals(new Integer(i), v.get(i));
+        }
+        assertEquals(null, v2.get(32));
+        assertEquals(new Integer(32), v.get(32));
+    }
+
+    @Test
+    public void testConjingAndPoppingOverDepthThreshold() {
+        for (int i = 0; i < 33; i++) {
+            v = v.conj(i);
+        }
+        v = v.pop().pop().conj(100).conj(101);
+        for (int i = 0; i < 30; i++) {
+            assertEquals(new Integer(i), v.get(i));
+        }
+        assertEquals(new Integer(100), v.get(31));
+        assertEquals(new Integer(101), v.get(32));
     }
 
     @Test
@@ -143,7 +170,7 @@ public class PersistentVectorTest {
             v = v.conj(i);
         }
         for (int i = 0; i < 103; i++) {
-            assertEquals(i, v.get(i));
+            assertEquals(new Integer(i), v.get(i));
         }
     }
 
@@ -153,8 +180,21 @@ public class PersistentVectorTest {
             v = v.conj(i);
         }
         PersistentVector<Integer> v2 = v.assoc(89, 42);
-        assertEquals(89, v.get(89));
+        assertEquals(new Integer(89), v.get(89));
         assertEquals(new Integer(42), v2.get(89));
+    }
+
+    @Test
+    public void testPopAfterAdding_103_Items() {
+        for (int i = 0; i < 103; i++) {
+            v = v.conj(i);
+        }
+        PersistentVector<Integer> v2 = v.pop();
+        for (int i = 0; i < 102; i++) {
+            assertEquals(new Integer(i), v2.get(i));
+        }
+        assertEquals(null, v2.get(102));
+        assertEquals(new Integer(102), v.get(102));
     }
 
     @Test
@@ -162,7 +202,7 @@ public class PersistentVectorTest {
         for (int i = 0; i < 103; i++) {
             v = v.conj(i);
         }
-        assertEquals(102, v.peek());
+        assertEquals(new Integer(102), v.peek());
     }
 
     @Test
@@ -171,7 +211,7 @@ public class PersistentVectorTest {
             v = v.conj(i);
         }
         for (int i = 0; i < 1025; i++) {
-            assertEquals(i, v.get(i));
+            assertEquals(new Integer(i), v.get(i));
         }
     }
 
