@@ -7,15 +7,10 @@
 /**
  *
  * @author laurikin
- * @param <T>
  */
-public interface IPersistentVector<T> {
-
-    public PersistentVector<T> pop(); 
-
-    public PersistentVector<T> conj(T element); 
-
-    public T peek(); 
+public interface IPersistentCollection<T> {
     
-    public T get(int index);
+    public IPersistentCollection<T> assoc(int ind, T element); 
+
+    public int count();
 }

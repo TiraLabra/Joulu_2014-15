@@ -11,7 +11,7 @@ import java.util.Arrays;
  *
  * @author laurikin
  */
-public class PersistentVector<T> implements IPersistentVector<T> {
+public class PersistentVector<T> implements IPersistentVector<T>, IPersistentCollection<T> {
 
     private final int BRANCHING_FACTOR = 32;
     private int count = 0;
@@ -22,6 +22,7 @@ public class PersistentVector<T> implements IPersistentVector<T> {
         this.root = new LeafNode<T>();
     }
     
+    @Override
     public int count() {
         return this.count;
     }
@@ -83,6 +84,7 @@ public class PersistentVector<T> implements IPersistentVector<T> {
     @Override
     public T get(int index) {
         if (index >= count || index < 0) return null;
+
         return findValue(index);
     }
 
