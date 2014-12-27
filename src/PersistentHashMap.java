@@ -17,9 +17,16 @@ import java.util.Arrays;
 public class PersistentHashMap<K, V> implements IPersistentCollection<K, V> {
 
     private Node root;
+    private int count;
 
     public PersistentHashMap() {
         this.root = new EmptyNode();
+        this.count = 0;
+    }
+
+    private PersistentHashMap(Node root, int count) {
+        this.root = root;
+        this.count = count;
     }
 
     @Override
@@ -30,26 +37,25 @@ public class PersistentHashMap<K, V> implements IPersistentCollection<K, V> {
 
     @Override
     public PersistentHashMap<K, V> assoc(K key, V value) {
-        PersistentHashMap<K,V> p = new PersistentHashMap<>();
-        p.root = this.root.assoc(key.hashCode(), 25, key, value);
-        return p;
+        Update u = this.root.assoc(key.hashCode(), 25, key, value);
+        return new PersistentHashMap<>(u.root, this.count + u.countDelta);
     }
 
     @Override
     public int count() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return this.count;
     }
     
     private abstract class Node {
-        abstract Node assoc(int level, int hash, K key, V value);
+        abstract Update assoc(int level, int hash, K key, V value);
         abstract LeafNode find(int hash, K key);
     }
 
     private class EmptyNode extends Node {
 
         @Override
-        Node assoc(int hash, int level, K key, V value) {
-            return new LeafNode(key, value, null);
+        Update assoc(int hash, int level, K key, V value) {
+            return new Update(new LeafNode(key, value, null), 1);
         }
 
         @Override
@@ -63,7 +69,7 @@ public class PersistentHashMap<K, V> implements IPersistentCollection<K, V> {
         private Node[] nodes;
 
         @Override
-        Node assoc(int level, int hash,K key, V value) {
+        Update assoc(int level, int hash,K key, V value) {
             return null;
         }
 
@@ -90,17 +96,33 @@ public class PersistentHashMap<K, V> implements IPersistentCollection<K, V> {
             this.next = next;
         }
 
-        private LeafNode add (LeafNode first, K key, V value) {
-            if (this.next == null) {
-                return new LeafNode(key, value, first);
+        private LeafNode copy(LeafNode node, int numOfCopies, LeafNode last) {
+            if (node == null) {
+                return null;
+            } else if (numOfCopies == 1) {
+                return new LeafNode(node.key, node.value, last);
             } else {
-                return this.next.add(first, key, value);
+                return new LeafNode(node.key, node.value, copy(this.next, numOfCopies - 1, last));
+            }
+        }
+
+        private Update update(K key, V value, LeafNode first, int numOfCopies, LeafNode next) {
+            return new Update(new LeafNode(key, value, copy(first, numOfCopies, next)), 0);
+        }
+
+        private Update add (LeafNode first, K key, V value, int rank) {
+            if (this.key.equals(key)) {
+                return update(key, value, first, rank, this.next);
+            } else if (this.next == null) {
+                return new Update(new LeafNode(key, value, first), 1);
+            } else {
+                return this.next.add(first, key, value, rank + 1);
             }
         }
 
         @Override
-        Node assoc(int hash, int level, K key, V value) {
-            return add(this, key, value);
+        Update assoc(int hash, int level, K key, V value) {
+            return add(this, key, value, 0);
         }
 
         @Override
@@ -116,6 +138,16 @@ public class PersistentHashMap<K, V> implements IPersistentCollection<K, V> {
 
         V getValue(V value) {
             return this.value;
+        }
+    }
+
+    private class Update {
+        private Node root;
+        private int countDelta;
+
+        private Update(Node root, int delta) {
+            this.root = root;
+            this.countDelta = delta;
         }
     }
 }
