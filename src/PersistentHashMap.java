@@ -16,8 +16,8 @@ import java.util.Arrays;
  */
 public class PersistentHashMap<K, V> implements IPersistentCollection<K, V> {
 
-    private Node root;
-    private int count;
+    private final Node root;
+    private final int count;
 
     public PersistentHashMap() {
         this.root = new EmptyNode();
@@ -102,7 +102,7 @@ public class PersistentHashMap<K, V> implements IPersistentCollection<K, V> {
             } else if (numOfCopies == 1) {
                 return new LeafNode(node.key, node.value, last);
             } else {
-                return new LeafNode(node.key, node.value, copy(this.next, numOfCopies - 1, last));
+                return new LeafNode(node.key, node.value, copy(node.next, numOfCopies - 1, last));
             }
         }
 
@@ -142,8 +142,8 @@ public class PersistentHashMap<K, V> implements IPersistentCollection<K, V> {
     }
 
     private class Update {
-        private Node root;
-        private int countDelta;
+        private final Node root;
+        private final int countDelta;
 
         private Update(Node root, int delta) {
             this.root = root;
