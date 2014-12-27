@@ -7,6 +7,8 @@
 /**
  *
  * @author laurikin
+ * @param <K>
+ * @param <V>
  */
 public interface IPersistentHashMap<K, V> {
 }

@@ -13,6 +13,7 @@ import static org.junit.Assert.*;
  * @author laurikin
  */
 public class PersistentHashMapTest {
+    private PersistentHashMap<String, String> m = new PersistentHashMap<>();
     
     public PersistentHashMapTest() {
     }
@@ -25,8 +26,9 @@ public class PersistentHashMapTest {
      * Test of get method, of class PersistentHashMap.
      */
     @Test
-    public void testGet() {
+    public void testInsertOneItem() {
+        PersistentHashMap<String, String> m2 = m.assoc("key", "value");
+        assertEquals("value", m2.get("key"));
     }
-
     
 }
