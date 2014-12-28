@@ -42,6 +42,15 @@ public class PersistentHashMapTest {
     }
     
     @Test
+    public void testInsertTwotems() {
+        PersistentHashMap<String, String> m2 = m.assoc("key", "value")
+            .assoc("key2", "value2");
+
+        assertEquals("value", m2.get("key"));
+        assertEquals("value2", m2.get("key2"));
+    }
+
+    @Test
     public void testCountAferInsertingOneItem() {
         PersistentHashMap<String, String> m2 = m.assoc("key", "value");
         assertEquals(1, m2.count());
