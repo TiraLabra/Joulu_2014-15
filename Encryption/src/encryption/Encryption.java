@@ -13,6 +13,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.InputStream;
 import java.io.Reader;
+import java.math.BigInteger;
 import java.util.ArrayList;
 
 /**
@@ -22,38 +23,52 @@ import java.util.ArrayList;
 public class Encryption {
 
     private static String input = new String();
-    private static Long muodostettuInt;
+    
+    private static BigInteger muodostettuLuku;
+    private static BigInteger modulusLuku = BigInteger.valueOf(256L);
     
     private static void generateInt(){
         if ( !input.isEmpty() ){
-            long kokonaisluku = 0L;
-            
-            
             int i = 0;
             
             while ( i < input.length() ){
-                char ch = input.charAt(i);
-                kokonaisluku += (long)ch*Math.pow(256, i);
+                
+                String ch = new String(""+input.charAt(i));
+                BigInteger tmp = new BigInteger(ch.getBytes());
+                
+                BigInteger power = modulusLuku;
+                power = power.pow(i);
+                tmp = tmp.multiply(power);
+                if ( muodostettuLuku == null ){
+                    muodostettuLuku = new BigInteger(tmp.toByteArray());
+                }else {
+                    muodostettuLuku = muodostettuLuku.add(tmp);
+                }
                 i++;
             }
-            System.out.println("Kokonaisluku: " + kokonaisluku);
-            muodostettuInt = kokonaisluku;
         }
-        System.out.println("No data to generate integer");
+        else 
+        {
+            System.out.println("No data to generate integer");    
+        }
+        
     }
 
 private static void generateString()
     {   
         ArrayList<String> array_str = new ArrayList<>();
 
-        if ( muodostettuInt != null && muodostettuInt > 0){
+        if ( muodostettuLuku != null ){
 
-            while ( muodostettuInt > 0 ){
-                long tmp = muodostettuInt%256;
-                String tmp_ch = "" + (char)tmp;
-                array_str.add(tmp_ch);
-                muodostettuInt -= tmp;
-                muodostettuInt /= 256;
+            while ( true ){
+                BigInteger jakojaannos = muodostettuLuku.mod(modulusLuku);
+                String tmp = new String(jakojaannos.toByteArray());
+                muodostettuLuku = muodostettuLuku.subtract(jakojaannos);
+                array_str.add(tmp);
+                muodostettuLuku = muodostettuLuku.divide(modulusLuku);
+                if ( muodostettuLuku.equals(BigInteger.valueOf(0L))){
+                    break;
+                }
             }
         }
 
@@ -115,6 +130,7 @@ private static void generateString()
             if ( args[0].equals("-encrypt")){
                 System.out.println("Ecrypting...");
                 File file = new File(args[2]);
+                //File file = new File("G:\\GITREPO\\Joulu_2014-15\\Encryption\\dist\\README.TXT");
                 try {
                     readContents(file);
                     generateInt();
