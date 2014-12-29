@@ -84,10 +84,11 @@
 }
 
 -(NSRange)findMatch:(NSString *)string {
-    NSUInteger startIndex=0;
-    NSUInteger endIndex=0;
-    //BOOL started = NO;
-    for (int i=0; i<string.length; i++) {
+    //NSUInteger startIndex=0;
+    //NSUInteger endIndex=0;
+    BOOL matched = NO;
+    int i; //the letter we are at in the string
+    for (i=0; i<string.length; i++) {
         NSString* character=[string substringWithRange:NSMakeRange(i, 1)];
         //Here, we have the default behavior of matching the character:
         if ([character rangeOfCharacterFromSet:self.operators].location == NSNotFound) {
@@ -96,35 +97,38 @@
             if ([character isEqualToString:self.currentState.matchingCharacter]) {
                 //matching character found!
                 ROState* startOfMatch=self.currentState;
-                //started=YES;
-                startIndex=i;
+                matched=YES;
+                //startIndex=i;
                 //first advance to the next state:
                 self.currentState=self.currentState.nextState;
                 //check if we reached complete string match:
                 if (self.currentState.finality==YES) {
-                    endIndex=i+1;
+                    //endIndex=i+1;
                     break;
                 }
-                //we have to match substring starting from the next character:
-                NSRange fromCurrent=[self findMatch:[string substringWithRange:NSMakeRange(i+1, string.length-i-1)]];
+                //we have to match the substring starting from the next character:
+                NSString* substring =[string substringWithRange:NSMakeRange(i+1, string.length-i-1)];
+                NSRange substringRange=[self findMatch:substring];
                 //if the substring is found, return it:
-                if (!NSEqualRanges(fromCurrent,NSMakeRange(0,0))) {
+                if (!NSEqualRanges(substringRange,NSMakeRange(0,0))) {
                     //the range has to be expressed within the original string:
-                    fromCurrent.location=fromCurrent.location+i;
-                    return fromCurrent;
+                    substringRange.location=substringRange.location+i;
+                    //range is one character longer than the matched substring range:
+                    substringRange.length=substringRange.length+1;
+                    return substringRange;
                 }
-                //if the whole string is not found, return to the start:
+                //if the whole string is not found, return to the start to process the next character:
                 self.currentState=startOfMatch;
             }
             //at character mismatch, return to the initial state:
             else {
                 self.currentState=self.initialState;
-                //started=NO;
+                matched=NO;
             }
         }
     }
-    //this is only reached at string mismatch or single letter match:
-    if (endIndex!=0) return NSMakeRange(startIndex, endIndex-startIndex);
+    //this is only reached at final letter match or string mismatch:
+    if (matched) return NSMakeRange(i,1);
     else return NSMakeRange(0, 0);
 }
 
