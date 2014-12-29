@@ -6,13 +6,16 @@
 
 package encryption;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
-import java.io.InputStream;
-import java.io.Reader;
 import java.math.BigInteger;
 import java.util.ArrayList;
 
@@ -26,6 +29,7 @@ public class Encryption {
     
     private static BigInteger muodostettuLuku;
     private static BigInteger modulusLuku = BigInteger.valueOf(256L);
+    private static BigInteger luettu;
     
     private static void generateInt(){
         if ( !input.isEmpty() ){
@@ -46,6 +50,25 @@ public class Encryption {
                 }
                 i++;
             }
+            
+            File output = new File("encrypted.txt");
+            try{
+                FileOutputStream fos = new FileOutputStream(output);
+                BufferedOutputStream bos = new BufferedOutputStream(fos);
+                
+                int j = 0;
+                byte[] array = muodostettuLuku.toByteArray(); 
+                while ( j < array.length ){
+                    bos.write(array[j]);
+                    j++;
+                }
+                
+                bos.close();
+                
+            }catch( Exception ex ){
+                System.out.println("Error, something happened.");
+                System.out.println(ex.getMessage());
+            }
         }
         else 
         {
@@ -58,21 +81,51 @@ private static void generateString()
     {   
         ArrayList<String> array_str = new ArrayList<>();
 
-        if ( muodostettuLuku != null ){
+        File fin = new File("encrypted.txt");
+        
+        try {
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            
+            byte[] array = new byte[1024];
+            FileInputStream fis = new FileInputStream(fin);
+            BufferedInputStream bis = new BufferedInputStream(fis);
+            
+            while ( true ){
+                
+                int error = bis.read(array);
+                
+                if ( error == -1 ){
+                    break;
+                }
+                
+                baos.write(array, 0, error);
+                
+            }
+            
+            bis.close();
+            luettu = new BigInteger(baos.toByteArray());
+            
+        }catch ( Exception ex ){
+            System.out.println("Error...");
+            System.out.println(ex.getMessage());
+        }
+        
+        
+        if ( luettu != null ){
 
             while ( true ){
-                BigInteger jakojaannos = muodostettuLuku.mod(modulusLuku);
+                BigInteger jakojaannos = luettu.mod(modulusLuku);
                 String tmp = new String(jakojaannos.toByteArray());
-                muodostettuLuku = muodostettuLuku.subtract(jakojaannos);
+                luettu = luettu.subtract(jakojaannos);
                 array_str.add(tmp);
-                muodostettuLuku = muodostettuLuku.divide(modulusLuku);
-                if ( muodostettuLuku.equals(BigInteger.valueOf(0L))){
+                luettu = luettu.divide(modulusLuku);
+                if ( luettu.equals(BigInteger.valueOf(0L))){
                     break;
                 }
             }
         }
-
-        File fout = new File("testi.txt");
+        
+        File fout = new File("decrypted.txt");
         try{
             FileWriter fwr = new FileWriter(fout);
             BufferedWriter bwr = new BufferedWriter(fwr);
