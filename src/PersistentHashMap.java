@@ -110,10 +110,12 @@ public class PersistentHashMap<K, V> implements IPersistentCollection<K, V> {
         @Override
         public Update assoc(int hash, int level, K key, V value) {
             int pos = bitpos(hash, level);
-            if ((this.bitmap & 2) != 0) {
+            if ((this.bitmap & pos) != 0) {
                 // node exists
-                Update u = this.nodes[index(pos)].assoc(level + 5, hash, key, value);
-                InternalNode<K,V> newNode = this.copyWith(u.root, pos);
+                Update u = this.nodes[index(pos)].assoc(hash, level + 5, key, value);
+                Node[] newNodes = Arrays.copyOf(this.nodes, this.nodes.length);
+                newNodes[index(pos)] = u.root;
+                InternalNode<K,V> newNode = new InternalNode<> (newNodes, this.bitmap);
                 u.root = newNode;
                 return u;
             } else {

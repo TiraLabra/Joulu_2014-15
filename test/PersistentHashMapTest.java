@@ -63,7 +63,7 @@ public class PersistentHashMapTest {
     }
 
     @Test
-    public void testUpdateAfterInsertingThreetems() {
+    public void testUpdateAfterInsertingThreeItems() {
         m = m.assoc("key", "value")
             .assoc("key2", "value2")
             .assoc("key3", "value3");
