@@ -18,6 +18,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Random;
 
 /**
  *
@@ -62,7 +63,6 @@ public class Encryption {
                     bos.write(array[j]);
                     j++;
                 }
-                
                 bos.close();
                 
             }catch( Exception ex ){
@@ -74,13 +74,11 @@ public class Encryption {
         {
             System.out.println("No data to generate integer");    
         }
-        
     }
 
 private static void generateString()
     {   
         ArrayList<String> array_str = new ArrayList<>();
-
         File fin = new File("encrypted.txt");
         
         try {
@@ -99,17 +97,14 @@ private static void generateString()
                 }
                 
                 baos.write(array, 0, error);
-                
             }
-            
             bis.close();
             luettu = new BigInteger(baos.toByteArray());
             
         }catch ( Exception ex ){
             System.out.println("Error...");
             System.out.println(ex.getMessage());
-        }
-        
+        }   
         
         if ( luettu != null ){
 
@@ -139,8 +134,6 @@ private static void generateString()
         catch ( Exception ex ){
             System.out.println("File writing failed: " + ex.getMessage());
         }
-
-
     }
     
     private static void readContents(File fileToRead) throws Exception{
@@ -159,6 +152,25 @@ private static void generateString()
         }
         
     }
+    
+    private static void generateKeys(){
+        Random rnd = new Random(System.nanoTime());
+        
+        BigInteger p = BigInteger.probablePrime(512, rnd);
+        BigInteger q = BigInteger.probablePrime(512, rnd);
+        
+        while ( p.equals(q)){
+            
+            q = BigInteger.probablePrime(512, rnd);
+        }
+        
+        BigInteger n = p.multiply(q);
+        
+        BigInteger fii = p.subtract(BigInteger.ONE).multiply(q.subtract(BigInteger.ONE));
+        BigInteger e = BigInteger.valueOf(65537L);
+        BigInteger d = e.modInverse(fii);
+    }
+    
     /**
      * @param args the command line arguments
      */
