@@ -323,6 +323,9 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				EXECUTABLE_PREFIX = lib;
+				GCC_GENERATE_TEST_COVERAGE_FILES = NO;
+				GCC_INSTRUMENT_PROGRAM_FLOW_ARCS = NO;
+				GENERATE_PROFILING_CODE = NO;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
@@ -331,6 +334,9 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				EXECUTABLE_PREFIX = lib;
+				GCC_GENERATE_TEST_COVERAGE_FILES = NO;
+				GCC_INSTRUMENT_PROGRAM_FLOW_ARCS = NO;
+				GENERATE_PROFILING_CODE = NO;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;

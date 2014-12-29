@@ -9,16 +9,20 @@
 #import <Foundation/Foundation.h>
 
 /**
- *  Represents a single state in a finite automaton.
+ *  A dumb class representing a single state in any finite automaton.
  */
 
 @interface ROState : NSObject
 /**
- *  @brief The array containing all the possible next states in a nondeterministic automaton. The ordering of the states depends on the automaton.
+ *  The next state in the tree.
  */
-@property (strong, nonatomic) NSMutableArray* nextStates;
+@property (strong, nonatomic) ROState* nextState;
 /**
- *  @brief The break condition of the automaton, indicating a pattern match. Default is NO.
+ *  An alternate state in the tree, if the tree forks. May be nil.
+ */
+@property (strong, nonatomic) ROState* alternateState;
+/**
+ *  @brief The break condition of the automaton, indicating a pattern match. Default is NO. If the state is shared by several automata, indicates that it is the final state of at least one subautomaton.
  */
 @property (nonatomic) BOOL finality;
 /**

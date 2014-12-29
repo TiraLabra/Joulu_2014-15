@@ -17,7 +17,6 @@
     self = [super init];
     if (self == nil) return self;
     //Here we implement the class-specific initialization:
-    self.nextStates = [[NSMutableArray alloc] init];
     return self;
 }
 

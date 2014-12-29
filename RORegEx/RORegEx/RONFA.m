@@ -11,12 +11,13 @@
 
 @interface RONFA ()
 /**
- *  The starting state of the automaton.
+ *  @brief The starting state of the automaton.
+ *  @discussion Contains pointers to all the other states; hence, it is the only strong reference to a state.
  */
 @property (strong, nonatomic)ROState* initialState;
 //Pointers to all the other states are contained in initialState.
 /**
- *  The state from which the automaton arrived to the current state. The same as currentState if we had an epsilon transition.
+ *  The state from which the automaton arrived to the current state, used in both constructing and running the automaton. The same as currentState if we had an epsilon transition.
  */
 @property (weak, nonatomic)ROState* previousState;
 /**
@@ -28,17 +29,26 @@
  */
 @property NSCharacterSet* operators;
 /**
- *  Contains all the states of the automaton that indicate a pattern match, i.e. those that have finality=YES.
- */
-//Note that the array contains strong references and the array must be strong. Hence, retain cycles of states pointing back to the NFA must be avoided.
+ *  @brief Contains all the states of the automaton that indicate a pattern match, i.e. those that have finality=YES.
+ *  @discussion Note that the array contains strong references and the array must be strong. Hence, retain cycles of states pointing back to the NFA must be avoided. This is no problem as long as the state is automaton-agnostic.
+*/
 @property (strong, nonatomic)NSMutableArray* finalStates;
 @end
 
 @implementation RONFA
 
-- (id) initWithRegEx:(NSString *)regEx {
+-(id) init {
+    self = [super init];
+    if (self == nil) return self;
+    //Here we implement the class-specific initialization:
     self.operators = [NSCharacterSet characterSetWithCharactersInString:@""];
+    return self;
+}
+
+-(id) initWithRegEx:(NSString *)regEx {
+    self=[self init];
     self.initialState=[[ROState alloc] init];
+    self.finalStates=[NSMutableArray array];
     self.currentState=self.initialState;
     //in the beginning, we have epsilon transition so the previous state is the current one:
     self.previousState=self.currentState;
@@ -48,16 +58,12 @@
         if ([character rangeOfCharacterFromSet:self.operators].location == NSNotFound) {
             self.currentState.matchingCharacter = character;
             //we do not need to explicitly create pointers to the successive states, as the pointers form a tree starting from initialState
-            //if the character doesn't match, we must go back to the previous state:
-            [self.currentState.nextStates addObject:self.previousState];
-            //an alternate nondeterministic outcome for non-match:
-            [self.currentState.nextStates addObject:self.currentState];
-            //otherwise, we move to a new state:
-            [self.currentState.nextStates addObject:[[ROState alloc] init]];
+            //create the next state:
+            self.currentState.nextState=[[ROState alloc] init];
             //save the current state as the previous one:
             self.previousState=self.currentState;
-            //we move on to the state matched by the character:
-            self.currentState=self.currentState.nextStates[2];
+            //move on to the state matched by the character:
+            self.currentState=self.currentState.nextState;
         }
     }
     //after the loop, the ending state indicates that we have a pattern:
@@ -68,33 +74,56 @@
     return self;
 }
 
+-(id) initWithState:(ROState *)state fromNFA:(RONFA *)NFA {
+    self=[self init];
+    self.initialState=state;
+    self.currentState=state;
+    self.previousState=NFA.currentState;
+    self.finalStates=NFA.finalStates;
+    return self;
+}
+
 -(NSRange)findMatch:(NSString *)string {
     NSUInteger startIndex=0;
     NSUInteger endIndex=0;
-    BOOL started = NO;
+    //BOOL started = NO;
     for (int i=0; i<string.length; i++) {
         NSString* character=[string substringWithRange:NSMakeRange(i, 1)];
         //Here, we have the default behavior of matching the character:
         if ([character rangeOfCharacterFromSet:self.operators].location == NSNotFound) {
-            //because of nondeterminism, at non-match we have several options:
-            if (character != self.currentState.matchingCharacter) {
-                self.currentState = self.currentState.nextStates.firstObject;
-                //implement nondeterminism by forking:
-            }
-            //at match we only have one option:
-            else self.currentState = self.currentState.nextStates.lastObject;
-            //if we had a first match, save the start index:
-            if (!started && self.currentState != self.initialState) {
-                started=YES;
+            //because of nondeterminism, at character match we fork:
+            //(remember to compare NSStrings, not pointers =)
+            if ([character isEqualToString:self.currentState.matchingCharacter]) {
+                //matching character found!
+                ROState* startOfMatch=self.currentState;
+                //started=YES;
                 startIndex=i;
+                //first advance to the next state:
+                self.currentState=self.currentState.nextState;
+                //check if we reached complete string match:
+                if (self.currentState.finality==YES) {
+                    endIndex=i+1;
+                    break;
+                }
+                //we have to match substring starting from the next character:
+                NSRange fromCurrent=[self findMatch:[string substringWithRange:NSMakeRange(i+1, string.length-i-1)]];
+                //if the substring is found, return it:
+                if (!NSEqualRanges(fromCurrent,NSMakeRange(0,0))) {
+                    //the range has to be expressed within the original string:
+                    fromCurrent.location=fromCurrent.location+i;
+                    return fromCurrent;
+                }
+                //if the whole string is not found, return to the start:
+                self.currentState=startOfMatch;
             }
-            //check if we reached the end:
-            if (self.currentState.finality==YES) {
-                endIndex=i+1;
-                break;
+            //at character mismatch, return to the initial state:
+            else {
+                self.currentState=self.initialState;
+                //started=NO;
             }
         }
     }
+    //this is only reached at string mismatch or single letter match:
     if (endIndex!=0) return NSMakeRange(startIndex, endIndex-startIndex);
     else return NSMakeRange(0, 0);
 }
