@@ -4,6 +4,10 @@
  * and open the template in the editor.
  */
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 import java.util.Random;
 import org.junit.Before;
 import org.junit.Test;
@@ -71,6 +75,7 @@ public class PersistentHashMapTest {
         
         assertEquals("value2", m.get("key2"));
         assertEquals("newValue", m2.get("key2"));
+        assertEquals(3, m2.count());
     }
 
     @Test
@@ -95,19 +100,49 @@ public class PersistentHashMapTest {
     }
 
     @Test
-    public void insert1000RandomIntegers() {
+    public void insert1000Integers() {
         PersistentHashMap<Integer, Integer> phm = new PersistentHashMap<>();
-        int[] keys = new int[1000];
+        ArrayList<Integer> keys = new ArrayList<>(1000);
         int[] values = new int[1000];
-        Random r = new Random();
 
         for (int i = 0; i < 1000; i++) {
-            keys[i] = r.nextInt();
-            values[i] = 0;
-            phm = phm.assoc(keys[i], values[i]);
+            keys.add(i);
+            values[i] = i;
+        }
+        Collections.shuffle(keys);
+
+        for (int i = 0; i < 1000; i++) {
+            phm = phm.assoc(keys.get(i), values[i]);
         }
 
         assertEquals(1000, phm.count());
 
+        for (int i = 0; i < 1000; i++) {
+            assertEquals(new Integer(values[i]), phm.get(keys.get(i)));
+        }
+
+    }
+
+    @Test
+    public void insert1000000RandomIntegers() {
+        PersistentHashMap<Integer, Integer> phm = new PersistentHashMap<>();
+        ArrayList<Integer> keys = new ArrayList<>(1000000);
+        int[] values = new int[1000000];
+
+        for (int i = 0; i < 1000000; i++) {
+            keys.add(i);
+            values[i] = i;
+        }
+        Collections.shuffle(keys);
+
+        for (int i = 0; i < 1000000; i++) {
+            phm = phm.assoc(keys.get(i), values[i]);
+        }
+
+        assertEquals(1000000, phm.count());
+
+        for (int i = 0; i < 1000000; i++) {
+            assertEquals(new Integer(values[i]), phm.get(keys.get(i)));
+        }
     }
 }
