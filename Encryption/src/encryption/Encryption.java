@@ -31,6 +31,9 @@ public class Encryption {
     private static BigInteger muodostettuLuku;
     private static BigInteger modulusLuku = BigInteger.valueOf(256L);
     private static BigInteger luettu;
+    private static BigInteger nModulus;
+    private static BigInteger eExponent;
+    private static BigInteger dExponent;
     
     private static void generateInt(){
         if ( !input.isEmpty() ){
@@ -52,23 +55,7 @@ public class Encryption {
                 i++;
             }
             
-            File output = new File("encrypted.txt");
-            try{
-                FileOutputStream fos = new FileOutputStream(output);
-                BufferedOutputStream bos = new BufferedOutputStream(fos);
-                
-                int j = 0;
-                byte[] array = muodostettuLuku.toByteArray(); 
-                while ( j < array.length ){
-                    bos.write(array[j]);
-                    j++;
-                }
-                bos.close();
-                
-            }catch( Exception ex ){
-                System.out.println("Error, something happened.");
-                System.out.println(ex.getMessage());
-            }
+            writeFile(new File("encrypted.txt"), muodostettuLuku.toByteArray());
         }
         else 
         {
@@ -99,6 +86,7 @@ private static void generateString()
                 baos.write(array, 0, error);
             }
             bis.close();
+            baos.close();
             luettu = new BigInteger(baos.toByteArray());
             
         }catch ( Exception ex ){
@@ -150,7 +138,6 @@ private static void generateString()
         else{
             throw new Exception("File cannot be read!");
         }
-        
     }
     
     private static void generateKeys(){
@@ -169,6 +156,84 @@ private static void generateString()
         BigInteger fii = p.subtract(BigInteger.ONE).multiply(q.subtract(BigInteger.ONE));
         BigInteger e = BigInteger.valueOf(65537L);
         BigInteger d = e.modInverse(fii);
+        
+        writeFileExponentModulus(new File("public.key"), e.toByteArray(), n.toByteArray());
+        writeFileExponentModulus(new File("private.key"), d.toByteArray(), n.toByteArray());
+    }
+    
+    private static void writeFileExponentModulus(File fileToWrite, 
+            byte [] exponent, 
+            byte [] modulus ){
+    
+        try{
+            FileOutputStream fos = new FileOutputStream(fileToWrite);
+            BufferedOutputStream bos = new BufferedOutputStream(fos);
+            
+            bos.write(exponent);
+            bos.write("\n\n\n".getBytes());
+            bos.write(modulus);
+            
+            bos.close();
+        }
+        catch ( Exception ex ){
+            System.out.println("Error...");
+            System.out.println(ex.getMessage());
+        }
+    }
+    
+    private static void readFileExponentModulus(File fileToRead){
+        
+         try {
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            
+            byte[] array = new byte[1024];
+            FileInputStream fis = new FileInputStream(fileToRead);
+            BufferedInputStream bis = new BufferedInputStream(fis);
+            
+            while ( true ){
+                
+                int error = bis.read(array);
+                
+                if ( error == -1 ){
+                    break;
+                }
+                
+                baos.write(array, 0, error);
+            }
+            bis.close();
+            baos.close();
+            String splitter = new String(baos.toByteArray());
+            String [] tmpArray = splitter.split("\n\n\n");
+            // private key
+            dExponent = new BigInteger(tmpArray[0].getBytes());
+            
+            // public key
+            eExponent = new BigInteger(tmpArray[0].getBytes());
+            
+            // common part, modulus
+            nModulus = new BigInteger(tmpArray[1].getBytes());
+            
+        }catch ( Exception ex ){
+            System.out.println("Error...");
+            System.out.println(ex.getMessage());
+        } 
+        
+    }
+    
+    private static void writeFile(File fileToWrite, byte [] bArray ){
+        
+        try{
+            FileOutputStream fos = new FileOutputStream(fileToWrite);
+            BufferedOutputStream bos = new BufferedOutputStream(fos);
+
+            bos.write(bArray);
+
+            bos.close();
+
+        }catch( Exception ex ){
+            System.out.println("Error, something happened.");
+            System.out.println(ex.getMessage());
+        }
     }
     
     /**
@@ -187,7 +252,7 @@ private static void generateString()
         if ( args.length == 1 ){
             if ( args[0].equals("-generate_keys")){
                 System.out.println("Generating keys.");
-                System.out.println("Nothing yet");            
+                generateKeys();
             }
         }
 
