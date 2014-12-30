@@ -84,9 +84,6 @@
 }
 
 -(NSRange)findMatch:(NSString *)string {
-    //NSUInteger startIndex=0;
-    //NSUInteger endIndex=0;
-    BOOL matched = NO;
     int i; //the letter we are at in the string
     for (i=0; i<string.length; i++) {
         NSString* character=[string substringWithRange:NSMakeRange(i, 1)];
@@ -97,14 +94,11 @@
             if ([character isEqualToString:self.currentState.matchingCharacter]) {
                 //matching character found!
                 ROState* startOfMatch=self.currentState;
-                matched=YES;
-                //startIndex=i;
                 //first advance to the next state:
                 self.currentState=self.currentState.nextState;
                 //check if we reached complete string match:
                 if (self.currentState.finality==YES) {
-                    //endIndex=i+1;
-                    break;
+                    return NSMakeRange(i,1);
                 }
                 //we have to match the substring starting from the next character:
                 NSString* substring =[string substringWithRange:NSMakeRange(i+1, string.length-i-1)];
@@ -117,19 +111,16 @@
                     substringRange.length=substringRange.length+1;
                     return substringRange;
                 }
-                //if the whole string is not found, return to the start to process the next character:
+                //if the substring is not found, return to the start to process the next character:
                 self.currentState=startOfMatch;
             }
             //at character mismatch, return to the initial state:
-            else {
-                self.currentState=self.initialState;
-                matched=NO;
-            }
+            //one of these malfunctions in partial recursion (wrong state or wrong recursion level reached!!!)
+            else self.currentState=self.initialState;
         }
     }
-    //this is only reached at final letter match or string mismatch:
-    if (matched) return NSMakeRange(i,1);
-    else return NSMakeRange(0, 0);
+    //the end is only reached at string mismatch:
+    return NSMakeRange(0, 0);
 }
 
 -(void)rewind {
