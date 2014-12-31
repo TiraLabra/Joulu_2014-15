@@ -9,7 +9,7 @@
 #import <Foundation/Foundation.h>
 
 /**
- *  Represents a general nondeterministic finite automaton.
+ *  Represents a general nondeterministic finite automaton running in parallel, i.e. in several states at each cycle. This ensures linear running time with respect to input length.
  */
 
 @interface RONFA : NSObject
