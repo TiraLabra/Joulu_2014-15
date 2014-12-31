@@ -54,7 +54,7 @@ public class Encryption {
                 }
                 i++;
             }
-            
+            muodostettuLuku = muodostettuLuku.modPow(eExponent, nModulus);
             writeFile(new File("encrypted.txt"), muodostettuLuku.toByteArray());
         }
         else 
@@ -63,16 +63,15 @@ public class Encryption {
         }
     }
 
-private static void generateString()
+private static void generateString(File fileToDecrypt)
     {   
         ArrayList<String> array_str = new ArrayList<>();
-        File fin = new File("encrypted.txt");
         
         try {
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             
             byte[] array = new byte[1024];
-            FileInputStream fis = new FileInputStream(fin);
+            FileInputStream fis = new FileInputStream(fileToDecrypt);
             BufferedInputStream bis = new BufferedInputStream(fis);
             
             while ( true ){
@@ -95,7 +94,9 @@ private static void generateString()
         }   
         
         if ( luettu != null ){
-
+            
+            luettu = luettu.modPow(dExponent, nModulus);
+            
             while ( true ){
                 BigInteger jakojaannos = luettu.mod(modulusLuku);
                 String tmp = new String(jakojaannos.toByteArray());
@@ -259,12 +260,11 @@ private static void generateString()
         if ( args.length == 3 ){
             if ( args[0].equals("-encrypt")){
                 System.out.println("Ecrypting...");
-                File file = new File(args[2]);
-                //File file = new File("G:\\GITREPO\\Joulu_2014-15\\Encryption\\dist\\README.TXT");
+                
                 try {
-                    readContents(file);
+                    readFileExponentModulus(new File(args[1]));
+                    readContents(new File(args[2]));
                     generateInt();
-                    generateString();
                 }catch (Exception ex) {
                     System.out.println(ex.getMessage());
                 }
@@ -273,6 +273,8 @@ private static void generateString()
 
             if ( args[0].equals("-decrypt")){
                 System.out.println("Decrypting...");
+                readFileExponentModulus(new File(args[1]));
+                generateString(new File(args[2]));
             }
 
             if ( args[1].equals("-sign")){
