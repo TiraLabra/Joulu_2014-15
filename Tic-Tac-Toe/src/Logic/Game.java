@@ -10,6 +10,12 @@ import java.util.ArrayList;
  * @author Teemu Salminen <teemujsalminen@gmail.com>
  */
 public class Game {
+    
+//20:13 < jgke> Xatalos: [java] Player 1 has won!!!
+//20:13 < jgke> 2-2, 4-4, 4-2, 3-2, 1-2
+//20:14 < jgke> ps, vaihda x- ja y-koordinaattien järjestys
+//20:14 < jgke> ainakin inputista
+//20:14 < jgke> häiritsevää että pitää pistää y x eikä x y
 
     /**
      * Creates the game board and initiates the first move
@@ -78,6 +84,7 @@ public class Game {
                         // non-AI player's move evaluation disabled for now
                         // evaluationBoard[i][j] = evaluateMove(newBoard, 2, 0);
                     } else {
+                        // alpha-beta pruning implementation somewhere here?????!!
                         if (checkForVictoryOrLoss(newBoard) == true) {
                             evaluationBoard[i][j] = Integer.MAX_VALUE;
                         } else {
@@ -165,7 +172,7 @@ public class Game {
         }
 
         if (board.length == 5 && count == 5) {
-            // heuristics... alpha-beta pruning?????
+            // heuristics... alpha-beta pruning in makeMove?????
             return 0;
         } else if (board.length == 7 && count == 4) {
             return 0;
