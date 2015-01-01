@@ -54,8 +54,12 @@ public class Encryption {
                 }
                 i++;
             }
+            if (muodostettuLuku.compareTo(nModulus) >= 1){
+                System.out.println("Virhe, viesti on liian pitkä!");
+                return;
+            }
             muodostettuLuku = muodostettuLuku.modPow(eExponent, nModulus);
-            writeFile(new File("encrypted.txt"), muodostettuLuku.toByteArray());
+            writeFile(new File("G:\\GITREPO\\Joulu_2014-15\\Encryption\\encrypted.txt"), muodostettuLuku.toByteArray());
         }
         else 
         {
@@ -109,7 +113,7 @@ private static void generateString(File fileToDecrypt)
             }
         }
         
-        File fout = new File("decrypted.txt");
+        File fout = new File("G:\\GITREPO\\Joulu_2014-15\\Encryption\\decrypted.txt");
         try{
             FileWriter fwr = new FileWriter(fout);
             BufferedWriter bwr = new BufferedWriter(fwr);
@@ -242,6 +246,22 @@ private static void generateString(File fileToDecrypt)
      */
     public static void main(String[] args) {
         
+        try{
+            readFileExponentModulus(new File("G:\\GITREPO\\Joulu_2014-15\\Encryption\\public.key"));
+            readContents(new File("G:\\GITREPO\\Joulu_2014-15\\Encryption\\testi.txt"));
+            generateInt();
+        }
+        catch( Exception ex){
+            System.out.println(ex.getMessage());
+        }
+        
+        try{
+            readFileExponentModulus(new File("G:\\GITREPO\\Joulu_2014-15\\Encryption\\private.key"));
+            generateString(new File("G:\\GITREPO\\Joulu_2014-15\\Encryption\\encrypted.txt"));
+        }catch ( Exception ex ){
+            System.out.println(ex.getMessage());
+        }
+        /*
         if ( args.length == 0 ){
             System.out.println("Generate public and private keys with command: -generate_keys");
             System.out.println("Encrypt the file with command: -encrypt <public.key> <file>");
@@ -281,5 +301,6 @@ private static void generateString(File fileToDecrypt)
                 System.out.println("Signing...");
             }
         }
+        */
     } 
 }
