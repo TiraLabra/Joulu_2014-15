@@ -2,3 +2,8 @@
 *.bib
 *.log
 *.out
+
+*.pyc
+*.pyproj
+*.sln
+*.suo
