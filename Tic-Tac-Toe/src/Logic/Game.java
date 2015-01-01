@@ -42,6 +42,8 @@ public class Game {
                 }
             }
         }
+        
+        // check if someone won the game during this turn
 
         if (checkForVictoryOrLoss(board) == true) {
             // the result is a WIN
@@ -52,6 +54,8 @@ public class Game {
             }
             return;
         }
+        
+        // if there's no more space left to make a move, the game ends in a draw
 
         if (containsSpace == false) {
             // the result is a DRAW

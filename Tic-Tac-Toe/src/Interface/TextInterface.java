@@ -32,6 +32,8 @@ public class TextInterface {
             System.out.println("3 in a row to win!");
         } else if (size == 5) {
             System.out.println("4 in a row to win!");
+        }  else if (size == 7) {
+            System.out.println("5 in a row to win!");
         }
         
         Game game = new Game(size);
