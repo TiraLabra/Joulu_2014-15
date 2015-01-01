@@ -14,3 +14,5 @@ Resources:
 + http://en.wikipedia.org/wiki/Error_function
 + http://en.wikipedia.org/wiki/Probit
 + http://people.maths.ox.ac.uk/~gilesm/files/gems_erfinv.pdf
++ https://code.google.com/p/javarng/
++ http://www.math.sci.hiroshima-u.ac.jp/~m-mat/MT/VERSIONS/C-LANG/mt19937-64.c
