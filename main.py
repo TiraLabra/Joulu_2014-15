@@ -8,19 +8,10 @@
 	1: wall, can't go here
 	2: start
 	3: end
-
-	OUTPUT:
-	
-1419685786.78
-12345        0
-#####        1
-#O__#        2
-#_X_#        3
-#___#        4
-#####        5
 """
 import sys
 import time
+import random
 
 # 
 # Before allowing user to give input,
@@ -28,18 +19,19 @@ import time
 # 
 
 STARTBLOCK = [1,1,2]
-ENDBLOCK = [5,5,3] 
-WIDTH = 25
-HEIGHT = 25
+ENDBLOCK = [4,4,3] 
+WIDTH = 10
+HEIGHT = 10
 """
 	Main function, nothing special
 """
 def main():
 	#No args for now
-	print time.time()
+	start = time.time()
 	graph = getGraph(WIDTH,HEIGHT)
 	printMap(graph)
-
+	print neighbors([2,3], graph)
+	print time.time() - start
 """
 	Helper function to print the map correctly
 	or in other words human readable form
@@ -52,9 +44,9 @@ def printMap(graph):
 			print(line + "        " + str(y[1]))
 			line = ""
 		if(y[2] == 0): line += "_"
-		if(y[2] == 1): line += "#"
-		if(y[2] == 2): line += "O"
-		if(y[2] == 3): line += "X"
+		if(y[2] == 1): line += "\033[91m" + "#" +"\033[0m"
+		if(y[2] == 2): line += "\033[92m" + "O" + "\033[0m"
+		if(y[2] == 3): line += "\033[92m" + "X" + "\033[0m"
 
 """
 	Generates a graph with given width and height
@@ -72,7 +64,10 @@ def getGraph(w,h):
 			elif(ENDBLOCK[0] == x+1 and ENDBLOCK[1] == y+1):
 				nodes.append(ENDBLOCK)
 			else:
-				nodes.append([x,y,0])
+				if(random.random() > 0.8):
+					nodes.append([x,y,1])
+				else:
+					nodes.append([x,y,0])
 	return nodes
 
 """
@@ -81,14 +76,22 @@ def getGraph(w,h):
 	@node: the node we want to find the neighbors for
 """
 def neighbors(node, graph):
-	directions = [[1,0,0], [0,1,0], [-1, 0,0], [0, -1,0]]
-	neighbors = []
+	#				right 	down	left		up
+	directions = [[1,0], [0,1], [-1, 0], [0, -1]]
+	nodes = []
 	for dir in directions:
-		neighbor = [node[0] + dir[0], node[1] + dir[1]]
+		x,y = node
+		c,v = dir
+		n = [x+c, y+v]
 		#see if we have the node
-		if neighbor in graph:
-			neighbors.append(neighbor)
-	return neighbors
+		for x in range(4):
+			curr = n[:]
+			curr.append(x)
+			print (str(curr) + str(curr in graph))
+			if curr in graph:
+				nodes.append(curr)
+				break
+	return nodes
 
 
 if __name__ == "__main__":
