@@ -1,7 +1,6 @@
 package Logic;
 
 import Interface.TextInterface;
-import java.util.ArrayList;
 
 /**
  * The logic class of the program that operates both the moves and the move
@@ -67,7 +66,7 @@ public class Game {
         int bestValue = Integer.MIN_VALUE;
         int besti = 0;
         int bestj = 0;
-        ArrayList<String> unavailableSpots = new ArrayList<String>();
+        int[][] unavailableSpots = new int[board.length][board.length];
         
         // check if the center position is empty - if yes, choose that as the next move
         // otherwise check if there's any move that would immediately win the game - if yes, choose that as the next move
@@ -92,7 +91,7 @@ public class Game {
                         newBoard[i][j] = 0;
                     } else {
                         if (newBoard[i][j] == 1 || newBoard[i][j] == 2) {
-                            unavailableSpots.add(j + " " + i);
+                            unavailableSpots[i][j] = 1;
                         }
                     }
                 }
@@ -144,7 +143,7 @@ public class Game {
      * @return minMaxSum the minmax value of this potential move in the current
      * board state
      */
-    private static int evaluateMove(int[][] board, int whosTurn, int count) {
+    public static int evaluateMove(int[][] board, int whosTurn, int count) {
 
         boolean gameOver = false;
         boolean containsSpace = false;
@@ -213,7 +212,7 @@ public class Game {
      *
      * @return true if one of the players has already won, otherwise false
      */
-    private static boolean checkForVictoryOrLoss(int[][] board) {
+    public static boolean checkForVictoryOrLoss(int[][] board) {
         if (board.length == 3) {
             for (int i = 0; i < board.length; i++) {
                 for (int j = 0; j < board.length; j++) {

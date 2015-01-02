@@ -1,7 +1,6 @@
 package Interface;
 
 import Logic.Game;
-import java.util.ArrayList;
 import java.util.Scanner;
 
 /**
@@ -85,12 +84,12 @@ public class TextInterface {
      *
      * @return move the next move as given by the user
      */
-    public static String getMove(ArrayList<String> unavailableSpots) {
+    public static String getMove(int[][] unavailableSpots) {
         int moveX = 0;
         int moveY = 0;
 
         System.out.println("make your move (XY position such as '1 3'):");
-        while (moveX > size || moveY > size || moveX < 1 || moveY < 1 || unavailableSpots.contains((moveX - 1) + " " + (moveY - 1))) {
+        while (moveX > size || moveY > size || moveX < 1 || moveY < 1 || unavailableSpots[moveY - 1][moveX - 1] == 1) {
             try {
                 moveX = Integer.parseInt(reader.next());
                 moveY = Integer.parseInt(reader.next());
