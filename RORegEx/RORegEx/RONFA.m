@@ -104,7 +104,10 @@
         self.currentStates=self.nextStates;
         self.nextStates=[NSMutableSet set];
         //update start indices before sorting:
-        for (ROState* state in self.currentStates) state.startIndex=state.nextStartIndex;
+        for (ROState* state in self.currentStates) {
+            state.startIndex=state.nextStartIndex;
+            state.nextStartIndex=[NSNumber numberWithUnsignedLong:NSUIntegerMax];
+        }
         //finally, check break condition:
         sortedStates = [self.currentStates sortedArrayUsingDescriptors:@[sortAscendingByStartIndex]];
         for (ROState* state in sortedStates) {
@@ -125,10 +128,14 @@
         //matching character found!
         //first add the next state:
         [self.nextStates addObject:state.nextState];
-        //if the current state is not yet in a matching branch, we are at the beginning of a match and must mark the start index for the next step (overwriting ensures lower start index due to the ordering of states):
-        if ([state.startIndex isEqualToNumber:[NSNumber numberWithUnsignedLong:NSUIntegerMax]]) state.nextState.nextStartIndex=[NSNumber numberWithUnsignedLong:i];
-        //if we are already in a matching branch, carry the starting index to the next state for the next step to propagate it:
-        else state.nextState.nextStartIndex=state.startIndex;
+        NSNumber *matchStartIndex;
+        //if the current state is not yet in a matching branch, we are at the beginning of a match and must mark the start index for the next step:
+        if ([state.startIndex isEqualToNumber:[NSNumber numberWithUnsignedLong:NSUIntegerMax]]) matchStartIndex=[NSNumber numberWithUnsignedLong:i];
+        //if we are already in a matching branch, propagate old starting index:
+        else matchStartIndex=state.startIndex;
+        //to maintain internal consistency, each step must *only* update the *next* start index for the *next* state, depending on the *current* start index of the *current* state!
+        // (overwriting ensures lower start index due to the ordering of states):
+        if (state.nextState.nextStartIndex>matchStartIndex) state.nextState.nextStartIndex=matchStartIndex;
     }
     //whether character was found or not, we always wind back to initial state for future matches:
     [self.nextStates addObject:self.initialState];
