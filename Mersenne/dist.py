@@ -1,29 +1,28 @@
-from math import log, sqrt, exp
+from math import log, sqrt, exp, sin, pi
 
 def uniform(v,min,max): # continuous uniform distribution
-    for i in range(0, len(v)):
-        v[i] = min+(max-min)*v[i]
-    return v
+    w = map(lambda x: min+(max-min)*x, v)
+    return list(w)
 
 def exponential(v,xm,l): # exponential distribution; xm > 0 (minimum), l > 0 (rate)
-    for i in range(0, len(v)):
-        v[i] = xm-log(1-v[i])/l
-    return v
+    w = map(lambda x: xm-log(1-x)/l, v)
+    return list(w)
 
 def pareto(v,xm,a): # Pareto distribution; xm > 0 (scale), a > 0 (shape)
-    for i in range(0, len(v)):
-        v[i] = xm*((1-v[i])**(-1/a))
-    return v
+    w = map(lambda x: xm*((1-x)**(-1/a)), v)
+    return list(w)
 
 def normal(v,m,s): # normal distribution
-    for i in range(0, len(v)):
-        v[i] = m+s*probit(v[i])
-    return v
+    w = map(lambda x: m+s*probit(x), v)
+    return list(w)
 
 def lognormal(v,m,s): # log-normal distribution
-    for i in range(0, len(v)):
-        v[i] = exp(m+s*probit(v[i]))
-    return v
+    w = map(lambda x: exp(m+s*probit(x)), v)
+    return list(w)
+
+def arcsine(v): # arcsine distribution (beta(0.5,0.5))
+    w = map(lambda x: sin(x*pi/2)**2, v)
+    return list(w)
 
 def erfinv(x): # inverse error function (approximation)
     w = -log(1-x**2)
