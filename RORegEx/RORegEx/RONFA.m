@@ -57,7 +57,7 @@
         NSString* nextCharacter=nil;
         if (i<regEx.length-1) nextCharacter=[regEx substringWithRange:NSMakeRange(i+1, 1)];
         //Here, we have the default behavior of matching the character:
-        if ([nextCharacter rangeOfCharacterFromSet:self.operators].location == NSNotFound && [character rangeOfCharacterFromSet:self.operators].location == NSNotFound) {
+        if ([character rangeOfCharacterFromSet:self.operators].location == NSNotFound) {
             currentState.matchingCharacter = character;
             //we do not need to explicitly create pointers to the successive states, as the pointers form a tree starting from initialState
             //create the next state:
