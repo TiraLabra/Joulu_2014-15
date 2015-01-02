@@ -19,6 +19,7 @@
     //Here we implement the class-specific initialization:
     //at the construction of the automaton, none of the states are the result of a match:
     self.startIndex=[NSNumber numberWithUnsignedLong:NSUIntegerMax];
+    self.nextStartIndex=[NSNumber numberWithUnsignedLong:NSUIntegerMax];
     return self;
 }
 

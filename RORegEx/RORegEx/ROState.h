@@ -30,7 +30,11 @@
  */
 @property (strong, nonatomic) NSString* matchingCharacter;
 /**
- *  @brief Used by a finite automaton to save the index of the letter where matching started.
+ *  @brief Used by a finite automaton to save the index of the letter where matching started on the previous step.
  */
 @property (strong,nonatomic) NSNumber* startIndex;
+/**
+ *  @brief Used by a finite automaton to save the next starting index until the end of step.
+ */
+@property (strong,nonatomic) NSNumber* nextStartIndex;
 @end

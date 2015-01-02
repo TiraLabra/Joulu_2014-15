@@ -16,7 +16,8 @@
  */
 @property (strong, nonatomic)ROState* initialState;
 /**
- *  @The current states in the running of the automaton. There are several as the running is done in parallel.
+ *  @brief The current states in the running of the automaton. There are several as the running is done in parallel.
+ *  @discussion The greedy algorithm requires the current states to be sorted at each step according to the start index of the match and, hence, extra O(mlogm) load. Another option would be to save the states in a two-dimensional binary search tree.
  */
 @property (strong, nonatomic)NSMutableSet* currentStates;
 /**
@@ -83,9 +84,9 @@
     long i; //the letter we are at in the string
     
     //the greedy implementation of the matching requires iterating over the current states in descending startindex order:
-    NSSortDescriptor* sortDescendingByStartIndex =[NSSortDescriptor sortDescriptorWithKey:@"startIndex" ascending:NO selector:@selector(localizedStandardCompare:)];
+    NSSortDescriptor* sortDescendingByStartIndex =[NSSortDescriptor sortDescriptorWithKey:@"startIndex" ascending:NO selector:@selector(compare:)];
     //break condition checking requires iterating in ascending order:
-    NSSortDescriptor* sortAscendingByStartIndex =[NSSortDescriptor sortDescriptorWithKey:@"startIndex" ascending:YES selector:@selector(localizedStandardCompare:)];
+    NSSortDescriptor* sortAscendingByStartIndex =[NSSortDescriptor sortDescriptorWithKey:@"startIndex" ascending:YES selector:@selector(compare:)];
     //if we have several states with the same starting index, the order is irrelevant, so we don't need any other sortdescriptors
     NSArray* sortedStates; //here we store the current states sorted according to descriptor
 
@@ -102,26 +103,28 @@
                     //matching character found!
                     //first add the next state:
                     [self.nextStates addObject:state.nextState];
-                    //if the current state is not yet in a matching branch, we are at the beginning of a match:
-                    if ([state.startIndex isEqualToNumber:[NSNumber numberWithUnsignedLong:NSUIntegerMax]]) state.nextState.startIndex=[NSNumber numberWithUnsignedLong:i];
-                    //if we are already in a matching branch, carry the starting index to the next state:
-                    else state.nextState.startIndex=state.startIndex;
+                    //if the current state is not yet in a matching branch, we are at the beginning of a match and must mark the start index for the next step (overwriting ensures lower start index due to the ordering of states):
+                    if ([state.startIndex isEqualToNumber:[NSNumber numberWithUnsignedLong:NSUIntegerMax]]) state.nextState.nextStartIndex=[NSNumber numberWithUnsignedLong:i];
+                    //if we are already in a matching branch, carry the starting index to the next state for the next step to propagate it:
+                    else state.nextState.nextStartIndex=state.startIndex;
                 }
                 //at mismatch, we remove the start index from the current state so matching starts from scratch:
-                else state.startIndex=[NSNumber numberWithUnsignedLong:NSUIntegerMax];
-                //whether character was found or not, we also stay in the current state:
-                [self.nextStates addObject:state];
+                //else state.nextStartIndex=[NSNumber numberWithUnsignedLong:NSUIntegerMax];
+                //whether character was found or not, we always wind back to initial state for future matches:
+                [self.nextStates addObject:self.initialState];
             }
         }
         //save the states for the next step:
         self.currentStates=self.nextStates;
         self.nextStates=[NSMutableSet set];
-        //after processing the states, check break condition:
+        //update start indices before sorting:
+        for (ROState* state in self.currentStates) state.startIndex=state.nextStartIndex;
+        //finally, check break condition:
         sortedStates = [self.currentStates sortedArrayUsingDescriptors:@[sortAscendingByStartIndex]];
         for (ROState* state in sortedStates) {
             //check if we reached complete string match:
             if (state.finality==YES) {
-                return NSMakeRange([state.startIndex intValue],i-[state.startIndex intValue]);
+                return NSMakeRange([state.startIndex intValue],i-[state.startIndex intValue]+1);
             }
         }
     }
