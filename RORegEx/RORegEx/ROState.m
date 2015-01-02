@@ -17,7 +17,7 @@
     self = [super init];
     if (self == nil) return self;
     //Here we implement the class-specific initialization:
-    //at the beginning, none of the states are the result of a match:
+    //at the construction of the automaton, none of the states are the result of a match:
     self.startIndex=[NSNumber numberWithUnsignedLong:NSUIntegerMax];
     return self;
 }
