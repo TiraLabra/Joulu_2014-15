@@ -130,7 +130,6 @@
         //if we are already in a matching branch, propagate old starting index:
         else matchStartIndex=state.startIndex;
         //to maintain internal consistency, each step must *only* update the *next* start index for the *next* state, depending on the *current* start index of the *current* state!
-        // (overwriting ensures lower start index due to the ordering of states):
         if (state.nextState.nextStartIndex>matchStartIndex) state.nextState.nextStartIndex=matchStartIndex;
     }
     //whether character was found or not, we always wind back to initial state for future matches:
