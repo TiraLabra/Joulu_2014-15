@@ -53,8 +53,11 @@
     ROState* currentState=self.initialState;
     for (int i=0; i<regEx.length; i++) {
         NSString* character=[regEx substringWithRange:NSMakeRange(i, 1)];
+        //we have to check if the next character is an operator:
+        NSString* nextCharacter=nil;
+        if (i<regEx.length-1) nextCharacter=[regEx substringWithRange:NSMakeRange(i+1, 1)];
         //Here, we have the default behavior of matching the character:
-        if ([character rangeOfCharacterFromSet:self.operators].location == NSNotFound) {
+        if ([nextCharacter rangeOfCharacterFromSet:self.operators].location == NSNotFound && [character rangeOfCharacterFromSet:self.operators].location == NSNotFound) {
             currentState.matchingCharacter = character;
             //we do not need to explicitly create pointers to the successive states, as the pointers form a tree starting from initialState
             //create the next state:
@@ -93,9 +96,9 @@
         //first iterate through current states:
         for (ROState* state in self.currentStates) {
             //Here, we have the default behavior of matching the character:
-            if ([character rangeOfCharacterFromSet:self.operators].location == NSNotFound) {
+            //if ([character rangeOfCharacterFromSet:self.operators].location == NSNotFound) {
                 [self matchCharacter:character inState:state forIndex:i];
-            }
+            //}
         }
         //save the states for the next step:
         self.currentStates=self.nextStates;
