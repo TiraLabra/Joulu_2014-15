@@ -1,4 +1,4 @@
-package tic.tac.toe;
+package tic_tac_toe;
 
 import Interface.TextInterface;
 

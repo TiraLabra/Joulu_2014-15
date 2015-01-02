@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package Logic;
 
 import org.junit.Test;
@@ -23,14 +19,14 @@ public class LogicTest {
         board[0][1] = 1;
         board[0][2] = 1;
         assertEquals(true, Game.checkForVictoryOrLoss(board));
-        
+
         int[][] board2 = new int[5][5];
         board2[0][0] = 1;
         board2[0][1] = 1;
         board2[0][2] = 1;
         board2[0][3] = 2;
         assertEquals(false, Game.checkForVictoryOrLoss(board2));
-        
+
         int[][] board3 = new int[7][7];
         board3[0][0] = 2;
         board3[1][1] = 2;

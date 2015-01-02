@@ -9,6 +9,7 @@ import Interface.TextInterface;
  * @author Teemu Salminen <teemujsalminen@gmail.com>
  */
 public class Game {
+
     /**
      * Creates the game board and initiates the first move
      *
@@ -67,7 +68,7 @@ public class Game {
         int besti = 0;
         int bestj = 0;
         int[][] unavailableSpots = new int[board.length][board.length];
-        
+
         // check if the center position is empty - if yes, choose that as the next move
         // otherwise check if there's any move that would immediately win the game - if yes, choose that as the next move
         // otherwise go through all possible moves and calculate the best next move (preferences: 1. loss avoidance 2. victory)
