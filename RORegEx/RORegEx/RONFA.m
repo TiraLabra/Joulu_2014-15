@@ -97,21 +97,7 @@
         for (ROState* state in sortedStates) {
             //Here, we have the default behavior of matching the character:
             if ([character rangeOfCharacterFromSet:self.operators].location == NSNotFound) {
-                //because of nondeterminism, at character match we get two branches!
-                //(remember to compare NSStrings, not pointers =)
-                if ([character isEqualToString:state.matchingCharacter]) {
-                    //matching character found!
-                    //first add the next state:
-                    [self.nextStates addObject:state.nextState];
-                    //if the current state is not yet in a matching branch, we are at the beginning of a match and must mark the start index for the next step (overwriting ensures lower start index due to the ordering of states):
-                    if ([state.startIndex isEqualToNumber:[NSNumber numberWithUnsignedLong:NSUIntegerMax]]) state.nextState.nextStartIndex=[NSNumber numberWithUnsignedLong:i];
-                    //if we are already in a matching branch, carry the starting index to the next state for the next step to propagate it:
-                    else state.nextState.nextStartIndex=state.startIndex;
-                }
-                //at mismatch, we remove the start index from the current state so matching starts from scratch:
-                //else state.nextStartIndex=[NSNumber numberWithUnsignedLong:NSUIntegerMax];
-                //whether character was found or not, we always wind back to initial state for future matches:
-                [self.nextStates addObject:self.initialState];
+                [self matchCharacter:character inState:state forIndex:i];
             }
         }
         //save the states for the next step:
@@ -130,6 +116,22 @@
     }
     //only reached if none of the steps reached finality:
     return NSMakeRange(0,0);
+}
+
+-(void)matchCharacter:(NSString *) character inState:(ROState *)state forIndex:(long) i{
+    //because of nondeterminism, at character match we get two branches!
+    //(remember to compare NSStrings, not pointers =)
+    if ([character isEqualToString:state.matchingCharacter]) {
+        //matching character found!
+        //first add the next state:
+        [self.nextStates addObject:state.nextState];
+        //if the current state is not yet in a matching branch, we are at the beginning of a match and must mark the start index for the next step (overwriting ensures lower start index due to the ordering of states):
+        if ([state.startIndex isEqualToNumber:[NSNumber numberWithUnsignedLong:NSUIntegerMax]]) state.nextState.nextStartIndex=[NSNumber numberWithUnsignedLong:i];
+        //if we are already in a matching branch, carry the starting index to the next state for the next step to propagate it:
+        else state.nextState.nextStartIndex=state.startIndex;
+    }
+    //whether character was found or not, we always wind back to initial state for future matches:
+    [self.nextStates addObject:self.initialState];
 }
 
 -(void)rewind {
