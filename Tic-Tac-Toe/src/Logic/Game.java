@@ -10,13 +10,6 @@ import java.util.ArrayList;
  * @author Teemu Salminen <teemujsalminen@gmail.com>
  */
 public class Game {
-    
-//20:13 < jgke> Xatalos: [java] Player 1 has won!!!
-//20:13 < jgke> 2-2, 4-4, 4-2, 3-2, 1-2
-//20:14 < jgke> ps, vaihda x- ja y-koordinaattien järjestys
-//20:14 < jgke> ainakin inputista
-//20:14 < jgke> häiritsevää että pitää pistää y x eikä x y
-
     /**
      * Creates the game board and initiates the first move
      *
@@ -48,7 +41,7 @@ public class Game {
                 }
             }
         }
-        
+
         // check if someone won the game during this turn
 
         if (checkForVictoryOrLoss(board) == true) {
@@ -60,7 +53,7 @@ public class Game {
             }
             return;
         }
-        
+
         // if there's no more space left to make a move, the game ends in a draw
 
         if (containsSpace == false) {
@@ -75,29 +68,37 @@ public class Game {
         int besti = 0;
         int bestj = 0;
         ArrayList<String> unavailableSpots = new ArrayList<String>();
+        
+        // check if the center position is empty - if yes, choose that as the next move
+        // otherwise check if there's any move that would immediately win the game - if yes, choose that as the next move
+        // otherwise go through all possible moves and calculate the best next move (preferences: 1. loss avoidance 2. victory)
 
-        for (int i = 0; i < board.length; i++) {
-            for (int j = 0; j < board.length; j++) {
-                if (newBoard[i][j] == 0) {
-                    newBoard[i][j] = whosTurn;
-                    if (whosTurn == 1) {
-                        // non-AI player's move evaluation disabled for now
-                        // evaluationBoard[i][j] = evaluateMove(newBoard, 2, 0);
-                    } else {
-                        // alpha-beta pruning implementation somewhere here?????!!
-                        if (checkForVictoryOrLoss(newBoard) == true) {
-                            evaluationBoard[i][j] = Integer.MAX_VALUE;
+        if (board[board.length / 2][board.length / 2] != 0) {
+            for (int i = 0; i < board.length; i++) {
+                for (int j = 0; j < board.length; j++) {
+                    if (newBoard[i][j] == 0) {
+                        newBoard[i][j] = whosTurn;
+                        if (whosTurn == 1) {
+                            // non-AI player's move evaluation disabled for now
+                            // evaluationBoard[i][j] = evaluateMove(newBoard, 2, 0);
                         } else {
-                            evaluationBoard[i][j] = evaluateMove(newBoard, 1, 1);
+                            // alpha-beta pruning implementation somewhere here?????!!
+                            if (checkForVictoryOrLoss(newBoard) == true) {
+                                evaluationBoard[i][j] = Integer.MAX_VALUE;
+                            } else {
+                                evaluationBoard[i][j] = evaluateMove(newBoard, 1, 1);
+                            }
                         }
-                    }
-                    newBoard[i][j] = 0;
-                } else {
-                    if (newBoard[i][j] == 1 || newBoard[i][j] == 2) {
-                        unavailableSpots.add(i + " " + j);
+                        newBoard[i][j] = 0;
+                    } else {
+                        if (newBoard[i][j] == 1 || newBoard[i][j] == 2) {
+                            unavailableSpots.add(j + " " + i);
+                        }
                     }
                 }
             }
+        } else {
+            evaluationBoard[board.length / 2][board.length / 2] = Integer.MAX_VALUE;
         }
 
         if (whosTurn == 2) {
@@ -125,7 +126,7 @@ public class Game {
             makeMove(newBoard, 1);
         } else {
             String move = TextInterface.getMove(unavailableSpots);
-            newBoard[Integer.parseInt("" + move.charAt(0)) - 1][Integer.parseInt("" + move.charAt(2)) - 1] = 1;
+            newBoard[Integer.parseInt("" + move.charAt(2)) - 1][Integer.parseInt("" + move.charAt(0)) - 1] = 1;
             makeMove(newBoard, 2);
         }
 
@@ -162,7 +163,7 @@ public class Game {
                 return 1;
             } else {
                 // the result is a LOSS
-                return -1;
+                return -2;
             }
         }
 
@@ -205,7 +206,8 @@ public class Game {
     }
 
     /**
-     * Checks if the given board state means that one of the players has already won
+     * Checks if the given board state means that one of the players has already
+     * won
      *
      * @param board the temporary game board to be checked
      *
