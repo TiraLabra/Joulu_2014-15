@@ -89,12 +89,12 @@
     NSSortDescriptor* sortAscendingByStartIndex =[NSSortDescriptor sortDescriptorWithKey:@"startIndex" ascending:YES selector:@selector(compare:)];
     //if we have several states with the same starting index, the order is irrelevant, so we don't need any other sortdescriptors
     NSArray* sortedStates; //here we store the current states sorted according to descriptor
-
+    NSMutableSet* finishedMatches=[NSMutableSet set];
     for (i=0; i<string.length; i++) {
         NSString* character=[string substringWithRange:NSMakeRange(i, 1)];
         //first iterate through current states:
-        sortedStates = [self.currentStates sortedArrayUsingDescriptors:@[sortDescendingByStartIndex]];
-        for (ROState* state in sortedStates) {
+        //sortedStates = [self.currentStates sortedArrayUsingDescriptors:@[sortDescendingByStartIndex]];
+        for (ROState* state in self.currentStates) {
             //Here, we have the default behavior of matching the character:
             if ([character rangeOfCharacterFromSet:self.operators].location == NSNotFound) {
                 [self matchCharacter:character inState:state forIndex:i];
@@ -107,15 +107,21 @@
         for (ROState* state in self.currentStates) {
             state.startIndex=state.nextStartIndex;
             state.nextStartIndex=[NSNumber numberWithUnsignedLong:NSUIntegerMax];
+            if (state.finality==YES) [finishedMatches addObject:state];
         }
         //finally, check break condition:
-        sortedStates = [self.currentStates sortedArrayUsingDescriptors:@[sortAscendingByStartIndex]];
+        if (![finishedMatches count]==0) {
+            sortedStates=[finishedMatches sortedArrayUsingDescriptors:@[sortAscendingByStartIndex]];
+            NSNumber* matchStart=((ROState *)sortedStates[0]).startIndex;
+            return NSMakeRange([matchStart intValue],i-[matchStart intValue]+1);
+        }
+        /*sortedStates = [self.currentStates sortedArrayUsingDescriptors:@[sortAscendingByStartIndex]];
         for (ROState* state in sortedStates) {
             //check if we reached complete string match:
             if (state.finality==YES) {
                 return NSMakeRange([state.startIndex intValue],i-[state.startIndex intValue]+1);
             }
-        }
+        }*/
     }
     //only reached if none of the steps reached finality:
     return NSMakeRange(0,0);
