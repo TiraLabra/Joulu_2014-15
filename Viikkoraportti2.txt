@@ -4,7 +4,7 @@ Sen sijaan algoritmin voi toteuttaa lineaarisessa ajassa sen ansiosta, että til
 
 Ongelmaksi lineaarisessa toteutuksessa kuitenkin osoittautuu menneiden matchien muistaminen. Koska määritelmällisesti tilakoneella ei ole muistia, mutta määrittelydokumentin mukaisesti regexpistä halutaan ulos myös matchin aloitusindeksi stringissä, dokumentissa on tavallaan kaksi keskenään ristiriitaista toteutusvaatimusta. Eksponentiaalisessa ratkaisussa jokainen haara etenee erikseen ja matchin aloituskohdan muistaminen on triviaalia; lineaarisessa ratkaisussa matchien aloituskohdat tulee tallentaa johonkin erilliseen rakenteeseen, joka pitää kirjaa siitä, missä haarassa tunnistus alkoi minkäkin kirjaimen kohdalla.
 
-Thompsonin tekemä Googlen algoritmi toteuttaa tämän käytännössä vaatimalla kullakin kierroksella matcheilta tiettyä suoritusjärjestystä. Tämä takaa sen, että lopputuloksena saadaan ennustettavasti greedy tai thrifty match; oletusarvoisesti regex-standardina on matchata mahdollisimman pitkään stringiin silloin, kun useampia submatcheja on tarjolla.
+Coxin tekemä Googlen algoritmi toteuttaa tämän käytännössä vaatimalla kullakin kierroksella matcheilta tiettyä suoritusjärjestystä. Tämä takaa sen, että lopputuloksena saadaan ennustettavasti greedy tai thrifty match; oletusarvoisesti regex-standardina on matchata mahdollisimman pitkään stringiin silloin, kun useampia submatcheja on tarjolla.
 
 Kevyin keksimäni toteutus tälle käytännölle on lisätä ROState-olioon kaksi kokonaislukua, johon tilakone joka kierroksella päivittää haaraa vastaavan matchin aloitusindeksin seuraavaa kierrosta varten. Tällöin matchin sattuessa kohdalle kaikista lopputiloista valitaan se, johon on tallennettu pienin aloitusindeksi.
 
