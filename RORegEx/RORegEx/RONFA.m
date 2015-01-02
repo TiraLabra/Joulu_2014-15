@@ -12,27 +12,27 @@
 @interface RONFA ()
 /**
  *  @brief The starting state of the automaton.
- *  @discussion Contains pointers to all the other states; hence, it is the only strong reference to a state.
+ *  @discussion Contains pointers to all the other states; hence, it need be the only strong reference to a state.
  */
 @property (strong, nonatomic)ROState* initialState;
-//Pointers to all the other states are contained in initialState.
 /**
- *  The state from which the automaton arrived to the current state, used in both constructing and running the automaton. The same as currentState if we had an epsilon transition.
+ *  @brief The current states in the running of the automaton. There are several as the running is done in parallel.
+ *  @discussion The greedy algorithm requires the current states to be sorted at each step according to the start index of the match and, hence, extra O(mlogm) load. Another option would be to save the states in a two-dimensional binary search tree.
  */
-@property (weak, nonatomic)ROState* previousState;
+@property (strong, nonatomic)NSMutableSet* currentStates;
 /**
- *  The current state of the automaton, used in both constructing and running the automaton.
+ *  The current states for the next step.
  */
-@property (weak, nonatomic)ROState* currentState;
+@property (strong, nonatomic)NSMutableSet* nextStates;
 /**
  *  The predefined regexp operators that are not treated as literals.
  */
 @property NSCharacterSet* operators;
 /**
  *  @brief Contains all the states of the automaton that indicate a pattern match, i.e. those that have finality=YES.
- *  @discussion Note that the array contains strong references and the array must be strong. Hence, retain cycles of states pointing back to the NFA must be avoided. This is no problem as long as the state is automaton-agnostic.
+ *  @discussion Note that a set contains strong references and the set must be strong. Hence, retain cycles of states pointing back to the NFA must be avoided. This is no problem as long as the state is automaton-agnostic.
 */
-@property (strong, nonatomic)NSMutableArray* finalStates;
+@property (strong, nonatomic)NSMutableSet* finalStates;
 @end
 
 @implementation RONFA
@@ -42,33 +42,30 @@
     if (self == nil) return self;
     //Here we implement the class-specific initialization:
     self.operators = [NSCharacterSet characterSetWithCharactersInString:@""];
+    self.initialState=[[ROState alloc] init];
+    self.finalStates=[NSMutableSet set];
+    [self rewind];
     return self;
 }
 
 -(id) initWithRegEx:(NSString *)regEx {
     self=[self init];
-    self.initialState=[[ROState alloc] init];
-    self.finalStates=[NSMutableArray array];
-    self.currentState=self.initialState;
-    //in the beginning, we have epsilon transition so the previous state is the current one:
-    self.previousState=self.currentState;
+    ROState* currentState=self.initialState;
     for (int i=0; i<regEx.length; i++) {
         NSString* character=[regEx substringWithRange:NSMakeRange(i, 1)];
         //Here, we have the default behavior of matching the character:
         if ([character rangeOfCharacterFromSet:self.operators].location == NSNotFound) {
-            self.currentState.matchingCharacter = character;
+            currentState.matchingCharacter = character;
             //we do not need to explicitly create pointers to the successive states, as the pointers form a tree starting from initialState
             //create the next state:
-            self.currentState.nextState=[[ROState alloc] init];
-            //save the current state as the previous one:
-            self.previousState=self.currentState;
+            currentState.nextState=[[ROState alloc] init];
             //move on to the state matched by the character:
-            self.currentState=self.currentState.nextState;
+            currentState=currentState.nextState;
         }
     }
     //after the loop, the ending state indicates that we have a pattern:
-    self.currentState.finality=YES;
-    [self.finalStates addObject:self.currentState];
+    currentState.finality=YES;
+    [self.finalStates addObject:currentState];
     //after initialization, return the automaton to the beginning for running:
     [self rewind];
     return self;
@@ -77,54 +74,73 @@
 -(id) initWithState:(ROState *)state fromNFA:(RONFA *)NFA {
     self=[self init];
     self.initialState=state;
-    self.currentState=state;
-    self.previousState=NFA.currentState;
+    //move to the new initial state:
+    [self rewind];
     self.finalStates=NFA.finalStates;
     return self;
 }
 
 -(NSRange)findMatch:(NSString *)string {
-    int i; //the letter we are at in the string
+    long i; //the letter we are at in the string
+    
+    //break condition checking requires ascending order:
+    NSSortDescriptor* sortAscendingByStartIndex =[NSSortDescriptor sortDescriptorWithKey:@"startIndex" ascending:YES selector:@selector(compare:)];
+    NSArray* sortedStates; //here we store the finished matches sorted according to descriptor
+    NSMutableSet* finishedMatches=[NSMutableSet set];
+    
     for (i=0; i<string.length; i++) {
         NSString* character=[string substringWithRange:NSMakeRange(i, 1)];
-        //Here, we have the default behavior of matching the character:
-        if ([character rangeOfCharacterFromSet:self.operators].location == NSNotFound) {
-            //because of nondeterminism, at character match we fork:
-            //(remember to compare NSStrings, not pointers =)
-            if ([character isEqualToString:self.currentState.matchingCharacter]) {
-                //matching character found!
-                ROState* startOfMatch=self.currentState;
-                //first advance to the next state:
-                self.currentState=self.currentState.nextState;
-                //check if we reached complete string match:
-                if (self.currentState.finality==YES) {
-                    return NSMakeRange(i,1);
-                }
-                //we have to match the substring starting from the next character:
-                NSString* substring =[string substringWithRange:NSMakeRange(i+1, string.length-i-1)];
-                NSRange substringRange=[self findMatch:substring];
-                //if the substring is found, return it:
-                if (!NSEqualRanges(substringRange,NSMakeRange(0,0))) {
-                    //the range has to be expressed within the original string:
-                    substringRange.location=substringRange.location+i;
-                    //range is one character longer than the matched substring range:
-                    substringRange.length=substringRange.length+1;
-                    return substringRange;
-                }
-                //if the substring is not found, return to the start to process the next character:
-                self.currentState=startOfMatch;
+        //first iterate through current states:
+        for (ROState* state in self.currentStates) {
+            //Here, we have the default behavior of matching the character:
+            if ([character rangeOfCharacterFromSet:self.operators].location == NSNotFound) {
+                [self matchCharacter:character inState:state forIndex:i];
             }
-            //at character mismatch, return to the initial state:
-            //one of these malfunctions in partial recursion (wrong state or wrong recursion level reached!!!)
-            else self.currentState=self.initialState;
+        }
+        //save the states for the next step:
+        self.currentStates=self.nextStates;
+        self.nextStates=[NSMutableSet set];
+        //update start indices before sorting and check finality:
+        for (ROState* state in self.currentStates) {
+            state.startIndex=state.nextStartIndex;
+            state.nextStartIndex=[NSNumber numberWithUnsignedLong:NSUIntegerMax];
+            if (state.finality==YES) [finishedMatches addObject:state];
+        }
+        //finally, check break condition:
+        if (![finishedMatches count]==0) {
+            sortedStates=[finishedMatches sortedArrayUsingDescriptors:@[sortAscendingByStartIndex]];
+            NSNumber* matchStart=((ROState *)sortedStates[0]).startIndex;
+            return NSMakeRange([matchStart intValue],i-[matchStart intValue]+1);
         }
     }
-    //the end is only reached at string mismatch:
-    return NSMakeRange(0, 0);
+    //only reached if none of the steps reached finality:
+    return NSMakeRange(0,0);
+}
+
+-(void)matchCharacter:(NSString *) character inState:(ROState *)state forIndex:(long) i{
+    //because of nondeterminism, at character match we get two branches!
+    //(remember to compare NSStrings, not pointers =)
+    if ([character isEqualToString:state.matchingCharacter]) {
+        //matching character found!
+        //first add the next state:
+        [self.nextStates addObject:state.nextState];
+        NSNumber *matchStartIndex;
+        //if the current state is not yet in a matching branch, we are at the beginning of a match and must mark the start index for the next step:
+        if ([state.startIndex isEqualToNumber:[NSNumber numberWithUnsignedLong:NSUIntegerMax]]) matchStartIndex=[NSNumber numberWithUnsignedLong:i];
+        //if we are already in a matching branch, propagate old starting index:
+        else matchStartIndex=state.startIndex;
+        //to maintain internal consistency, each step must *only* update the *next* start index for the *next* state, depending on the *current* start index of the *current* state!
+        if (state.nextState.nextStartIndex>matchStartIndex) state.nextState.nextStartIndex=matchStartIndex;
+    }
+    //whether character was found or not, we always wind back to initial state for future matches:
+    [self.nextStates addObject:self.initialState];
 }
 
 -(void)rewind {
-    self.currentState=self.initialState;
+    self.nextStates=[NSMutableSet set];
+    self.currentStates=[NSMutableSet set];
+    //start from the initial state:
+    [self.currentStates addObject:self.initialState];
 }
 
 @end
