@@ -71,7 +71,11 @@ public class Game {
 
         // check if the center position is empty - if yes, choose that as the next move
         // otherwise check if there's any move that would immediately win the game - if yes, choose that as the next move
-        // otherwise go through all possible moves and calculate the best next move (preferences: 1. loss avoidance 2. victory)
+        // otherwise go through all possible moves and calculate the best next move
+        
+        // need to fix situations like these...!
+        // 3x3: 3-3, 1-1, 2-1, 1-3, 1-2
+        // Player 1 has won!!!
 
         if (board[board.length / 2][board.length / 2] != 0) {
             for (int i = 0; i < board.length; i++) {
@@ -163,7 +167,7 @@ public class Game {
                 return 1;
             } else {
                 // the result is a LOSS
-                return -2;
+                return -1;
             }
         }
 
