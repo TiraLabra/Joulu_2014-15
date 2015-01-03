@@ -155,7 +155,7 @@ returns a new PersistentHashMap without the given key
 ***
 
 ```java
-    public T get(K key);
+    public V get(K key);
 ```
 returns the value associated with the given key
 
