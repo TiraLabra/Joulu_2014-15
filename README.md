@@ -176,3 +176,14 @@ an additional field, that stores the position of each child in a 32 bit bitmap. 
 
 **LeafNode** holds the actual value. In case of hash collision, leaf nodes form a persistent linked list that stores all values with the same hash.
 
+***
+
+### For more info
+
+* [Understanding Clojures PersistentVector Implementation](http://blog.higher-order.net/2009/02/01/understanding-clojures-persistentvector-implementation)
+* [Understanding Clojure's PersistentHashMap Implementation](http://blog.higher-order.net/2009/09/08/understanding-clojures-persistenthashmap-deftwice.html)
+* [Understanding Clojure's Persistent Vectors, pt. 1](http://hypirion.com/musings/understanding-persistent-vector-pt-1)
+* [Understanding Clojure's Persistent Vectors, pt. 2](http://hypirion.com/musings/understanding-persistent-vector-pt-2)
+* [Persistent Data Structures and Managed References, presentation by Rich Hickey](http://www.infoq.com/presentations/Value-Identity-State-Rich-Hickey)
+* [Ideal Hash Trees by Phil Bagwell](http://lampwww.epfl.ch/papers/idealhashtrees.pdf)
+
