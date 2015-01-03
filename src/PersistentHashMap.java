@@ -14,7 +14,7 @@ import java.util.Arrays;
  * @param <K> key
  * @param <V> value
  */
-public class PersistentHashMap<K, V> implements IPersistentCollection<K, V> {
+public class PersistentHashMap<K, V> implements IPersistentCollection<K, V>, IPersistentHashMap<K, V> {
 
     private final Node root;
     private final int count;
@@ -30,6 +30,11 @@ public class PersistentHashMap<K, V> implements IPersistentCollection<K, V> {
     }
 
     @Override
+    public int count() {
+        return this.count;
+    }
+
+    @Override
     public V get(K key) {
         LeafNode<K,V> l = this.root.find(key.hashCode(), key, 0);
         return l == null? null : l.value;
@@ -42,12 +47,18 @@ public class PersistentHashMap<K, V> implements IPersistentCollection<K, V> {
     }
 
     @Override
-    public int count() {
-        return this.count;
+    public PersistentHashMap dissoc(K key) {
+        Update u = this.root.dissoc(key.hashCode(), 0, key);
+        if (u.root == null) {
+            return new PersistentHashMap<>();
+        } else {
+            return new PersistentHashMap<>(u.root, this.count + u.countDelta);
+        }
     }
-    
+
     static interface Node<K,V> {
-        public Update assoc(int level, int hash, K key, V value);
+        public Update assoc(int hash, int level, K key, V value);
+        public Update dissoc(int hash, int level, K key);
         public LeafNode find(int hash, K key, int level);
     }
 
@@ -61,6 +72,11 @@ public class PersistentHashMap<K, V> implements IPersistentCollection<K, V> {
         @Override
         public LeafNode<K,V> find(int hash, K key, int level) {
             return null;
+        }
+
+        @Override
+        public Update dissoc(int hash, int level, K key) {
+            return new Update(this, 0);
         }
 
     }
@@ -107,6 +123,15 @@ public class PersistentHashMap<K, V> implements IPersistentCollection<K, V> {
             return new InternalNode<>(newNodes, newBitmap);
         }
 
+        private InternalNode<K,V> copyWithout(int pos) {
+            Node[] newNodes = new Node[this.nodes.length - 1];
+            int newBitmap = this.bitmap & (~pos);
+            int index = index(pos, this.bitmap);
+            System.arraycopy(this.nodes, 0, newNodes, 0, index);
+            System.arraycopy(this.nodes, index + 1, newNodes, index, this.nodes.length - index - 1);
+            return new InternalNode<>(newNodes, newBitmap);
+        }
+
         @Override
         public Update assoc(int hash, int level, K key, V value) {
             int pos = bitpos(hash, level);
@@ -124,6 +149,33 @@ public class PersistentHashMap<K, V> implements IPersistentCollection<K, V> {
                 InternalNode<K,V> newNode = this.copyWith(leaf, pos);
                 return new Update(newNode, 1);
             }
+        } 
+
+        @Override
+        public Update dissoc(int hash, int level, K key) {
+            int pos = bitpos(hash, level);
+            if ((this.bitmap & pos) != 0) {
+                // node exists
+                Update u = this.nodes[index(pos)].dissoc(hash, level + 5, key);
+                if (u.root == null) {
+                    if (this.nodes.length > 0) {
+                        InternalNode<K,V> newNode = this.copyWithout(pos);
+                        u.root = newNode;
+                        return u;
+                    } else {
+                        return u;
+                    }
+                } else {
+                    Node[] newNodes = Arrays.copyOf(this.nodes, this.nodes.length);
+                    newNodes[index(pos)] = u.root;
+                    InternalNode<K,V> newNode = new InternalNode<> (newNodes, this.bitmap);
+                    u.root = newNode;
+                    return u;
+                }
+            } else {
+                // node does not exist
+                return new Update(this, 0);
+            }
         }
 
         @Override
@@ -135,6 +187,7 @@ public class PersistentHashMap<K, V> implements IPersistentCollection<K, V> {
                 return null;
             }
         }
+
     }
 
     private static class LeafNode<K,V> implements Node<K,V> {
@@ -178,6 +231,20 @@ public class PersistentHashMap<K, V> implements IPersistentCollection<K, V> {
             }
         }
 
+        private Update remove (LeafNode first, K key, V value, int rank) {
+            if (this.key.equals(key)) {
+                if (rank == 0) {
+                    return new Update(this.next, -1);
+                } else {
+                    return new Update(copy(first, rank, this.next), -1);
+                }
+            } else if (this.next == null) {
+                return new Update(this, 0);
+            } else {
+                return this.next.remove(first, key, value, rank + 1);
+            }
+        }
+
         @Override
         public Update assoc(int hash, int level, K key, V value) {
             if (hash == this.key.hashCode()) {
@@ -186,6 +253,15 @@ public class PersistentHashMap<K, V> implements IPersistentCollection<K, V> {
                 InternalNode<K,V> iNode = new InternalNode<>(new Node[0], 0);
                 Update u = iNode.assoc(this.key.hashCode(), level, this.key, this.value);
                 return new Update(u.root.assoc(hash, level, key, value).root, 1);
+            }
+        }
+
+        @Override
+        public Update dissoc(int hash, int level, K key) {
+            if (hash == this.key.hashCode()) {
+                return remove(this, key, value, 0);
+            } else {
+                return new Update(this, 0);
             }
         }
 
@@ -200,9 +276,6 @@ public class PersistentHashMap<K, V> implements IPersistentCollection<K, V> {
             }
         }
 
-        V getValue(V value) {
-            return this.value;
-        }
     }
 
     private static class Update {

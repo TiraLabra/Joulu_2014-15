@@ -11,4 +11,5 @@
  * @param <V>
  */
 public interface IPersistentHashMap<K, V> {
+    public PersistentHashMap dissoc(K key);
 }

@@ -5,10 +5,7 @@
  */
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
-import java.util.Random;
 import org.junit.Before;
 import org.junit.Test;
 import static org.junit.Assert.*;
@@ -41,9 +38,21 @@ public class PersistentHashMapTest {
     }
 
     @Test
+    public void removeItemFromEmptyPHM() {
+        assertEquals(0, m.dissoc("someKey").count());
+    }
+
+    @Test
     public void testInsertOneItem() {
         PersistentHashMap<String, String> m2 = m.assoc("key", "value");
         assertEquals("value", m2.get("key"));
+    }
+
+    @Test
+    public void testRemoveAfterInsertingOneItem() {
+        PersistentHashMap<String, String> m2 = m.assoc("key", "value").dissoc("key");
+        assertEquals(0, m2.count());
+        assertEquals(null, m2.get("key"));
     }
     
     @Test
@@ -58,7 +67,21 @@ public class PersistentHashMapTest {
     }
 
     @Test
-    public void testCountAfterInsertingThreetems() {
+    public void testRemovingOneItemAfterInsertingThreeItems() {
+        m = m.assoc("key", "value")
+            .assoc("key2", "value2")
+            .assoc("key3", "value3");
+        
+        PersistentHashMap<String, String> m2 = m.dissoc("key2");
+
+        assertEquals(3, m.count());
+        assertEquals(2, m2.count());
+        assertEquals(null, m2.get("key2"));
+        assertEquals("value3", m.get("key3"));
+    }
+
+    @Test
+    public void testCountAfterInsertingThreeItems() {
         m = m.assoc("key", "value")
             .assoc("key2", "value2")
             .assoc("key3", "value3");
@@ -118,30 +141,6 @@ public class PersistentHashMapTest {
         assertEquals(1000, phm.count());
 
         for (int i = 0; i < 1000; i++) {
-            assertEquals(new Integer(values[i]), phm.get(keys.get(i)));
-        }
-
-    }
-
-    @Test
-    public void insert1000000RandomIntegers() {
-        PersistentHashMap<Integer, Integer> phm = new PersistentHashMap<>();
-        ArrayList<Integer> keys = new ArrayList<>(1000000);
-        int[] values = new int[1000000];
-
-        for (int i = 0; i < 1000000; i++) {
-            keys.add(i);
-            values[i] = i;
-        }
-        Collections.shuffle(keys);
-
-        for (int i = 0; i < 1000000; i++) {
-            phm = phm.assoc(keys.get(i), values[i]);
-        }
-
-        assertEquals(1000000, phm.count());
-
-        for (int i = 0; i < 1000000; i++) {
             assertEquals(new Integer(values[i]), phm.get(keys.get(i)));
         }
     }
