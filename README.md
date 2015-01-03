@@ -13,15 +13,14 @@ Lukiessanne tätä tekstiä huomannette kaksi asiaa.
    kun kirjoitan itselleni ikään kuin *muistiinpanot* tähän muotoon.
 
 # Persistent Data Structures
-    PersistentVector and PersistentHashMap are built-in data structures in the clojure programming language.
-    The philosophy of clojure is to never use mutable objects. Mutability in idiomatic clojure
-    is restricted to reference primitives (pointers). To accomplish this goal a language needs an **immutable**
-    and **efficient** collection types that implement a set of operations similar to those of ArrayList and HashMap in Java.
+   PersistentVector and PersistentHashMap are built-in data structures in the clojure programming language.
+   The philosophy of clojure is to never use mutable objects. Mutability in idiomatic clojure
+   is restricted to reference primitives (pointers). To accomplish this goal a language needs an **immutable**
+   and **efficient** collection types that implement a set of operations similar to those of ArrayList and HashMap in Java.
 
 # Persistent Vector
-    Persistent vector is a persistent list data structure. It cannot be mutated. When *conj* is called on a persistent vector.
-    it returns a new vector that is equal to the old vector with the new item added to its last index. Similarly *pop*
-    returns a new vector that is the old one minus the last item.
+   Persistent vector is a persistent list data structure. It cannot be mutated. When *conj* is called on a persistent vector it returns a new vector that is equal to the old vector with the new item added to its last index. Similarly *pop*
+   returns a new vector that is the old one minus the last item.
 
 ## API
 
