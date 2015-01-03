@@ -8,7 +8,7 @@ Lukiessanne tätä tekstiä huomannette kaksi asiaa.
    
 2. Teksti on kirjoitettu tutoriaalin muotoon. Tähän on kaksi syytä.
 
-   Ensiksikin toivon, että se helpottaa ohjaajaa ymmärtämään harjoitustyön aiheen ja motivaation helpommin.
+   Ensiksikin toivon, että se helpottaa ohjaajaa/vertaisarvioijaa ymmärtämään harjoitustyön aiheen ja motivaation helpommin.
    Toiseksi, kirjoitin sen samalla kun opiskelin itse tietorakennetta, ja huomaan että opin parhaiten,
    kun kirjoitan itselleni ikään kuin *muistiinpanot* tähän muotoon.
 
