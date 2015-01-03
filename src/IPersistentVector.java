@@ -9,7 +9,7 @@
  * @author laurikin
  * @param <T>
  */
-public interface IPersistentVector<T> {
+public interface IPersistentVector<T> extends IPersistentCollection<Integer, T> {
 
     public PersistentVector<T> pop(); 
 

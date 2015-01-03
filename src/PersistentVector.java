@@ -12,7 +12,7 @@ import java.util.Arrays;
  * @author laurikin
  * @param <T>
  */
-public class PersistentVector<T> implements IPersistentVector<T>, IPersistentCollection<Integer, T> {
+public class PersistentVector<T> implements IPersistentVector<T> {
 
     private final int BRANCHING_FACTOR = 32;
     private int count = 0;

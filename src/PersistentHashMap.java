@@ -14,7 +14,8 @@ import java.util.Arrays;
  * @param <K> key
  * @param <V> value
  */
-public class PersistentHashMap<K, V> implements IPersistentCollection<K, V>, IPersistentHashMap<K, V> {
+
+public class PersistentHashMap<K, V> implements IPersistentHashMap<K, V> {
 
     private final Node root;
     private final int count;

@@ -10,6 +10,6 @@
  * @param <K>
  * @param <V>
  */
-public interface IPersistentHashMap<K, V> {
+public interface IPersistentHashMap<K, V> extends IPersistentCollection<K,V>{
     public PersistentHashMap dissoc(K key);
 }
