@@ -16,6 +16,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Random;
@@ -35,7 +36,7 @@ public class Encryption {
     private static BigInteger muodostettuLuku;
     
     // Small modulus for transforming bigInteger to a String or vice versa.
-    private static BigInteger modulusLuku = BigInteger.valueOf(256L);
+    private static final BigInteger modulusLuku = BigInteger.valueOf(256L);
     
     // Encrypted data read from encrypted file.
     private static BigInteger luettu;
@@ -112,7 +113,7 @@ public class Encryption {
             baos.close();
             luettu = new BigInteger(baos.toByteArray());
             
-        }catch ( Exception ex ){
+        }catch ( IOException ex ){
             System.out.println("Error...");
             System.out.println(ex.getMessage());
         }   
@@ -136,15 +137,15 @@ public class Encryption {
         File fout = new File("G:\\GITREPO\\Joulu_2014-15\\Encryption\\decrypted.txt");
         try{
             FileWriter fwr = new FileWriter(fout);
-            BufferedWriter bwr = new BufferedWriter(fwr);
-            int i = 0;
-            while (i < array_str.size() ){
-                bwr.write(array_str.get(i));
-                i++;
-            }    
-            bwr.close();
+            try (BufferedWriter bwr = new BufferedWriter(fwr)) {
+                int i = 0;
+                while (i < array_str.size() ){
+                    bwr.write(array_str.get(i));
+                    i++;
+                }
+            }
         }
-        catch ( Exception ex ){
+        catch ( IOException ex ){
             System.out.println("File writing failed: " + ex.getMessage());
         }
     }
@@ -222,15 +223,13 @@ public class Encryption {
     
         try{
             FileOutputStream fos = new FileOutputStream(fileToWrite);
-            BufferedOutputStream bos = new BufferedOutputStream(fos);
-            
-            bos.write(exponent);
-            bos.write("\n\n\n".getBytes());
-            bos.write(modulus);
-            
-            bos.close();
+            try (BufferedOutputStream bos = new BufferedOutputStream(fos)) {
+                bos.write(exponent);
+                bos.write("\n\n\n".getBytes());// Separate the two different BigIntegers.
+                bos.write(modulus);
+            }
         }
-        catch ( Exception ex ){
+        catch ( IOException ex ){
             System.out.println("Error...");
             System.out.println(ex.getMessage());
         }
@@ -261,17 +260,21 @@ public class Encryption {
             bis.close();
             baos.close();
             String splitter = new String(baos.toByteArray());
-            String [] tmpArray = splitter.split("\n\n\n");
+            // Separate the two different BigIntegers.
+            String [] tmpArray = splitter.split("\n\n\n"); 
+            
+            // dExponent and eExponent will be the same, but doesn't matter.
+            // Only one of them is used in encryption or decryption (or signing)
+
             // private key
             dExponent = new BigInteger(tmpArray[0].getBytes());
-            
             // public key
             eExponent = new BigInteger(tmpArray[0].getBytes());
             
             // common part, modulus
             nModulus = new BigInteger(tmpArray[1].getBytes());
             
-        }catch ( Exception ex ){
+        }catch ( IOException ex ){
             System.out.println("Error...");
             System.out.println(ex.getMessage());
         } 
@@ -286,13 +289,11 @@ public class Encryption {
         
         try{
             FileOutputStream fos = new FileOutputStream(fileToWrite);
-            BufferedOutputStream bos = new BufferedOutputStream(fos);
+            try (BufferedOutputStream bos = new BufferedOutputStream(fos)) {
+                bos.write(bArray);
+            }
 
-            bos.write(bArray);
-
-            bos.close();
-
-        }catch( Exception ex ){
+        }catch( IOException ex ){
             System.out.println("Error, something happened.");
             System.out.println(ex.getMessage());
         }
