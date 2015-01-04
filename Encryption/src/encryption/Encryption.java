@@ -21,20 +21,37 @@ import java.util.ArrayList;
 import java.util.Random;
 
 /**
- *
- * @author Markus
+ * Encryption project for University of Helsinki.
+ * Course: Algoritmien harjoitustyö.
+ * Encryption is based on RSA-algorithm.
+ * @author Markus Pahkamaa
  */
 public class Encryption {
 
+    // Data that has been read from a file to be encrypted.
     private static String input = new String();
     
+    // Integer that is created from input string.
     private static BigInteger muodostettuLuku;
+    
+    // Small modulus for transforming bigInteger to a String or vice versa.
     private static BigInteger modulusLuku = BigInteger.valueOf(256L);
+    
+    // Encrypted data read from encrypted file.
     private static BigInteger luettu;
+    
+    // Common Big modulus for public and private keys.
     private static BigInteger nModulus;
+    
+    // Public exponent for encryption, currently it's 17.
     private static BigInteger eExponent;
+    
+    // Private exponent for decryption.
     private static BigInteger dExponent;
     
+    /**
+     * Generates the integer from read data.
+     */
     private static void generateInt(){
         if ( !input.isEmpty() ){
             int i = 0;
@@ -67,8 +84,11 @@ public class Encryption {
         }
     }
 
-private static void generateString(File fileToDecrypt)
-    {   
+    /**
+     * Decrypts the files content.
+     * @param fileToDecrypt file to decrypt.
+     */
+    private static void generateString(File fileToDecrypt){   
         ArrayList<String> array_str = new ArrayList<>();
         
         try {
@@ -129,6 +149,11 @@ private static void generateString(File fileToDecrypt)
         }
     }
     
+    /**
+     * Reads contents of a file
+     * @param fileToRead file which data is to be read.
+     * @throws Exception 
+     */
     private static void readContents(File fileToRead) throws Exception{
         if ( fileToRead.canRead()) {
             FileReader fr = new FileReader(fileToRead);
@@ -138,13 +163,19 @@ private static void generateString(File fileToDecrypt)
                 input = input + tmp;
                 tmp = bfr.readLine();
             }
-            System.out.println("Tiedoston sisältö: " + input);
         }
         else{
             throw new Exception("File cannot be read!");
         }
     }
     
+    /**
+     * Generates BigInteger keys.
+     * public exponent e
+     * private exponent d
+     * and modulus n.
+     * Writes them to a files private.key and public.key
+     */
     private static void generateKeys(){
         Random rnd = new Random(System.nanoTime());
         
@@ -159,13 +190,32 @@ private static void generateString(File fileToDecrypt)
         BigInteger n = p.multiply(q);
         
         BigInteger fii = p.subtract(BigInteger.ONE).multiply(q.subtract(BigInteger.ONE));
-        BigInteger e = BigInteger.valueOf(65537L);
+        BigInteger e = BigInteger.valueOf(17L);//BigInteger.valueOf(65537L);
+        
+        BigInteger [] debugVariable = fii.divideAndRemainder(e);
+        if ( debugVariable[0].compareTo(BigInteger.ZERO) == 0){
+            System.out.println("Ei ole sopiva luku...");
+        }
+        if ( debugVariable[1].compareTo(BigInteger.ZERO) == 0 ){
+            System.out.println("Ei ole sopiva luku...");
+        }
+        
         BigInteger d = e.modInverse(fii);
+        
+        BigInteger test = d.multiply(e).mod(fii);
+        if ( test.equals(BigInteger.ONE)){
+            System.out.println("d*e mod n = 1. OK Numbers");
+        }
         
         writeFileExponentModulus(new File("public.key"), e.toByteArray(), n.toByteArray());
         writeFileExponentModulus(new File("private.key"), d.toByteArray(), n.toByteArray());
     }
     
+    /**
+     * @param fileToWrite file where data is written into
+     * @param exponent exponent bytearray
+     * @param modulus modulus bytearray
+     */
     private static void writeFileExponentModulus(File fileToWrite, 
             byte [] exponent, 
             byte [] modulus ){
@@ -186,6 +236,9 @@ private static void generateString(File fileToDecrypt)
         }
     }
     
+    /**
+     * @param fileToRead input file for data
+     */
     private static void readFileExponentModulus(File fileToRead){
         
          try {
@@ -225,6 +278,10 @@ private static void generateString(File fileToDecrypt)
         
     }
     
+    /**
+     * @param fileToWrite file where data is written into
+     * @param bArray byte array to write into the file
+     */
     private static void writeFile(File fileToWrite, byte [] bArray ){
         
         try{
@@ -246,6 +303,8 @@ private static void generateString(File fileToDecrypt)
      */
     public static void main(String[] args) {
         
+        generateKeys();
+        /*
         try{
             readFileExponentModulus(new File("G:\\GITREPO\\Joulu_2014-15\\Encryption\\public.key"));
             readContents(new File("G:\\GITREPO\\Joulu_2014-15\\Encryption\\testi.txt"));
@@ -261,7 +320,7 @@ private static void generateString(File fileToDecrypt)
         }catch ( Exception ex ){
             System.out.println(ex.getMessage());
         }
-        /*
+        // ----------
         if ( args.length == 0 ){
             System.out.println("Generate public and private keys with command: -generate_keys");
             System.out.println("Encrypt the file with command: -encrypt <public.key> <file>");
