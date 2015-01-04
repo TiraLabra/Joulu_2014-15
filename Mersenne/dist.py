@@ -1,4 +1,18 @@
-from math import log, sqrt, exp, sin, pi
+from math import log, sqrt, exp, sin, pi, tan
+
+# discrete distributions:
+
+def twovalued(v,x1,x2,p): # general two-valued distribution
+    w = map(lambda x: x1+(x2-x1)*(x>p), v)
+    return list(w)
+
+def bernoulli(v,p): # Bernoulli distribution
+    return twovalued(v,0,1,p)
+
+def rademacher(v): # Rademacher distribution
+    return twovalued(v,-1,1,0.5)
+
+# continuous distributions:
 
 def uniform(v,min,max): # continuous uniform distribution
     w = map(lambda x: min+(max-min)*x, v)
@@ -18,6 +32,22 @@ def normal(v,m,s): # normal distribution
 
 def lognormal(v,m,s): # log-normal distribution
     w = map(lambda x: exp(m+s*probit(x)), v)
+    return list(w)
+
+def cauchy(v,x0,g): # Cauchy distribution
+    w = map(lambda x: x0 + g*tan(pi*(r-0.5)), v)
+    return list(w)
+
+def logcauchy(v,m,s): # log-Cauchy distribution
+    w = map(lambda x: exp(m+s*tan(pi*(r-0.5))), v)
+    return list(w)
+
+def logistic(v,m,s): # logistic distribution
+    w = map(lambda x: m+s*log(x/(1-x)), v)
+    return list(w)
+
+def loglogistic(v,a,b): # log-logistic distribution
+    w = map(lambda x: a*(x/(1-x))**(1/b), v)
     return list(w)
 
 def arcsine(v): # arcsine distribution (beta(0.5,0.5))
