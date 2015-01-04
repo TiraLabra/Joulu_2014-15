@@ -1,0 +1,27 @@
+DOXYFILE_ENCODING      = UTF-8
+PROJECT_NAME           = putkijuoksu
+PROJECT_NUMBER         =
+PROJECT_BRIEF          = Dynamic dungeon generator.
+PROJECT_LOGO           =
+OUTPUT_DIRECTORY       = 
+HTML_OUTPUT            = doxygen
+OUTPUT_LANGUAGE        = Finnish
+FULL_PATH_NAMES        = NO
+JAVADOC_AUTOBRIEF      = YES
+OPTIMIZE_OUTPUT_FOR_C  = YES
+
+QUIET                  = YES
+
+INPUT                  = mainpage.dox ../include ../src/generators ../test/test.hpp
+FILE_PATTERNS          = *.hpp
+IMAGE_PATH             = .
+RECURSIVE              = YES
+
+SOURCE_BROWSER         = YES
+
+ALPHABETICAL_INDEX     = NO
+
+GENERATE_HTML          = YES
+
+GENERATE_LATEX         = NO
+
