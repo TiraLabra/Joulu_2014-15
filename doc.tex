@@ -33,4 +33,8 @@ MT only uses basic arrays, so no special data structures will be implemented as 
 
 I'll properly start the project next week; therefore this week didn't provide much new. Nothing seems unreasonably unclear at the moment and in case problems arrive I will turn to IRC first. The program itself hasn't progressed at all yet; I've researched the algorithms, but haven't coded anything. However, by next Sunday I'm aiming for a preliminary complete program. Next thing I'm going to do is implementing MT19937 and some of the distribution transform functions with Python 3.
 
+\section{Week 2}
+
+Lately I've been studying both Mersenne twister implementation and different probability distributions. Generators MT19937 and MT19937-64 have now been implemented in the program. A few more will follow for comparison purposes, perhaps a lagged Fibonacci generator (simpler and less random) and the Blum Blum Shub generator (very slow, but a lot better for cryptographical purposes). Most of the planned probability distributions have also been implemented. Their implementation uses quantile functions (inverse functions of the respective cumulative distribution functions) on input numbers between 0 and 1 from the generators. This is a well-known technique in Monte Carlo simulation. Output visualization and testing are priorities for next week.
+
 \end{document}
