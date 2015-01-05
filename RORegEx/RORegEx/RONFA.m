@@ -17,7 +17,6 @@
 @property (strong, nonatomic)ROState* initialState;
 /**
  *  @brief The current states in the running of the automaton. There are several as the running is done in parallel.
- *  @discussion The greedy algorithm requires the current states to be sorted at each step according to the start index of the match and, hence, extra O(mlogm) load. Another option would be to save the states in a two-dimensional binary search tree.
  */
 @property (strong, nonatomic)NSMutableSet* currentStates;
 /**
