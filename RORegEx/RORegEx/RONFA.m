@@ -87,14 +87,31 @@
 }
 
 -(NSRange)findMatch:(NSString *)string {
-    long i; //the letter we are at in the string
+    long i=0; //the letter we are at in the string
     
     //break condition checking requires ascending order:
     NSSortDescriptor* sortAscendingByStartIndex =[NSSortDescriptor sortDescriptorWithKey:@"startIndex" ascending:YES selector:@selector(compare:)];
     NSArray* sortedStates; //here we store the finished matches sorted according to descriptor
     NSMutableSet* finishedMatches=[NSMutableSet set];
     
-    for (i=0; i<string.length; i++) {
+    while (i<string.length) {
+        //we have to check if we have forking states first:
+        BOOL forkDiscovered=YES;
+        while (forkDiscovered) {
+            forkDiscovered=NO;
+            for (ROState* state in self.currentStates) {
+                if (state.alternateState!= nil) {
+                    forkDiscovered=YES;
+                    [self.currentStates addObject:state.nextState];
+                    [self.currentStates addObject:state.alternateState];
+                    //this particular fork has been processed (even if multiple branches ended up in the same fork), so we can remove it from current states:
+                    [self.currentStates removeObject:state.alternateState];
+                    //currentStates have been modified, so restart from the beginning:
+                    break;
+                }
+            }
+        }
+        
         NSString* character=[string substringWithRange:NSMakeRange(i, 1)];
         //first iterate through current states:
         for (ROState* state in self.currentStates) {
@@ -118,6 +135,8 @@
             NSNumber* matchStart=((ROState *)sortedStates[0]).startIndex;
             return NSMakeRange([matchStart intValue],i-[matchStart intValue]+1);
         }
+        //proceed to the next character:
+        i++;
     }
     //only reached if none of the steps reached finality:
     return NSMakeRange(0,0);
