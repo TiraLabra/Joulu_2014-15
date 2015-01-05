@@ -84,50 +84,6 @@ public class Encryption {
             System.out.println("No data to generate integer");    
         }
     }
-    
-    private static BigInteger generateIntLocally(String message){
-        BigInteger retValue = null;
-        if ( !message.isEmpty() ){
-            int i = 0;
-            
-            while ( i < message.length() ){
-                
-                String ch = new String(""+message.charAt(i));
-                BigInteger tmp = new BigInteger(ch.getBytes());
-                
-                BigInteger power = modulusLuku;
-                power = power.pow(i);
-                tmp = tmp.multiply(power);
-                if ( retValue == null ){
-                    retValue = new BigInteger(tmp.toByteArray());
-                }else {
-                    retValue = retValue.add(tmp);
-                }
-                i++;
-            }
-        }
-        else 
-        {
-            System.out.println("No data to generate integer");    
-        }
-        return retValue;
-    }
-    
-    private static String generateStringLocally(BigInteger representation){
-        String valmis = new String("");
-        
-        while ( true ){
-            BigInteger jakojaannos = representation.mod(modulusLuku);
-            String tmp = new String(jakojaannos.toByteArray());
-            representation = representation.subtract(jakojaannos);
-            valmis = valmis + tmp;
-            representation = representation.divide(modulusLuku);
-            if ( representation.equals(BigInteger.valueOf(0L))){
-                break;
-            }
-        }
-        return valmis;
-    }
 
     /**
      * Decrypts the files content.
@@ -255,6 +211,7 @@ public class Encryption {
         
         /**
          * TESTING
+         * To be made for unit tests somehow
          
         BigInteger test2 = new BigInteger("2");
         test2 = test2.modPow(e, n);
@@ -303,13 +260,6 @@ public class Encryption {
                 bfw.write(modulus.toString());
                 bfw.write("\n");
             }
-            /*
-            FileOutputStream fos = new FileOutputStream(fileToWrite);
-            try (BufferedOutputStream bos = new BufferedOutputStream(fos)) {
-                bos.write(exponent.toString());
-                bos.write("\n\n\n".getBytes());// Separate the two different BigIntegers.
-                bos.write(modulus);
-            }*/
         }
         catch ( IOException ex ){
             System.out.println("Error...");
@@ -318,31 +268,14 @@ public class Encryption {
     }
     
     /**
+     * Read the exponent and modulus from given file. Private exponent d and
+     * public exponent e variables will be same, but those are used in different
+     * situations.
      * @param fileToRead input file for data
      */
     private static void readFileExponentModulus(File fileToRead){
         
          try {
-            /*
-             ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            
-            byte[] array = new byte[1024];
-            FileInputStream fis = new FileInputStream(fileToRead);
-            BufferedInputStream bis = new BufferedInputStream(fis);
-            
-            while ( true ){
-                
-                int error = bis.read(array);
-                
-                if ( error == -1 ){
-                    break;
-                }
-                
-                baos.write(array, 0, error);
-            }
-            bis.close();
-            baos.close();
-             */
             FileReader fr = new FileReader(fileToRead);
             BufferedReader bfr = new BufferedReader(fr);
             String [] array = new String[2];
@@ -350,13 +283,6 @@ public class Encryption {
             for ( int i = 0; i < 2; i++ ){
                 array[i] = bfr.readLine();
             }
-            
-            //String splitter = new String(baos);
-            // Separate the two different BigIntegers.
-            //String [] tmpArray = splitter.split("\n\n\n"); 
-            
-            // dExponent and eExponent will be the same, but doesn't matter.
-            // Only one of them is used in encryption or decryption (or signing)
             
             // private exponent
             dExponent = new BigInteger(array[0]);
@@ -395,24 +321,6 @@ public class Encryption {
      */
     public static void main(String[] args) {
         
-        generateKeys();
-        /*
-        try{
-            readFileExponentModulus(new File("G:\\GITREPO\\Joulu_2014-15\\Encryption\\public.key"));
-            readContents(new File("G:\\GITREPO\\Joulu_2014-15\\Encryption\\testi.txt"));
-            generateInt();
-        }
-        catch( Exception ex){
-            System.out.println(ex.getMessage());
-        }
-        
-        try{
-            readFileExponentModulus(new File("G:\\GITREPO\\Joulu_2014-15\\Encryption\\private.key"));
-            generateString(new File("G:\\GITREPO\\Joulu_2014-15\\Encryption\\encrypted.txt"));
-        }catch ( Exception ex ){
-            System.out.println(ex.getMessage());
-        }
-        // ----------
         if ( args.length == 0 ){
             System.out.println("Generate public and private keys with command: -generate_keys");
             System.out.println("Encrypt the file with command: -encrypt <public.key> <file>");
@@ -429,29 +337,27 @@ public class Encryption {
         }
 
         if ( args.length == 3 ){
-            if ( args[0].equals("-encrypt")){*/
+            if ( args[0].equals("-encrypt")){
                 System.out.println("Ecrypting...");
                 
                 try {
-                    readFileExponentModulus(new File("C:\\git_repo\\Joulu_2014-15\\Encryption\\public.key"));
-                    readContents(new File("C:\\git_repo\\Joulu_2014-15\\Encryption\\testi.txt"));
+                    readFileExponentModulus(new File(args[1]));
+                    readContents(new File(args[2]));
                     generateInt();
                 }catch (Exception ex) {
                     System.out.println(ex.getMessage());
-                }
-                
-      //      }
-
-        //    if ( args[0].equals("-decrypt")){
-                System.out.println("Decrypting...");
-                readFileExponentModulus(new File("C:\\git_repo\\Joulu_2014-15\\Encryption\\private.key"));
-                generateString(new File("C:\\git_repo\\Joulu_2014-15\\Encryption\\encrypted.txt"));
-           // }
-
-      /*      if ( args[1].equals("-sign")){
-                System.out.println("Signing...");
+                }  
             }
-        }*/
-        
+
+            if ( args[0].equals("-decrypt")){
+                System.out.println("Decrypting...");
+                readFileExponentModulus(new File(args[1]));
+                generateString(new File(args[2]));
+            }
+
+            if ( args[1].equals("-sign")){
+                System.out.println("Signing... Not yet implemented");
+            }
+        }
     } 
 }
