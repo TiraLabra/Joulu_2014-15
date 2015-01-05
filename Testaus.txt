@@ -1,0 +1,11 @@
+Testaus jakautuu kahteen osaan: itse äärellisen automaatin yksittäisten matchien toimivuuden testaamiseen ja toisaalta regexp-matchauksen testaamiseen tilanteissa, joissa syötettävä stringi sisältää mahdollisesti useita peräkkäisiä matcheja.
+
+Useamman matchauksen tilanteessa matchauksen lähtökohtana on, kuten yleensäkin säännöllisissä lausekkeissa, että yksi osa stringiä voi osua vain yhteen matchiin. Näin ollen ensimmäisen matchin löydyttyä matchausta jatketaan tämän jälkeisestä merkistä eteenpäin. Tällaisia toistuvia peräkkäisiä matcheja sisältävien stringien testaaminen on hyvin suoraviivaista. Näihin tarvittavat testit on sisällytetty luokkaan RORegExTest.
+
+Yksittäisen matchauksen testaaminen on vaikein osa testausta, sillä äärellisillä määrillä testejä ei voida vielä aukottomasti vakuuttua siitä, että ohjelmalogiikka toimii kaikissa tilanteissa oikein. Varmempi testaus vaatisi järjestelmällistä loogista analyysia siitä, mihin tiloihin ohjelma voi minkäkinlaisilla stringeillä päätyä. Automaatti on toki toteutettu analysoimalla kynällä ja paperilla, mitkä tilat ovat mahdollisia ja miten ne tulee toteuttaa niin, että tulos on aina oikea, mutta en edelleenkään voi olla vakuuttunut siitä, että analyysini on oikea kaikissa tilanteissa.
+
+Yksittäistä regex-matchia kuvaavat testit ovat luokassa RONFAtest. Lähdin kehitystyössä liikkeelle siitä, että toteutin mielivaltaisten stringien matchaamisen ensimmäisenä yksittäisistä kirjaimista lähtien. Käytännössä kaikkien mahdollisten stringien matchaaminen oikealla tavalla edellyttää jo kokonaista epädeterminististä tilakonetta, joten aikaa tilakoneen konstruointiin meni nimenomaan tässä vaiheessa runsaasti.
+
+Stringien testaamisen jälkeen luokka RONFAtest sisältää haluttujen operaattorien testauksen. Operaattoreita käytettäessä tulee ensin testata myös sulkulausekkeiden toimivuus eli koodin rekursio-ominaisuus sisäkkäisten sulkeiden tapauksessa. Lisää operaattoreita on yllättävän helppoa ja nopeaa lisätä sekä testeihin että RONFA-luokkaan, kun itse tilakoneen toteutus on valmis.
+
+Toistaiseksi testit on implementoitu operaattoreille . (mikä tahansa kirjain) sekä * (mikä tahansa määrä kirjaimia). Näillä operaattoreilla voidaan tehdä myös suorituskykytestausta, joka on olennaisin osa testausta, kun tavoitteena on ollut lineaarisesti skaalautuva algoritmi.
