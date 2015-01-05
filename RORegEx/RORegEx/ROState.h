@@ -18,7 +18,7 @@
  */
 @property (strong, nonatomic) ROState* nextState;
 /**
- *  An alternate state in the tree, if the tree forks. May be nil.
+ *  An alternate next state in the tree, if the tree forks. May be nil.
  */
 @property (strong, nonatomic) ROState* alternateState;
 /**
@@ -26,7 +26,8 @@
  */
 @property (nonatomic) BOOL finality;
 /**
- *  @brief The matching character of the state, or nil if the state doesn't allow matching a character.
+ *  @brief The matching character of the state. matchingCharacter=nil represents any character match, or a fork state.
+ *  @discussion If alternateState=nil, we have "any character" match, i.e. we match and move to nextState. If alternateState!=nil, we have a fork in the tree, i.e. we don't match and move to nextState and alternateState.
  */
 @property (strong, nonatomic) NSString* matchingCharacter;
 /**

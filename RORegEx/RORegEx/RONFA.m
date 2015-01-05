@@ -41,7 +41,7 @@
     self = [super init];
     if (self == nil) return self;
     //Here we implement the class-specific initialization:
-    self.operators = [NSCharacterSet characterSetWithCharactersInString:@""];
+    self.operators = [NSCharacterSet characterSetWithCharactersInString:@"."];
     self.initialState=[[ROState alloc] init];
     self.finalStates=[NSMutableSet set];
     [self rewind];
@@ -59,12 +59,15 @@
         //Here, we have the default behavior of matching the character:
         if ([character rangeOfCharacterFromSet:self.operators].location == NSNotFound) {
             currentState.matchingCharacter = character;
-            //we do not need to explicitly create pointers to the successive states, as the pointers form a tree starting from initialState
-            //create the next state:
-            currentState.nextState=[[ROState alloc] init];
-            //move on to the state matched by the character:
-            currentState=currentState.nextState;
         }
+        else if ([character isEqualToString:@"."]) {
+            currentState.matchingCharacter=nil;
+        }
+        //we do not need to explicitly create pointers to the successive states, as the pointers form a tree starting from initialState
+        //create the next state:
+        currentState.nextState=[[ROState alloc] init];
+        //move on to the state matched by the character:
+        currentState=currentState.nextState;
     }
     //after the loop, the ending state indicates that we have a pattern:
     currentState.finality=YES;
@@ -123,8 +126,8 @@
 -(void)matchCharacter:(NSString *) character inState:(ROState *)state forIndex:(long) i{
     //because of nondeterminism, at character match we get two branches!
     //(remember to compare NSStrings, not pointers =)
-    if ([character isEqualToString:state.matchingCharacter]) {
-        //matching character found!
+    if ([character isEqualToString:state.matchingCharacter] || state.matchingCharacter==nil) {
+        //matching character found, or "any character" match!
         //first add the next state:
         [self.nextStates addObject:state.nextState];
         NSNumber *matchStartIndex;
