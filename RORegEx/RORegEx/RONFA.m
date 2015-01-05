@@ -41,7 +41,7 @@
     self = [super init];
     if (self == nil) return self;
     //Here we implement the class-specific initialization:
-    self.operators = [NSCharacterSet characterSetWithCharactersInString:@"."];
+    self.operators = [NSCharacterSet characterSetWithCharactersInString:@".*"];
     self.initialState=[[ROState alloc] init];
     self.finalStates=[NSMutableSet set];
     [self rewind];
@@ -53,15 +53,18 @@
     ROState* currentState=self.initialState;
     for (int i=0; i<regEx.length; i++) {
         NSString* character=[regEx substringWithRange:NSMakeRange(i, 1)];
-        //we have to check if the next character is an operator:
-        NSString* nextCharacter=nil;
-        if (i<regEx.length-1) nextCharacter=[regEx substringWithRange:NSMakeRange(i+1, 1)];
         //Here, we have the default behavior of matching the character:
         if ([character rangeOfCharacterFromSet:self.operators].location == NSNotFound) {
             currentState.matchingCharacter = character;
         }
         else if ([character isEqualToString:@"."]) {
-            currentState.matchingCharacter=nil;
+            //any character matches. matchingCharacter is already nil by default =)
+        }
+        else if ([character isEqualToString:@"*"]) {
+            //we have to match zero or more characters.
+            //currentState becomes a forking state. The NFA moves immediately to the next state (matches zero characters). The alternate arrow points to "any character" state (matches one character), which points back here. *never* link a fork state directly back to itself (creates an infinite loop when matching)!
+            currentState.alternateState=[[ROState alloc] init]; //the any character state
+            currentState.alternateState.nextState=currentState; //the current fork state
         }
         //we do not need to explicitly create pointers to the successive states, as the pointers form a tree starting from initialState
         //create the next state:
@@ -97,28 +100,34 @@
     while (i<string.length) {
         //we have to check if we have forking states first:
         BOOL forkDiscovered=YES;
+        ROState* toBeRemoved; //the fork state to be removed
         while (forkDiscovered) {
             forkDiscovered=NO;
+            toBeRemoved=nil;
+            //find the first fork state:
             for (ROState* state in self.currentStates) {
                 if (state.alternateState!= nil) {
                     forkDiscovered=YES;
+                    toBeRemoved=state;
+                    //never link a fork state back to itself (creates an infinite loop!)
                     [self.currentStates addObject:state.nextState];
                     [self.currentStates addObject:state.alternateState];
-                    //this particular fork has been processed (even if multiple branches ended up in the same fork), so we can remove it from current states:
-                    [self.currentStates removeObject:state.alternateState];
-                    //currentStates have been modified, so restart from the beginning:
+                    //also, remember to propagate the starting index of the match from any fork state to both of the subsequent states, as the fork state does not enter matchCharacter method!!
+                    state.nextState.startIndex=state.startIndex;
+                    state.alternateState.startIndex=state.startIndex;
+                    //this particular fork has been processed (even if multiple branches ended up in the same fork), so we can remove it from current states.
+                    //cannot remove object from within the iteration loop. we have a fork to remove, so get out of the loop:
                     break;
                 }
             }
+            if (toBeRemoved!=nil) [self.currentStates removeObject:toBeRemoved];
         }
         
         NSString* character=[string substringWithRange:NSMakeRange(i, 1)];
         //first iterate through current states:
         for (ROState* state in self.currentStates) {
-            //Here, we have the default behavior of matching the character:
-            //if ([character rangeOfCharacterFromSet:self.operators].location == NSNotFound) {
-                [self matchCharacter:character inState:state forIndex:i];
-            //}
+            //at this point, there are no forking states present so all the current states with matchingCharacter=nil are of the type "match any character"
+            [self matchCharacter:character inState:state forIndex:i];
         }
         //save the states for the next step:
         self.currentStates=self.nextStates;

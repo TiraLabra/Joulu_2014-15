@@ -73,10 +73,23 @@
 
 - (void)testAnyCharacterMatch {
     RONFA* NFA = [[RONFA alloc] initWithRegEx:@"aa.a"];
-    XCTAssert(NSEqualRanges([NFA findMatch:@"aaaa"],NSMakeRange(0, 4)), @"Correct any character match");
+    XCTAssert(NSEqualRanges([NFA findMatch:@"aaaa"],NSMakeRange(0, 4)), @"Correct . match");
 }
 
+- (void)testZeroCharactersMatch {
+    RONFA* NFA = [[RONFA alloc] initWithRegEx:@"aa*a"];
+    XCTAssert(NSEqualRanges([NFA findMatch:@"aaa"],NSMakeRange(0, 3)), @"Correct * match");
+}
 
+- (void)testAnyStringMatch {
+    RONFA* NFA = [[RONFA alloc] initWithRegEx:@"a*a"];
+    XCTAssert(NSEqualRanges([NFA findMatch:@"abffa"],NSMakeRange(0, 5)), @"Correct * match");
+}
+
+- (void)testOperatorCombination {
+    RONFA* NFA = [[RONFA alloc] initWithRegEx:@"a*a."];
+    XCTAssert(NSEqualRanges([NFA findMatch:@"graaaaagh"],NSMakeRange(2, 3)), @"Correct *a. match");
+}
 
 - (void)testPerformanceExample {
     // This is an example of a performance test case.
