@@ -77,12 +77,56 @@ public class Encryption {
                 return;
             }
             muodostettuLuku = muodostettuLuku.modPow(eExponent, nModulus);
-            writeFile(new File("G:\\GITREPO\\Joulu_2014-15\\Encryption\\encrypted.txt"), muodostettuLuku.toByteArray());
+            writeFile(new File("encrypted.txt"), muodostettuLuku.toByteArray());
         }
         else 
         {
             System.out.println("No data to generate integer");    
         }
+    }
+    
+    private static BigInteger generateIntLocally(String message){
+        BigInteger retValue = null;
+        if ( !message.isEmpty() ){
+            int i = 0;
+            
+            while ( i < message.length() ){
+                
+                String ch = new String(""+message.charAt(i));
+                BigInteger tmp = new BigInteger(ch.getBytes());
+                
+                BigInteger power = modulusLuku;
+                power = power.pow(i);
+                tmp = tmp.multiply(power);
+                if ( retValue == null ){
+                    retValue = new BigInteger(tmp.toByteArray());
+                }else {
+                    retValue = retValue.add(tmp);
+                }
+                i++;
+            }
+        }
+        else 
+        {
+            System.out.println("No data to generate integer");    
+        }
+        return retValue;
+    }
+    
+    private static String generateStringLocally(BigInteger representation){
+        String valmis = new String("");
+        
+        while ( true ){
+            BigInteger jakojaannos = representation.mod(modulusLuku);
+            String tmp = new String(jakojaannos.toByteArray());
+            representation = representation.subtract(jakojaannos);
+            valmis = valmis + tmp;
+            representation = representation.divide(modulusLuku);
+            if ( representation.equals(BigInteger.valueOf(0L))){
+                break;
+            }
+        }
+        return valmis;
     }
 
     /**
@@ -111,6 +155,7 @@ public class Encryption {
             }
             bis.close();
             baos.close();
+
             luettu = new BigInteger(baos.toByteArray());
             
         }catch ( IOException ex ){
@@ -134,7 +179,7 @@ public class Encryption {
             }
         }
         
-        File fout = new File("G:\\GITREPO\\Joulu_2014-15\\Encryption\\decrypted.txt");
+        File fout = new File("decrypted.txt");
         try{
             FileWriter fwr = new FileWriter(fout);
             try (BufferedWriter bwr = new BufferedWriter(fwr)) {
@@ -208,8 +253,37 @@ public class Encryption {
             System.out.println("d*e mod n = 1. OK Numbers");
         }
         
-        writeFileExponentModulus(new File("public.key"), e.toByteArray(), n.toByteArray());
-        writeFileExponentModulus(new File("private.key"), d.toByteArray(), n.toByteArray());
+        /**
+         * TESTING
+         
+        BigInteger test2 = new BigInteger("2");
+        test2 = test2.modPow(e, n);
+        test2 = test2.modPow(d, n);
+        
+        if ( test2.equals(new BigInteger("2"))){
+            System.out.println("Keys seem to be working.");
+        }
+        
+        BigInteger test3 = new BigInteger("T".getBytes());
+        test3 = test3.modPow(e, n);
+        test3 = test3.modPow(d, n);
+        
+        if ( test3.equals(new BigInteger("T".getBytes()))){
+            System.out.println("Keys seem to be working.");
+        }
+        
+        BigInteger test4 = generateIntLocally("Ta");
+        test4 = test4.modPow(e, n);
+        test4 = test4.modPow(d, n);
+        
+        String decrypt = generateStringLocally(test4);
+        if ( decrypt.equals("Ta")){
+            System.out.println("Keys seem to be working.");
+            System.out.println(decrypt);
+        }
+        */
+        writeFileExponentModulus(new File("public.key"), e, n);
+        writeFileExponentModulus(new File("private.key"), d, n);
     }
     
     /**
@@ -218,16 +292,24 @@ public class Encryption {
      * @param modulus modulus bytearray
      */
     private static void writeFileExponentModulus(File fileToWrite, 
-            byte [] exponent, 
-            byte [] modulus ){
+            BigInteger exponent, 
+            BigInteger modulus ){
     
         try{
+            FileWriter fwr = new FileWriter(fileToWrite);
+            try(BufferedWriter bfw = new BufferedWriter(fwr)){
+                bfw.write(exponent.toString());
+                bfw.write("\n");
+                bfw.write(modulus.toString());
+                bfw.write("\n");
+            }
+            /*
             FileOutputStream fos = new FileOutputStream(fileToWrite);
             try (BufferedOutputStream bos = new BufferedOutputStream(fos)) {
-                bos.write(exponent);
+                bos.write(exponent.toString());
                 bos.write("\n\n\n".getBytes());// Separate the two different BigIntegers.
                 bos.write(modulus);
-            }
+            }*/
         }
         catch ( IOException ex ){
             System.out.println("Error...");
@@ -241,7 +323,8 @@ public class Encryption {
     private static void readFileExponentModulus(File fileToRead){
         
          try {
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            /*
+             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             
             byte[] array = new byte[1024];
             FileInputStream fis = new FileInputStream(fileToRead);
@@ -259,20 +342,28 @@ public class Encryption {
             }
             bis.close();
             baos.close();
-            String splitter = new String(baos.toByteArray());
+             */
+            FileReader fr = new FileReader(fileToRead);
+            BufferedReader bfr = new BufferedReader(fr);
+            String [] array = new String[2];
+            
+            for ( int i = 0; i < 2; i++ ){
+                array[i] = bfr.readLine();
+            }
+            
+            //String splitter = new String(baos);
             // Separate the two different BigIntegers.
-            String [] tmpArray = splitter.split("\n\n\n"); 
+            //String [] tmpArray = splitter.split("\n\n\n"); 
             
             // dExponent and eExponent will be the same, but doesn't matter.
             // Only one of them is used in encryption or decryption (or signing)
-
-            // private key
-            dExponent = new BigInteger(tmpArray[0].getBytes());
-            // public key
-            eExponent = new BigInteger(tmpArray[0].getBytes());
             
-            // common part, modulus
-            nModulus = new BigInteger(tmpArray[1].getBytes());
+            // private exponent
+            dExponent = new BigInteger(array[0]);
+            // public exponent
+            eExponent = new BigInteger(array[0]);
+            // common modulus
+            nModulus = new BigInteger(array[1]);
             
         }catch ( IOException ex ){
             System.out.println("Error...");
@@ -338,29 +429,29 @@ public class Encryption {
         }
 
         if ( args.length == 3 ){
-            if ( args[0].equals("-encrypt")){
+            if ( args[0].equals("-encrypt")){*/
                 System.out.println("Ecrypting...");
                 
                 try {
-                    readFileExponentModulus(new File(args[1]));
-                    readContents(new File(args[2]));
+                    readFileExponentModulus(new File("C:\\git_repo\\Joulu_2014-15\\Encryption\\public.key"));
+                    readContents(new File("C:\\git_repo\\Joulu_2014-15\\Encryption\\testi.txt"));
                     generateInt();
                 }catch (Exception ex) {
                     System.out.println(ex.getMessage());
                 }
                 
-            }
+      //      }
 
-            if ( args[0].equals("-decrypt")){
+        //    if ( args[0].equals("-decrypt")){
                 System.out.println("Decrypting...");
-                readFileExponentModulus(new File(args[1]));
-                generateString(new File(args[2]));
-            }
+                readFileExponentModulus(new File("C:\\git_repo\\Joulu_2014-15\\Encryption\\private.key"));
+                generateString(new File("C:\\git_repo\\Joulu_2014-15\\Encryption\\encrypted.txt"));
+           // }
 
-            if ( args[1].equals("-sign")){
+      /*      if ( args[1].equals("-sign")){
                 System.out.println("Signing...");
             }
-        }
-        */
+        }*/
+        
     } 
 }
