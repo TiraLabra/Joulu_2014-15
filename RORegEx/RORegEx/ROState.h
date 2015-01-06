@@ -22,7 +22,7 @@
  */
 @property (strong, nonatomic) ROState* alternateState;
 /**
- *  @brief The break condition of the automaton, indicating a pattern match. Default is NO. If the state is shared by several automata, indicates that it is the final state of at least one subautomaton.
+ *  @brief The break condition of the automaton, indicating a pattern match. Default is NO.
  */
 @property (nonatomic) BOOL finality;
 /**

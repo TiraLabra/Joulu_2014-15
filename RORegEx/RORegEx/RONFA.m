@@ -16,7 +16,7 @@
  */
 @property (strong, nonatomic)ROState* initialState;
 /**
- *  The current states in the running of the automaton. There are several as the running is done in parallel.
+ *  The current states in the construction and running of the automaton. There are several as the running is done in parallel.
  */
 @property (strong, nonatomic)NSMutableSet* currentStates;
 /**
@@ -46,53 +46,65 @@
     self=[super init];
     if (self == nil) return self;
     //Here we implement the class-specific initialization:
-    self.operators = [NSCharacterSet characterSetWithCharactersInString:@".*()"];
+    self.operators = [NSCharacterSet characterSetWithCharactersInString:@".*()|"];
     self.finalStates=[NSMutableSet set];
     self.initialState=state;
-    ROState* currentState=self.initialState;
+    [self rewind]; //creates the currentStates array and adds the initial state there
     for (long i=0; i<regEx.length; i++) {
-        NSString* character=[regEx substringWithRange:NSMakeRange(i, 1)];
-        //Here, we have the default behavior of matching the character:
-        if ([character rangeOfCharacterFromSet:self.operators].location == NSNotFound) {
-            currentState.matchingCharacter = character;
-        }
-        else if ([character isEqualToString:@"."]) {
-            //any character matches. matchingCharacter is already nil by default =)
-        }
-        else if ([character isEqualToString:@"*"]) {
-            //we have to match zero or more characters.
-            //currentState becomes a forking state. The NFA moves immediately to the next state (matches zero characters). The alternate arrow points to "any character" state (matches one character), which points back here. *never* link a fork state directly back to itself (creates an infinite loop when matching)!
-            currentState.alternateState=[[ROState alloc] init]; //the any character state
-            currentState.alternateState.nextState=currentState; //the current fork state
-        }
-        else if ([character isEqualToString:@"("]) {
-            //here we must implement recursive NFAs for the expression in parentheses
-            //first, find the corresponding closing parenthesis:
-            long parentheses=1;
-            long j=i;
-            while (parentheses>0) {
-                j++;
-                NSString* subcharacter=[regEx substringWithRange:NSMakeRange(i, 1)];
-                if ([subcharacter isEqualToString:@"("]) parentheses++;
-                if ([subcharacter isEqualToString:@")"]) parentheses--;
+        //we need a loop over multiple current states, in case the OR operator is present!!
+        for (ROState* currentState in self.currentStates) {
+            NSString* character=[regEx substringWithRange:NSMakeRange(i, 1)];
+            //Here, we have the default behavior of matching the character:
+            if ([character rangeOfCharacterFromSet:self.operators].location == NSNotFound) {
+                currentState.matchingCharacter = character;
             }
-            //make a new NFA for the subexpression, set the current state as its initial state and skip to the end:
-            NSString* subexpression=[regEx substringWithRange:NSMakeRange(i+1, j-i-1)];
-            RONFA* subNFA=[[RONFA alloc] initWithState:currentState withRegEx:subexpression];
-            i=j;
-            //Here, the construction of the NFA will fork into discrete parts (no subsequent merges possible):
-            //move on to the states matched by the subNFA:
-            //currentState=subNFA.finalState;
+            else if ([character isEqualToString:@"."]) {
+                //any character matches. matchingCharacter is already nil by default =)
+            }
+            else if ([character isEqualToString:@"*"]) {
+                //we have to match zero or more characters.
+                //currentState becomes a forking state. The NFA moves immediately to the next state (matches zero characters). The alternate arrow points to "any character" state (matches one character), which points back here. *never* link a fork state directly back to itself (creates an infinite loop when matching)!
+                currentState.alternateState=[[ROState alloc] init]; //the any character state
+                currentState.alternateState.nextState=currentState; //the current fork state
+            }
+            else if ([character isEqualToString:@"("]) {
+                //here we must implement recursive NFAs for the expression in parentheses
+                //first, find the corresponding closing parenthesis:
+                long parentheses=1;
+                long j=i;
+                while (parentheses>0) {
+                    j++;
+                    NSString* subcharacter=[regEx substringWithRange:NSMakeRange(i, 1)];
+                    if ([subcharacter isEqualToString:@"("]) parentheses++;
+                    if ([subcharacter isEqualToString:@")"]) parentheses--;
+                }
+                //make a new NFA for the subexpression, set the current state as its initial state and skip to the end:
+                NSString* subexpression=[regEx substringWithRange:NSMakeRange(i+1, j-i-1)];
+                RONFA* subNFA=[[RONFA alloc] initWithState:currentState withRegEx:subexpression];
+                i=j;
+                //Here, the resulting NFA may have several final states (no subsequent merges possible):
+                //we have to continue on the letter after the parentheses, from the states matched by the subNFA:
+                //currentState=subNFA.finalState;
+                continue;
+            }
+            else if ([character isEqualToString:@"|"]) {
+                //here we must make a new NFA for the superexpression, nest the current NFA inside it, and create another NFA for the other subexpression!!! forking into two final states ensues, but the current state is one of them.
+                break;
+            }
+            //we do not need to explicitly create pointers to the successive states, as the pointers form a tree starting from initialState
+            //create the next state:
+            currentState.nextState=[[ROState alloc] init];
+            //move on to the state matched by the character:
+            [self.nextStates addObject:currentState.nextState];
         }
-        //we do not need to explicitly create pointers to the successive states, as the pointers form a tree starting from initialState
-        //create the next state:
-        currentState.nextState=[[ROState alloc] init];
-        //move on to the state matched by the character:
-        currentState=currentState.nextState;
+        self.currentStates=self.nextStates;
+        self.nextStates=[NSMutableSet set];
     }
-    //after the loop, the ending state indicates that we have a pattern:
-    currentState.finality=YES;
-    [self.finalStates addObject:currentState];
+    //after the loop, the ending state indicates that we have a pattern match:
+    for (ROState* currentState in self.currentStates) {
+        currentState.finality=YES;
+        [self.finalStates addObject:currentState];
+    }
     //after initialization, return the automaton to the beginning for running:
     [self rewind];
 
@@ -108,7 +120,7 @@
     NSMutableSet* finishedMatches=[NSMutableSet set];
     
     while (i<string.length) {
-        //we have to check if we have forking states first:
+        //first we have to check if the current states contain forks:
         BOOL forkDiscovered=YES;
         ROState* toBeRemoved; //the fork state to be removed
         while (forkDiscovered) {
@@ -133,10 +145,10 @@
             if (toBeRemoved!=nil) [self.currentStates removeObject:toBeRemoved];
         }
         
+        //at this point, there are no forking states present so all the current states with matchingCharacter=nil are of the type "match any character"
         NSString* character=[string substringWithRange:NSMakeRange(i, 1)];
         //first iterate through current states:
         for (ROState* state in self.currentStates) {
-            //at this point, there are no forking states present so all the current states with matchingCharacter=nil are of the type "match any character"
             [self matchCharacter:character inState:state forIndex:i];
         }
         //save the states for the next step:
