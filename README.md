@@ -15,5 +15,5 @@ java -jar Encryption.jar -encrypt <public.key> <file to encrypt>
 Tämä luo tiedoston encrypted.txt.
 
 Salauksen purku:
-java -jar Encryption.jar -encrypt <private.key> <file to decrypt>
+java -jar Encryption.jar -decrypt <private.key> <file to decrypt>
 Tämä luo tiedoston decrypted.txt.
