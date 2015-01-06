@@ -91,6 +91,16 @@
     XCTAssert(NSEqualRanges([NFA findMatch:@"graaaaagh"],NSMakeRange(2, 3)), @"Correct *a. match");
 }
 
+- (void)testParentheses {
+    RONFA* NFA = [[RONFA alloc] initWithRegEx:@"(a)a"];
+    XCTAssert(NSEqualRanges([NFA findMatch:@"aa"],NSMakeRange(0, 2)), @"Correct subNFA recursion");
+}
+
+- (void)testSeveralParenthesesAndOperators {
+    RONFA* NFA = [[RONFA alloc] initWithRegEx:@"((*)*)a"];
+    XCTAssert(NSEqualRanges([NFA findMatch:@"aa"],NSMakeRange(0, 1)), @"Correct minimal nested operator match");
+}
+
 - (void)testPerformanceExample {
     // This is an example of a performance test case.
     [self measureBlock:^{

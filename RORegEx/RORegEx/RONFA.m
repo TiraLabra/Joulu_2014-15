@@ -74,7 +74,7 @@
                 long j=i;
                 while (parentheses>0) {
                     j++;
-                    NSString* subcharacter=[regEx substringWithRange:NSMakeRange(i, 1)];
+                    NSString* subcharacter=[regEx substringWithRange:NSMakeRange(j, 1)];
                     if ([subcharacter isEqualToString:@"("]) parentheses++;
                     if ([subcharacter isEqualToString:@")"]) parentheses--;
                 }
@@ -83,20 +83,24 @@
                 RONFA* subNFA=[[RONFA alloc] initWithState:currentState withRegEx:subexpression];
                 i=j;
                 //Here, the resulting NFA may have several final states (no subsequent merges possible):
-                //we have to continue on the letter after the parentheses, from the states matched by the subNFA:
-                //currentState=subNFA.finalState;
+                self.nextStates=subNFA.finalStates;
+                //These states are freshly created, they have finality=YES and no nextStates added. Correct that:
+                for (ROState* state in subNFA.finalStates) state.finality=NO;
+                //self.nextStates exist already, skip creating them:
                 continue;
             }
             else if ([character isEqualToString:@"|"]) {
                 //here we must make a new NFA for the superexpression, nest the current NFA inside it, and create another NFA for the other subexpression!!! forking into two final states ensues, but the current state is one of them.
+                //do not continue the loop after the operator:
                 break;
             }
             //we do not need to explicitly create pointers to the successive states, as the pointers form a tree starting from initialState
             //create the next state:
             currentState.nextState=[[ROState alloc] init];
-            //move on to the state matched by the character:
+            //move on to the next state for matching next character:
             [self.nextStates addObject:currentState.nextState];
         }
+        //update the sets the loop runs over:
         self.currentStates=self.nextStates;
         self.nextStates=[NSMutableSet set];
     }
