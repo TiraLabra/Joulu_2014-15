@@ -16,7 +16,7 @@
  */
 @property (strong, nonatomic)ROState* initialState;
 /**
- *  @brief The current states in the running of the automaton. There are several as the running is done in parallel.
+ *  The current states in the running of the automaton. There are several as the running is done in parallel.
  */
 @property (strong, nonatomic)NSMutableSet* currentStates;
 /**
@@ -40,7 +40,7 @@
     self = [super init];
     if (self == nil) return self;
     //Here we implement the class-specific initialization:
-    self.operators = [NSCharacterSet characterSetWithCharactersInString:@".*"];
+    self.operators = [NSCharacterSet characterSetWithCharactersInString:@".*()"];
     self.initialState=[[ROState alloc] init];
     self.finalStates=[NSMutableSet set];
     [self rewind];
@@ -50,7 +50,7 @@
 -(id) initWithRegEx:(NSString *)regEx {
     self=[self init];
     ROState* currentState=self.initialState;
-    for (int i=0; i<regEx.length; i++) {
+    for (long i=0; i<regEx.length; i++) {
         NSString* character=[regEx substringWithRange:NSMakeRange(i, 1)];
         //Here, we have the default behavior of matching the character:
         if ([character rangeOfCharacterFromSet:self.operators].location == NSNotFound) {
@@ -64,6 +64,25 @@
             //currentState becomes a forking state. The NFA moves immediately to the next state (matches zero characters). The alternate arrow points to "any character" state (matches one character), which points back here. *never* link a fork state directly back to itself (creates an infinite loop when matching)!
             currentState.alternateState=[[ROState alloc] init]; //the any character state
             currentState.alternateState.nextState=currentState; //the current fork state
+        }
+        else if ([character isEqualToString:@"("]) {
+            //here we must implement recursive NFAs for the expression in parentheses
+            //first, find the corresponding closing parenthesis:
+            long parentheses=1;
+            long j=i;
+            while (parentheses>0) {
+                j++;
+                NSString* subcharacter=[regEx substringWithRange:NSMakeRange(i, 1)];
+                if ([subcharacter isEqualToString:@"("]) parentheses++;
+                if ([subcharacter isEqualToString:@")"]) parentheses--;
+            }
+            //make a new NFA for the subexpression, paste it in here and skip to the end:
+            NSString* subexpression=[regEx substringWithRange:NSMakeRange(i+1, j-i-1)];
+            RONFA* subNFA=[[RONFA alloc] initWithRegEx:subexpression];
+            i=j;
+            //Here, the construction of the NFA will fork into discrete parts (no subsequent merges possible):
+            //move on to the states matched by the subNFA:
+            //currentState=subNFA.finalState;
         }
         //we do not need to explicitly create pointers to the successive states, as the pointers form a tree starting from initialState
         //create the next state:
@@ -79,12 +98,9 @@
     return self;
 }
 
--(id) initWithState:(ROState *)state fromNFA:(RONFA *)NFA {
+-(id) initWithState:(ROState *)state withRegEx:(NSString *)regex {
     self=[self init];
     self.initialState=state;
-    //move to the new initial state:
-    [self rewind];
-    self.finalStates=NFA.finalStates;
     return self;
 }
 
