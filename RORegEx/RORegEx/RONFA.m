@@ -36,19 +36,19 @@
 
 @implementation RONFA
 
--(id) init {
-    self = [super init];
-    if (self == nil) return self;
-    //Here we implement the class-specific initialization:
-    self.operators = [NSCharacterSet characterSetWithCharactersInString:@".*()"];
-    self.initialState=[[ROState alloc] init];
-    self.finalStates=[NSMutableSet set];
-    [self rewind];
+-(id) initWithRegEx:(NSString *)regEx {
+    //this is to be used if the desired initial state doesn't exist yet:
+    self=[self initWithState:[[ROState alloc]init] withRegEx:regEx];
     return self;
 }
 
--(id) initWithRegEx:(NSString *)regEx {
-    self=[self init];
+-(id) initWithState:(ROState *)state withRegEx:(NSString *)regEx {
+    self=[super init];
+    if (self == nil) return self;
+    //Here we implement the class-specific initialization:
+    self.operators = [NSCharacterSet characterSetWithCharactersInString:@".*()"];
+    self.finalStates=[NSMutableSet set];
+    self.initialState=state;
     ROState* currentState=self.initialState;
     for (long i=0; i<regEx.length; i++) {
         NSString* character=[regEx substringWithRange:NSMakeRange(i, 1)];
@@ -76,9 +76,9 @@
                 if ([subcharacter isEqualToString:@"("]) parentheses++;
                 if ([subcharacter isEqualToString:@")"]) parentheses--;
             }
-            //make a new NFA for the subexpression, paste it in here and skip to the end:
+            //make a new NFA for the subexpression, set the current state as its initial state and skip to the end:
             NSString* subexpression=[regEx substringWithRange:NSMakeRange(i+1, j-i-1)];
-            RONFA* subNFA=[[RONFA alloc] initWithRegEx:subexpression];
+            RONFA* subNFA=[[RONFA alloc] initWithState:currentState withRegEx:subexpression];
             i=j;
             //Here, the construction of the NFA will fork into discrete parts (no subsequent merges possible):
             //move on to the states matched by the subNFA:
@@ -95,12 +95,7 @@
     [self.finalStates addObject:currentState];
     //after initialization, return the automaton to the beginning for running:
     [self rewind];
-    return self;
-}
 
--(id) initWithState:(ROState *)state withRegEx:(NSString *)regex {
-    self=[self init];
-    self.initialState=state;
     return self;
 }
 
