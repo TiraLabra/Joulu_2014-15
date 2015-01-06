@@ -6,19 +6,13 @@
 
 package encryption;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.math.BigInteger;
-import java.util.ArrayList;
 import java.util.Random;
 
 /**
@@ -59,7 +53,7 @@ public class Encryption {
             
             while ( i < input.length() ){
                 
-                String ch = new String(""+input.charAt(i));
+                String ch = ""+input.charAt(i);
                 BigInteger tmp = new BigInteger(ch.getBytes());
                 
                 BigInteger power = modulusLuku;
@@ -77,7 +71,7 @@ public class Encryption {
                 return;
             }
             muodostettuLuku = muodostettuLuku.modPow(eExponent, nModulus);
-            writeFile(new File("encrypted.txt"), muodostettuLuku.toByteArray());
+            writeFile(new File("encrypted.txt"), muodostettuLuku);
         }
         else 
         {
@@ -91,29 +85,15 @@ public class Encryption {
      */
     private static void generateString(File fileToDecrypt){   
         
-        String array_str = new String("");
+        String array_str = "";
         
         try {
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            
-            byte[] array = new byte[1024];
-            FileInputStream fis = new FileInputStream(fileToDecrypt);
-            BufferedInputStream bis = new BufferedInputStream(fis);
-            
-            while ( true ){
-                
-                int error = bis.read(array);
-                
-                if ( error == -1 ){
-                    break;
-                }
-                
-                baos.write(array, 0, error);
-            }
-            bis.close();
-            baos.close();
+            FileReader fr = new FileReader(fileToDecrypt);
+            BufferedReader bfr = new BufferedReader(fr);
+            String read = bfr.readLine();
+            bfr.close();
 
-            luettu = new BigInteger(baos.toByteArray());
+            luettu = new BigInteger(read);
             
         }catch ( IOException ex ){
             System.out.println("Error...");
@@ -136,7 +116,7 @@ public class Encryption {
             }
         }
         
-        array_str = removePadding(array_str);
+      //  array_str = removePadding(array_str);
         
         File fout = new File("decrypted.txt");
         try{
@@ -144,11 +124,6 @@ public class Encryption {
             try (BufferedWriter bwr = new BufferedWriter(fwr)) {
                 bwr.write(array_str);
                 bwr.close();
-                /*int i = 0;
-                while (i < array_str.size() ){
-                    bwr.write(array_str.get(i));
-                    i++;
-                }*/
             }
         }
         catch ( IOException ex ){
@@ -170,7 +145,7 @@ public class Encryption {
                 input = input + tmp;
                 tmp = bfr.readLine();
             }
-            addPadding();
+           // addPadding();
         }
         else{
             throw new Exception("File cannot be read!");
@@ -185,15 +160,13 @@ public class Encryption {
         if ( !input.isEmpty()){
             Random rnd = new Random(System.nanoTime());
             
-            String tmpBegining = new String("");
             char first = (char) (rnd.nextInt() % 256);
             char second = (char) (rnd.nextInt() % 256);
-            tmpBegining = "" + first + second;
+            String tmpBegining = "" + first + second;
             
-            String tmpEnding = new String("");
             char secondLast = (char) (rnd.nextInt() % 256);
             char last = (char) (rnd.nextInt() % 256);
-            tmpEnding = "" + secondLast + last;
+            String tmpEnding = "" + secondLast + last;
             
             input = tmpBegining + input + tmpEnding;
         }
@@ -206,7 +179,7 @@ public class Encryption {
      * @return 
      */
     private static String removePadding(String paddedText){
-        String returnValue = new String("");
+        String returnValue = "";
         
         if ( !paddedText.isEmpty()){
             // Beginning position should be 2 and correct last position should be
@@ -264,9 +237,12 @@ public class Encryption {
             System.out.println("Please wait, trying again...");
         }
         
-        
-        BigInteger test = d.multiply(e).mod(fii);
-        if ( test.equals(BigInteger.ONE)){
+        BigInteger test = null;
+        if ( d != null ){
+            test = d.multiply(e).mod(fii);
+        }
+
+        if ( test != null && test.equals(BigInteger.ONE)){
             System.out.println("d*e mod n = 1. OK Numbers");
         }
         
@@ -328,6 +304,7 @@ public class Encryption {
                 bfw.write("\n");
                 bfw.write(modulus.toString());
                 bfw.write("\n");
+                bfw.close();
             }
         }
         catch ( IOException ex ){
@@ -363,22 +340,21 @@ public class Encryption {
         }catch ( IOException ex ){
             System.out.println("Error...");
             System.out.println(ex.getMessage());
-        } 
-        
+        }    
     }
     
     /**
      * @param fileToWrite file where data is written into
-     * @param bArray byte array to write into the file
+     * @param BigInteger to write into the file
      */
-    private static void writeFile(File fileToWrite, byte [] bArray ){
+    private static void writeFile(File fileToWrite, BigInteger encryptedInt ){
         
         try{
-            FileOutputStream fos = new FileOutputStream(fileToWrite);
-            try (BufferedOutputStream bos = new BufferedOutputStream(fos)) {
-                bos.write(bArray);
+            FileWriter fw = new FileWriter(fileToWrite);
+            try(BufferedWriter bwr = new BufferedWriter(fw)){
+                bwr.write(encryptedInt.toString());
+                bwr.close();
             }
-
         }catch( IOException ex ){
             System.out.println("Error, something happened.");
             System.out.println(ex.getMessage());
@@ -410,6 +386,8 @@ public class Encryption {
                 System.out.println("Ecrypting...");
                 
                 try {
+                    //readFileExponentModulus(new File("G:\\GITREPO\\Joulu_2014-15\\Encryption\\public.key"));
+                    //readContents(new File("G:\\GITREPO\\Joulu_2014-15\\Encryption\\testi.txt"));
                     readFileExponentModulus(new File(args[1]));
                     readContents(new File(args[2]));
                     generateInt();
@@ -420,6 +398,8 @@ public class Encryption {
 
             if ( args[0].equals("-decrypt")){
                 System.out.println("Decrypting...");
+                //readFileExponentModulus(new File("G:\\GITREPO\\Joulu_2014-15\\Encryption\\private.key"));
+                //generateString(new File("G:\\GITREPO\\Joulu_2014-15\\Encryption\\encrypted.txt"));                
                 readFileExponentModulus(new File(args[1]));
                 generateString(new File(args[2]));
             }
