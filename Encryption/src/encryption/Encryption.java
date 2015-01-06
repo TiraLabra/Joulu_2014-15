@@ -90,7 +90,8 @@ public class Encryption {
      * @param fileToDecrypt file to decrypt.
      */
     private static void generateString(File fileToDecrypt){   
-        ArrayList<String> array_str = new ArrayList<>();
+        
+        String array_str = new String("");
         
         try {
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -127,7 +128,7 @@ public class Encryption {
                 BigInteger jakojaannos = luettu.mod(modulusLuku);
                 String tmp = new String(jakojaannos.toByteArray());
                 luettu = luettu.subtract(jakojaannos);
-                array_str.add(tmp);
+                array_str = array_str + tmp;
                 luettu = luettu.divide(modulusLuku);
                 if ( luettu.equals(BigInteger.valueOf(0L))){
                     break;
@@ -135,15 +136,19 @@ public class Encryption {
             }
         }
         
+        array_str = removePadding(array_str);
+        
         File fout = new File("decrypted.txt");
         try{
             FileWriter fwr = new FileWriter(fout);
             try (BufferedWriter bwr = new BufferedWriter(fwr)) {
-                int i = 0;
+                bwr.write(array_str);
+                bwr.close();
+                /*int i = 0;
                 while (i < array_str.size() ){
                     bwr.write(array_str.get(i));
                     i++;
-                }
+                }*/
             }
         }
         catch ( IOException ex ){
@@ -165,12 +170,52 @@ public class Encryption {
                 input = input + tmp;
                 tmp = bfr.readLine();
             }
+            addPadding();
         }
         else{
             throw new Exception("File cannot be read!");
         }
     }
     
+    /**
+     * Adds random padding to the input data. 
+     * 2 characters to beginning of string and to ending of string
+     */
+    private static void addPadding(){
+        if ( !input.isEmpty()){
+            Random rnd = new Random(System.nanoTime());
+            
+            String tmpBegining = new String("");
+            char first = (char) (rnd.nextInt() % 256);
+            char second = (char) (rnd.nextInt() % 256);
+            tmpBegining = "" + first + second;
+            
+            String tmpEnding = new String("");
+            char secondLast = (char) (rnd.nextInt() % 256);
+            char last = (char) (rnd.nextInt() % 256);
+            tmpEnding = "" + secondLast + last;
+            
+            input = tmpBegining + input + tmpEnding;
+        }
+    }
+    
+    /**
+     * Removes the padding from given string, currently we have 2 extra characters
+     * at the beginning of string and at the end of the string.
+     * @param paddedText, String that contains padding
+     * @return 
+     */
+    private static String removePadding(String paddedText){
+        String returnValue = new String("");
+        
+        if ( !paddedText.isEmpty()){
+            // Beginning position should be 2 and correct last position should be
+            // length - 2.
+            returnValue = paddedText.substring(2, paddedText.length()-2);
+        }
+        
+        return returnValue;
+    }
     /**
      * Generates BigInteger keys.
      * public exponent e
@@ -179,6 +224,9 @@ public class Encryption {
      * Writes them to a files private.key and public.key
      */
     private static void generateKeys(){
+        
+        boolean generationFailed = false;
+        
         Random rnd = new Random(System.nanoTime());
         
         BigInteger p = BigInteger.probablePrime(512, rnd);
@@ -195,23 +243,45 @@ public class Encryption {
         BigInteger e = BigInteger.valueOf(17L);//BigInteger.valueOf(65537L);
         
         BigInteger [] debugVariable = fii.divideAndRemainder(e);
+        
         if ( debugVariable[0].compareTo(BigInteger.ZERO) == 0){
             System.out.println("Ei ole sopiva luku...");
-        }
-        if ( debugVariable[1].compareTo(BigInteger.ZERO) == 0 ){
-            System.out.println("Ei ole sopiva luku...");
+            generationFailed = true;
         }
         
-        BigInteger d = e.modInverse(fii);
+        if ( debugVariable[1].compareTo(BigInteger.ZERO) == 0 ){
+            System.out.println("Ei ole sopiva luku...");
+            generationFailed = true;
+        }
+        
+        BigInteger d = null;
+        try{
+            d = e.modInverse(fii);    
+            
+        }catch( Exception ex ){
+            generationFailed = true;
+            System.out.println(ex.getMessage());
+            System.out.println("Please wait, trying again...");
+        }
+        
         
         BigInteger test = d.multiply(e).mod(fii);
         if ( test.equals(BigInteger.ONE)){
             System.out.println("d*e mod n = 1. OK Numbers");
         }
         
+        if ( generationFailed ){
+            // recursion needed if the key generation 
+            // fails so that key-pair is generated
+            generateKeys(); 
+        }else{
+            writeFileExponentModulus(new File("public.key"), e, n);
+            writeFileExponentModulus(new File("private.key"), d, n);
+        }
+        
         /**
          * TESTING
-         * To be made for unit tests somehow
+         * TODO: check if creating unit tests is possible
          
         BigInteger test2 = new BigInteger("2");
         test2 = test2.modPow(e, n);
@@ -239,8 +309,7 @@ public class Encryption {
             System.out.println(decrypt);
         }
         */
-        writeFileExponentModulus(new File("public.key"), e, n);
-        writeFileExponentModulus(new File("private.key"), d, n);
+        
     }
     
     /**
