@@ -14,7 +14,7 @@ import org.junit.Test;
  *
  * @author laurikin
  */
-public class PersistentHashMapTestSLow {
+public class PersistentHashMapTestSlow {
     
     @Test
     public void insert1000000RandomIntegers() {
