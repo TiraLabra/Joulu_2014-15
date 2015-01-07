@@ -46,7 +46,7 @@
     self=[super init];
     if (self == nil) return self;
     //Here we implement the class-specific initialization:
-    self.operators = [NSCharacterSet characterSetWithCharactersInString:@".*()|"];
+    self.operators = [NSCharacterSet characterSetWithCharactersInString:@".*()|?"];
     self.finalStates=[NSMutableSet set];
     self.initialState=state;
     [self rewind]; //creates the currentStates array and adds the initial state there
@@ -54,6 +54,22 @@
         //we need a loop over multiple current states, in case the OR operator is present!!
         for (ROState* currentState in self.currentStates) {
             NSString* character=[regEx substringWithRange:NSMakeRange(i, 1)];
+            //check if the next character (if any) is an operator first:
+            NSString* nextCharacter;
+            if (i<regEx.length-1) nextCharacter=[regEx substringWithRange:NSMakeRange(i+1, 1)];
+            if ([nextCharacter isEqualToString:@"?"]) {
+                //this means the character is optional, i.e. we have a fork and a match. implementation akin to *:
+                currentState.alternateState=[[ROState alloc] init];
+                currentState.alternateState.matchingCharacter=character;
+                //create the next state that makes matching optional:
+                currentState.nextState=[[ROState alloc] init];
+                currentState.alternateState.nextState=currentState.nextState;
+                [self.nextStates addObject:currentState.nextState];
+                //skip over question mark:
+                i++;
+                //self.nextStates exist already, skip creating them:
+                continue;
+            }
             //Here, we have the default behavior of matching the character:
             if ([character rangeOfCharacterFromSet:self.operators].location == NSNotFound) {
                 currentState.matchingCharacter = character;
@@ -137,26 +153,33 @@
         //first we have to check if the current states contain forks:
         BOOL forkDiscovered=YES;
         ROState* toBeRemoved; //the fork state to be removed
+        ROState* toBeAdded;
+        ROState* alternateToBeAdded; //the two children of the fork state, to be added
         while (forkDiscovered) {
             forkDiscovered=NO;
             toBeRemoved=nil;
+            toBeAdded=nil;
+            alternateToBeAdded=nil;
             //find the first fork state:
             for (ROState* state in self.currentStates) {
                 if (state.alternateState!= nil) {
                     forkDiscovered=YES;
                     toBeRemoved=state;
                     //never link a fork state back to itself (creates an infinite loop!)
-                    [self.currentStates addObject:state.nextState];
-                    [self.currentStates addObject:state.alternateState];
+                    toBeAdded=state.nextState;
+                    alternateToBeAdded=state.alternateState;
                     //also, remember to propagate the starting index of the match from any fork state to both of the subsequent states, as the fork state does not enter matchCharacter method!!
-                    state.nextState.startIndex=state.startIndex;
-                    state.alternateState.startIndex=state.startIndex;
+                    //*don't* overwrite smaller start indices if already present (greedy matching):
+                    if (state.nextState.startIndex>state.startIndex) state.nextState.startIndex=state.startIndex;
+                    if (state.alternateState.startIndex>state.startIndex) state.alternateState.startIndex=state.startIndex;
                     //this particular fork has been processed (even if multiple branches ended up in the same fork), so we can remove it from current states.
-                    //cannot remove object from within the iteration loop. we have a fork to remove, so get out of the loop:
+                    //cannot add and remove objects from within the iteration loop. we have states to add and a fork to remove, so get out of the loop:
                     break;
                 }
             }
             if (toBeRemoved!=nil) [self.currentStates removeObject:toBeRemoved];
+            if (toBeAdded!= nil) [self.currentStates addObject:toBeAdded];
+            if (alternateToBeAdded!=nil) [self.currentStates addObject:alternateToBeAdded];
         }
         
         //at this point, there are no forking states present so all the current states with matchingCharacter=nil are of the type "match any character"
