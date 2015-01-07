@@ -96,6 +96,11 @@
     XCTAssert(NSEqualRanges([NFA findMatch:@"aa"],NSMakeRange(0, 2)), @"Correct b? match");
 }
 
+- (void)testOptionalCharacters {
+    RONFA* NFA = [[RONFA alloc] initWithRegEx:@"a?a?aa"];
+    XCTAssert(NSEqualRanges([NFA findMatch:@"aa"],NSMakeRange(0, 2)), @"Correct a?a?aa match");
+}
+
 - (void)testParentheses {
     RONFA* NFA = [[RONFA alloc] initWithRegEx:@"(a)a"];
     XCTAssert(NSEqualRanges([NFA findMatch:@"aa"],NSMakeRange(0, 2)), @"Correct subNFA recursion");
@@ -141,7 +146,7 @@
     RONFA* NFA = [[RONFA alloc] initWithRegEx:regEx];
     [self measureBlock:^{
         // Put the code you want to measure the time of here.
-        XCTAssert(NSEqualRanges([NFA findMatch:stringToMatch],NSMakeRange(0, n)), @"Correct match for pathological regex");
+        NSRange result=[NFA findMatch:stringToMatch];
     }];
 }
 
