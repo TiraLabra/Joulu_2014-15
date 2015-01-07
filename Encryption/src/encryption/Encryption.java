@@ -44,6 +44,42 @@ public class Encryption {
     // Private exponent for decryption.
     private static BigInteger dExponent;
     
+    private static void generateInt2(){
+        if ( !input.isEmpty() ){
+            int i = 0; // character position
+            int j = 0; // exponent
+            BigInteger [] array = new BigInteger[10]; // start from 10, increase if needed.
+            int k = 0; // array position, how many big integers have been created.
+            
+            while ( i < input.length() ){
+                
+                String ch = "" + input.charAt(i);
+                BigInteger tmp = new BigInteger(ch.getBytes());
+                BigInteger power = modulusLuku;
+            
+                if ( array[k] == null ){
+                    array[k] = new BigInteger(tmp.toByteArray());
+                }else if ( array[k].add(tmp).compareTo(nModulus) <= 0){
+                    array[k] = array[k].add(tmp);
+                }else{
+                    // time to start new BigInteger next round.
+                    k++;
+                    if ( k > array.length ){
+                        // needs to create new bigger array.
+                        BigInteger [] tmpArray = new BigInteger[k+10];
+                        for ( int pos = 0; pos < array.length; pos++ ){
+                            tmpArray[pos] = array[pos];
+                        }
+                        
+                        array = tmpArray;
+                    }
+                    j=0;
+                    i--; // we need to stay in the same position next round.
+                }
+                i++;
+            }
+        }
+    }
     /**
      * Generates the integer from read data.
      */
@@ -79,6 +115,74 @@ public class Encryption {
         }
     }
 
+    private static void generateString2(File fileToDecrypt){
+        String [] array = new String [10];
+        int i = 0; // position counter
+        try{
+            FileReader fr = new FileReader(fileToDecrypt);
+            BufferedReader bfr = new BufferedReader(fr);
+            String tmp = bfr.readLine();
+            while ( tmp != null ){
+                
+                if ( i > array.length ){
+                    String [] tmpArray = new String[i + 10];
+                    for ( int j = 0; j < array.length; j++){
+                        tmpArray[j] = array[j];
+                    }
+                    array = tmpArray;
+                }
+                
+                array[i] = tmp;
+                tmp = bfr.readLine();
+                i++;
+            }
+        }
+        catch(Exception ex){
+            System.out.println("Error...");
+            System.out.println(ex.getMessage());
+        }
+        
+        if ( i > 0 ){
+            String decryptedText = "";
+            
+            for ( int j = 0; j < i; j++ ){
+                decryptedText = decryptedText + 
+                        generateStringFromBigIntegerString(array[j]);
+            }
+            
+            File fout = new File("decrypted.txt");
+            try{
+                FileWriter fwr = new FileWriter(fout);
+                try (BufferedWriter bwr = new BufferedWriter(fwr)) {
+                    bwr.write(decryptedText);
+                    bwr.close();
+                }
+            }
+            catch ( IOException ex ){
+                System.out.println("File writing failed: " + ex.getMessage());
+            }
+        }
+    }
+    
+    private static String generateStringFromBigIntegerString(String longNumber){
+        String returnString = "";
+        BigInteger bigInt = new BigInteger(longNumber);
+        
+        bigInt = bigInt.modPow(dExponent, nModulus);
+        
+        while ( true ){
+            BigInteger jakojaannos = luettu.mod(modulusLuku);
+            String tmp = new String(jakojaannos.toByteArray());
+            bigInt = bigInt.subtract(jakojaannos);
+            returnString = returnString + tmp;
+            bigInt = bigInt.divide(modulusLuku);
+            if ( bigInt.equals(BigInteger.valueOf(0L))){
+                break;
+            }
+        }
+        return returnString;
+    }
+    
     /**
      * Decrypts the files content.
      * @param fileToDecrypt file to decrypt.
@@ -356,6 +460,23 @@ public class Encryption {
                 bwr.close();
             }
         }catch( IOException ex ){
+            System.out.println("Error, something happened.");
+            System.out.println(ex.getMessage());
+        }
+    }
+    
+    private static void writeFile2(File fileToWrite, BigInteger[] array, int count){
+        
+        try{
+            FileWriter fw = new FileWriter(fileToWrite);
+            try(BufferedWriter bwr = new BufferedWriter(fw)){
+                for ( int i = 0; i < count; i++ ){
+                    bwr.write(array[i].toString());
+                    bwr.write("\n");
+                }
+                bwr.close();
+            }
+        }catch( Exception ex ){
             System.out.println("Error, something happened.");
             System.out.println(ex.getMessage());
         }
