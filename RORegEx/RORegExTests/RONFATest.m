@@ -101,6 +101,23 @@
     XCTAssert(NSEqualRanges([NFA findMatch:@"aa"],NSMakeRange(0, 1)), @"Correct minimal nested operator match");
 }
 
+
+- (void)testOR {
+    RONFA* NFA = [[RONFA alloc] initWithRegEx:@"a|b"];
+    XCTAssert(NSEqualRanges([NFA findMatch:@"b"],NSMakeRange(0, 1)), @"Correct OR match");
+}
+
+
+- (void)testORWithParentheses {
+    RONFA* NFA = [[RONFA alloc] initWithRegEx:@"(aaaargh)|b"];
+    XCTAssert(NSEqualRanges([NFA findMatch:@"b"],NSMakeRange(0, 1)), @"Correct OR match");
+}
+
+- (void)testORWithOperators {
+    RONFA* NFA = [[RONFA alloc] initWithRegEx:@"(aa|ca*)|d"];
+    XCTAssert(NSEqualRanges([NFA findMatch:@"bllcaaaaa"],NSMakeRange(3, 2)), @"Correct OR match");
+}
+
 - (void)testPerformanceExample {
     // This is an example of a performance test case.
     [self measureBlock:^{

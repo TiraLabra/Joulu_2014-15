@@ -82,7 +82,7 @@
                 NSString* subexpression=[regEx substringWithRange:NSMakeRange(i+1, j-i-1)];
                 RONFA* subNFA=[[RONFA alloc] initWithState:currentState withRegEx:subexpression];
                 i=j;
-                //Here, the resulting NFA may have several final states (no subsequent merges possible):
+                //Here, the resulting NFA may have several final states:
                 self.nextStates=subNFA.finalStates;
                 //These states are freshly created, they have finality=YES and no nextStates added. Correct that:
                 for (ROState* state in subNFA.finalStates) state.finality=NO;
@@ -90,8 +90,20 @@
                 continue;
             }
             else if ([character isEqualToString:@"|"]) {
-                //here we must make a new NFA for the superexpression, nest the current NFA inside it, and create another NFA for the other subexpression!!! forking into two final states ensues, but the current state is one of them.
-                //do not continue the loop after the operator:
+                //here we must make a new initial state for the superexpression, nest the current NFA inside it, and create another NFA for the other subexpression!!! forking into multiple final states ensues, but the current state is one of them.
+                NSString* theOtherSubexpression=[regEx substringWithRange:NSMakeRange(i+1, regEx.length-i-1)];
+                ROState* newInitialState = [[ROState alloc] init];
+                newInitialState.nextState=self.initialState;
+                self.initialState=newInitialState;
+                ROState* theOtherState = [[ROState alloc] init];
+                newInitialState.alternateState=theOtherState; //the initial state is now a fork!
+                RONFA* theOtherNFA =[[RONFA alloc] initWithState:theOtherState withRegEx:theOtherSubexpression];
+                //we cannot edit self.currentStates within the loop!!!
+                //instead, save the current (final state) and the final states of the other subexpression in self.nextStates:
+                self.nextStates=theOtherNFA.finalStates;
+                [self.nextStates addObject:currentState];
+                //do not continue the loop, we created self.nextStates and they are the final states:
+                i=regEx.length;
                 break;
             }
             //we do not need to explicitly create pointers to the successive states, as the pointers form a tree starting from initialState
@@ -104,11 +116,9 @@
         self.currentStates=self.nextStates;
         self.nextStates=[NSMutableSet set];
     }
-    //after the loop, the ending state indicates that we have a pattern match:
-    for (ROState* currentState in self.currentStates) {
-        currentState.finality=YES;
-        [self.finalStates addObject:currentState];
-    }
+    //after the loop, all the states we are in correspond to a pattern match:
+    for (ROState* currentState in self.currentStates) currentState.finality=YES;
+    self.finalStates=self.currentStates;
     //after initialization, return the automaton to the beginning for running:
     [self rewind];
 
