@@ -7,6 +7,7 @@
 import org.junit.Before;
 import org.junit.Test;
 import static org.junit.Assert.*;
+import org.junit.BeforeClass;
 
 /**
  *
@@ -14,23 +15,36 @@ import static org.junit.Assert.*;
  */
 public class PersistentVectorTestSlow {
 
-    public PersistentVector v;
+    private PersistentVector<Integer> v;
+    private static PersistentVector<Integer> vBig;
     
-    public PersistentVectorTestSlow() {
+    @BeforeClass
+    public static void setUpBeforeClass() throws Exception {
+        vBig = new PersistentVector<>();
+        for (int i = 0; i < 1000000; i++) {
+            vBig = vBig.conj(i);
+        }
     }
-    
+
     @Before
     public void setUp() {
         v = new PersistentVector<>();
     }
 
-    @Test
-    public void testAddingMillionItems() {
-        for (int i = 0; i < 1000000; i++) {
-            v = v.conj(i);
+    @Test(timeout=1000)
+    public void testInsertingAndRemovingManyItems() {
+        for (int i = 0; i < 1000; i++) {
+            vBig = vBig.conj(i);
+            vBig = vBig.pop();
         }
+        assertEquals(1000000, vBig.count());
+    }
+
+    @Test(timeout=1000)
+    public void testGettingManyIntegers() {
         for (int i = 0; i < 1000000; i++) {
-            assertEquals(i, v.get(i));
+            vBig.get(i);
         }
+        assertEquals(1000000, vBig.count());
     }
 }

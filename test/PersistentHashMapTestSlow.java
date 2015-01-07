@@ -2,6 +2,8 @@
 import java.util.ArrayList;
 import java.util.Collections;
 import static org.junit.Assert.assertEquals;
+import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 /*
@@ -15,50 +17,66 @@ import org.junit.Test;
  * @author laurikin
  */
 public class PersistentHashMapTestSlow {
-    
-    @Test
-    public void insert1000000RandomIntegers() {
-        PersistentHashMap<Integer, Integer> phm = new PersistentHashMap<>();
-        ArrayList<Integer> keys = new ArrayList<>(1000000);
-        int[] values = new int[1000000];
+   
+    private static ArrayList<Integer> keys;
+    private static int[] values;
+    private PersistentHashMap<Integer, Integer> phm;
 
+    @BeforeClass
+    public static void beforeClass() {
+        keys = new ArrayList<>();
+        values = new int[1000000];
         for (int i = 0; i < 1000000; i++) {
-            keys.add(i);
-            values[i] = i;
+            // create values that are distributed over a large range
+            keys.add(i * 2);
+            values[i] = i * 2;
         }
         Collections.shuffle(keys);
+    }
 
-        for (int i = 0; i < 1000000; i++) {
+    @Before
+    public void beforeEach() {
+        phm = new PersistentHashMap<>();
+    }
+    
+    @Test(timeout=1000)
+    public void insertManyIntegers() {
+        int rep = 200000;
+
+        for (int i = 0; i < rep; i++) {
             phm = phm.assoc(keys.get(i), values[i]);
         }
 
-        assertEquals(1000000, phm.count());
-
-        for (int i = 0; i < 1000000; i++) {
-            assertEquals(new Integer(values[i]), phm.get(keys.get(i)));
-        }
+        assertEquals(rep, phm.count());
     }
 
-    @Test
-    public void insertAndRemove1000000RandomIntegers() {
-        PersistentHashMap<Integer, Integer> phm = new PersistentHashMap<>();
-        ArrayList<Integer> keys = new ArrayList<>(1000000);
-        int[] values = new int[1000000];
+    @Test(timeout=1000)
+    public void insertAndRemoveManyIntegers() {
+        int rep = 100000;
 
-        for (int i = 0; i < 1000000; i++) {
-            keys.add(i);
-            values[i] = i;
-        }
-        Collections.shuffle(keys);
-
-        for (int i = 0; i < 1000000; i++) {
+        for (int i = 0; i < rep; i++) {
             phm = phm.assoc(keys.get(i), values[i]);
         }
         
-        for (int i = 0; i < 1000000; i++) {
+        for (int i = 0; i < rep; i++) {
             phm = phm.dissoc(keys.get(i));
         }
 
         assertEquals(0, phm.count());
+    }
+
+    @Test(timeout=1000)
+    public void getManyIntegers() {
+        int rep = 200000;
+
+        for (int i = 0; i < rep; i++) {
+            phm = phm.assoc(keys.get(i), values[i]);
+        }
+
+        for (int i = 0; i < rep; i++) {
+            phm.get(keys.get(i));
+        }
+
+        assertEquals(rep, phm.count());
     }
 }
