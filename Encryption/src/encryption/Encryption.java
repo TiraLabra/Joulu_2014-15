@@ -44,6 +44,9 @@ public class Encryption {
     // Private exponent for decryption.
     private static BigInteger dExponent;
     
+    /**
+     * Generates integers from the read data.
+     */
     private static void generateInt2(){
         if ( !input.isEmpty() ){
             int i = 0; // character position
@@ -56,28 +59,34 @@ public class Encryption {
                 String ch = "" + input.charAt(i);
                 BigInteger tmp = new BigInteger(ch.getBytes());
                 BigInteger power = modulusLuku;
-            
+                power = power.pow(j);
+                j++;
+                tmp = tmp.multiply(power);
+                
                 if ( array[k] == null ){
                     array[k] = new BigInteger(tmp.toByteArray());
-                }else if ( array[k].add(tmp).compareTo(nModulus) <= 0){
+                }else if ( array[k].add(tmp).compareTo(nModulus) < 0){
                     array[k] = array[k].add(tmp);
                 }else{
-                    // time to start new BigInteger next round.
-                    k++;
-                    if ( k > array.length ){
+                    // time to start new BigInteger next round.   
+                    // tmp cannot be inserted into a new position
+                    // because it's wrong power.
+                    if ( k >= array.length-1 ){
                         // needs to create new bigger array.
                         BigInteger [] tmpArray = new BigInteger[k+10];
                         for ( int pos = 0; pos < array.length; pos++ ){
                             tmpArray[pos] = array[pos];
                         }
-                        
                         array = tmpArray;
                     }
                     j=0;
+                    k++; // new biginteger creation needed to new position
                     i--; // we need to stay in the same position next round.
                 }
                 i++;
             }
+            
+            writeFile2(new File("encrypted.txt"), array, k);
         }
     }
     /**
@@ -115,6 +124,11 @@ public class Encryption {
         }
     }
 
+    /** 
+     * Reads the integers into strings and makes them BigIntegers for 
+     * decrypting.
+     * @param fileToDecrypt, file containing encrypted integers.
+     */
     private static void generateString2(File fileToDecrypt){
         String [] array = new String [10];
         int i = 0; // position counter
@@ -164,6 +178,11 @@ public class Encryption {
         }
     }
     
+    /**
+     * Decrypts the data from integer strings.
+     * @param longNumber
+     * @return String generated from encrypted data
+     */
     private static String generateStringFromBigIntegerString(String longNumber){
         String returnString = "";
         BigInteger bigInt = new BigInteger(longNumber);
@@ -171,7 +190,7 @@ public class Encryption {
         bigInt = bigInt.modPow(dExponent, nModulus);
         
         while ( true ){
-            BigInteger jakojaannos = luettu.mod(modulusLuku);
+            BigInteger jakojaannos = bigInt.mod(modulusLuku);
             String tmp = new String(jakojaannos.toByteArray());
             bigInt = bigInt.subtract(jakojaannos);
             returnString = returnString + tmp;
@@ -508,9 +527,10 @@ public class Encryption {
                 
                 try {
                     //readFileExponentModulus(new File("G:\\GITREPO\\Joulu_2014-15\\Encryption\\public.key"));
-                    //readContents(new File("G:\\GITREPO\\Joulu_2014-15\\Encryption\\testi.txt"));
+                    //readContents(new File("G:\\GITREPO\\Joulu_2014-15\\Encryption\\dist\\README.TXT"));
                     readFileExponentModulus(new File(args[1]));
                     readContents(new File(args[2]));
+                    //generateInt2();
                     generateInt();
                 }catch (Exception ex) {
                     System.out.println(ex.getMessage());
@@ -522,6 +542,8 @@ public class Encryption {
                 //readFileExponentModulus(new File("G:\\GITREPO\\Joulu_2014-15\\Encryption\\private.key"));
                 //generateString(new File("G:\\GITREPO\\Joulu_2014-15\\Encryption\\encrypted.txt"));                
                 readFileExponentModulus(new File(args[1]));
+                //generateString2(new File(args[2]));
+                //generateString2(new File("G:\\GITREPO\\Joulu_2014-15\\Encryption\\encrypted.txt"));                
                 generateString(new File(args[2]));
             }
 
