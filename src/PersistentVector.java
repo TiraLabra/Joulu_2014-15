@@ -1,4 +1,3 @@
-
 import java.util.Arrays;
 
 /**
@@ -11,12 +10,21 @@ public class PersistentVector<T> implements IPersistentVector<T> {
 
     private final int BRANCHING_FACTOR = 32;
     private final int SHIFT = 5;
-    private int count = 0;
-    private int depth = 0;
-    private Node root;
+    private final int MASK = BRANCHING_FACTOR - 1;
+    private final int count;
+    private final int depth;
+    private final Node root;
 
     public PersistentVector () {
         this.root = new Node();
+        this.count = 0;
+        this.depth = 0;
+    }
+
+    private PersistentVector (Node root, int count, int depth) {
+        this.root = root;
+        this.count = count;
+        this.depth = depth;
     }
     
     @Override
@@ -26,49 +34,34 @@ public class PersistentVector<T> implements IPersistentVector<T> {
 
     @Override
     public PersistentVector<T> pop () {
-        PersistentVector p = new PersistentVector();
-        p.root = doAssoc(null, this.depth * SHIFT, this.root, this.count - 1);
+        Node newRoot = doAssoc(null, this.depth * SHIFT, this.root, this.count - 1);
 
         // check if one level can be removed
         if (this.count == (1 << (this.depth * SHIFT)) + 1) {
-            p.root = (Node)p.root.get(0);
-            p.depth = this.depth - 1;
+            return new PersistentVector<>((Node)newRoot.get(0), this.count - 1, this.depth -1);
         } else {
-            p.depth = this.depth;
+            return new PersistentVector<>(newRoot, this.count - 1, this.depth);
         }
-
-        p.count = this.count - 1;
-        return p;
     }
 
     @Override
     public PersistentVector<T> conj (T element) {
-        PersistentVector p = new PersistentVector();
-
-        // full level
         if (this.count >= 1 << (this.depth + 1) * SHIFT) {
+            // full level, create new root
             Object[] rootElements = new Object[BRANCHING_FACTOR];
             rootElements[0] = this.root;
-            p.depth = this.depth + 1;
-            p.count = this.count;
-            p.root = doAssoc(element, p.depth * SHIFT, new Node(rootElements), p.count);
+            Node newRoot = doAssoc(element, (this.depth + 1) * SHIFT, new Node(rootElements), this.count);
+            return new PersistentVector<>(newRoot, this.count + 1, this.depth + 1);
         } else {
-            p.root = doAssoc(element, this.depth * SHIFT, this.root, this.count);
-            p.depth = this.depth;
+            Node newRoot = doAssoc(element, this.depth * SHIFT, this.root, this.count);
+            return new PersistentVector<>(newRoot, this.count + 1, this.depth);
         }
-
-        p.count = this.count + 1;
-
-        return p;
     }
 
     @Override
     public PersistentVector<T> assoc (Integer ind, T element) {
-        PersistentVector p = new PersistentVector();
-        p.root = doAssoc(element, this.depth * SHIFT, this.root, ind);
-        p.count = this.count + 1;
-        p.depth = this.depth;
-        return p;
+        Node newRoot = doAssoc(element, this.depth * SHIFT, this.root, ind);
+        return new PersistentVector(newRoot, this.count + 1, this.depth);
     }
 
     @Override
@@ -87,21 +80,19 @@ public class PersistentVector<T> implements IPersistentVector<T> {
 
     private T findValue (int index) {
         Node node = this.root;
-        int mask = BRANCHING_FACTOR - 1;
         
         for (int level = this.depth * SHIFT; level > 0; level -= SHIFT) {
-            int ind = (index >>> level) & mask;
+            int ind = (index >>> level) & MASK;
             node = (Node)node.get(ind);
         }
 
-        return (T)node.get(index & mask);
+        return (T)node.get(index & MASK);
     }
 
     private Node doAssoc(T el, int level, Node node, int index) {
         //create a new node for each step in the path
-        //recursively call and return the root
-        int mask = BRANCHING_FACTOR - 1;
-        int ind = (index >>> level) & mask;
+        //recursively call doAssoc and return the root
+        int ind = (index >>> level) & MASK;
         Object[] newNodes;
 
         if (node != null) {
@@ -121,9 +112,8 @@ public class PersistentVector<T> implements IPersistentVector<T> {
 
     }
 
-
     private class Node {
-        private Object[] elements;
+        private final Object[] elements;
         
         public Node () {
             this.elements = new Object[BRANCHING_FACTOR];
