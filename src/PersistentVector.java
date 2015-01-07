@@ -1,41 +1,37 @@
 
 import java.util.Arrays;
 
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 /**
  *
- * @author laurikin
- * @param <T>
+ * @author Lauri Kinnunen
+ * @param <T> item type
  */
+
 public class PersistentVector<T> implements IPersistentVector<T> {
 
     private final int BRANCHING_FACTOR = 32;
+    private final int SHIFT = 5;
     private int count = 0;
     private int depth = 0;
-    private Node<T> root;
+    private Node root;
 
     public PersistentVector () {
-        this.root = new LeafNode<T>();
+        this.root = new Node();
     }
     
     @Override
-    public int count() {
+    public int count () {
         return this.count;
     }
 
     @Override
-    public PersistentVector<T> pop() {
+    public PersistentVector<T> pop () {
         PersistentVector p = new PersistentVector();
-        p.root = doPop(this.depth * 5, this.root, this.count - 1);
+        p.root = doAssoc(null, this.depth * SHIFT, this.root, this.count - 1);
 
         // check if one level can be removed
-        if (this.count == (1 << (this.depth * 5)) + 1) {
-            p.root = p.root.getNode(0);
+        if (this.count == (1 << (this.depth * SHIFT)) + 1) {
+            p.root = (Node)p.root.get(0);
             p.depth = this.depth - 1;
         } else {
             p.depth = this.depth;
@@ -46,18 +42,18 @@ public class PersistentVector<T> implements IPersistentVector<T> {
     }
 
     @Override
-    public PersistentVector<T> conj(T element) {
+    public PersistentVector<T> conj (T element) {
         PersistentVector p = new PersistentVector();
 
         // full level
-        if (this.count >= 1 << (this.depth + 1) * 5) {
-            p.root = new InternalNode<>();
-            p.root.setNode(0, this.root);
+        if (this.count >= 1 << (this.depth + 1) * SHIFT) {
+            Object[] rootElements = new Object[BRANCHING_FACTOR];
+            rootElements[0] = this.root;
             p.depth = this.depth + 1;
             p.count = this.count;
-            p.root = doAssoc(element, p.depth * 5, p.root, p.count);
+            p.root = doAssoc(element, p.depth * SHIFT, new Node(rootElements), p.count);
         } else {
-            p.root = doAssoc(element, this.depth * 5, this.root, this.count);
+            p.root = doAssoc(element, this.depth * SHIFT, this.root, this.count);
             p.depth = this.depth;
         }
 
@@ -67,194 +63,83 @@ public class PersistentVector<T> implements IPersistentVector<T> {
     }
 
     @Override
-    public PersistentVector<T> assoc(Integer ind, T element) {
+    public PersistentVector<T> assoc (Integer ind, T element) {
         PersistentVector p = new PersistentVector();
-        p.root = doAssoc(element, this.depth * 5, this.root, ind);
+        p.root = doAssoc(element, this.depth * SHIFT, this.root, ind);
         p.count = this.count + 1;
         p.depth = this.depth;
         return p;
     }
 
     @Override
-    public T peek() {
+    public T peek () {
         if (count < 1) return null;
 
         return this.get(this.count - 1);
     }
 
     @Override
-    public T get(Integer index) {
+    public T get (Integer index) {
         if (index >= count || index < 0) return null;
 
         return findValue(index);
     }
 
-    private T findValue(int index) {
-        Node<T> node = this.root;
+    private T findValue (int index) {
+        Node node = this.root;
         int mask = BRANCHING_FACTOR - 1;
         
-        for (int level = this.depth * 5; level > 0; level -= 5) {
+        for (int level = this.depth * SHIFT; level > 0; level -= SHIFT) {
             int ind = (index >>> level) & mask;
-            node = node.getNode(ind);
+            node = (Node)node.get(ind);
         }
 
-        return node.getValue(index & mask);
+        return (T)node.get(index & mask);
     }
 
-    private Node doPop(int level, Node<T> node, int index) {
+    private Node doAssoc(T el, int level, Node node, int index) {
         //create a new node for each step in the path
-        //recursively call add return the root
+        //recursively call and return the root
         int mask = BRANCHING_FACTOR - 1;
+        int ind = (index >>> level) & mask;
+        Object[] newNodes;
+
+        if (node != null) {
+            newNodes = node.copyElements();
+        } else {
+            newNodes = new Object[BRANCHING_FACTOR];
+        }
 
         if (level > 0) {
-            Node<T> newNode = new InternalNode<T>();
-            if (node != null) {
-                newNode.setAllNodes(node.copyNodes());
-            }
-            int ind = (index >>> level) & mask;
-            Node<T> nextNode = newNode.getNode(ind);
-            newNode.setNode(ind, doPop(level - 5, nextNode, index));
-            return newNode;
+            Node nextNode = (Node)newNodes[ind];
+            newNodes[ind] = doAssoc(el, level - SHIFT, nextNode, index);
+            return new Node(newNodes);
         } else {
-            Node<T> newNode = new LeafNode<T>();
-            if (node != null) {
-                newNode.setAllValues(node.copyValues());
-            }
-            newNode.setValue(index & mask, null);
-            return newNode;
-        }
-    }
-
-    private Node doAssoc(T el, int level, Node<T> node, int index) {
-        //create a new node for each step in the path
-        //recursively call add return the root
-        int mask = BRANCHING_FACTOR - 1;
-
-        if (level > 0) {
-            Node<T> newNode = new InternalNode<T>();
-            if (node != null) {
-                newNode.setAllNodes(node.copyNodes());
-            }
-            int ind = (index >>> level) & mask;
-            Node<T> nextNode = newNode.getNode(ind);
-            newNode.setNode(ind, doAssoc(el, level - 5, nextNode, index));
-            return newNode;
-        } else {
-            Node<T> newNode = new LeafNode<T>();
-            if (node != null) {
-                newNode.setAllValues(node.copyValues());
-            }
-            newNode.setValue(index & mask, el);
-            return newNode;
+            newNodes[ind] = el;
+            return new Node(newNodes);
         }
 
     }
 
-   
 
-
-    private abstract class Node<T> {
-        abstract T getValue(int ind);
-        abstract Node<T> getNode(int ind);
-        abstract void setValue(int ind, T element);
-        abstract void setNode(int ind, Node node);
-        abstract T[] copyValues();
-        abstract Node[] copyNodes();
-        abstract void setAllValues(T[] elements);
-        abstract void setAllNodes(Node[] elements);
-    }
-
-    private class LeafNode<T> extends Node {
-        private T[] elements;
+    private class Node {
+        private Object[] elements;
         
-        public LeafNode () {
-            this.elements = (T[])(new Object[BRANCHING_FACTOR]);
+        public Node () {
+            this.elements = new Object[BRANCHING_FACTOR];
         }
 
-        @Override
-        public Node<T> getNode(int ind) {
-            return null;
+        public Node (Object[] elements) {
+            this.elements = elements;
         }
 
-        @Override
-        public T getValue(int ind) {
+        public Object get(int ind) {
             return elements[ind];
         }
 
-        @Override
-        public void setValue(int ind, Object element) {
-            this.elements[ind] = (T) element;
-        }
-
-        @Override
-        public T[] copyValues() {
+        public Object[] copyElements() {
             return Arrays.copyOf(this.elements, BRANCHING_FACTOR);
         }
 
-        @Override
-        void setAllValues(Object[] elements) {
-            this.elements = (T[]) elements;
-        }
-
-        @Override
-        void setNode(int ind, Node node) {
-        }
-
-        @Override
-        Node[] copyNodes() { return null; }
-
-        @Override
-        void setAllNodes(Node[] elements) {
-        }
-
     }
-
-    private class InternalNode<T> extends Node {
-        private Node[] elements;
-
-        public InternalNode () {
-            this.elements = new Node[32];//(new Object[BRANCHING_FACTOR]);
-        }
-
-        @Override
-        public Node<T> getNode(int ind) {
-            return elements[ind];
-        }
-
-        @Override
-        public T[] getValue(int ind) {
-            return null;
-        }
-
-        @Override
-        void setValue(int ind, Object element) {
-        }
-
-        @Override
-        T[] copyValues() {
-            return (T[])(new Object[BRANCHING_FACTOR]);
-        }
-
-        @Override
-        void setAllValues(Object[] elements) {
-        }
-
-        @Override
-        void setNode(int ind, Node node) {
-            this.elements[ind] = node;
-        }
-
-        @Override
-        Node[] copyNodes() {
-            return Arrays.copyOf(this.elements, BRANCHING_FACTOR);
-        }
-
-        @Override
-        void setAllNodes(Node[] elements) {
-            this.elements = (Node[]) elements;
-        }
-
-
-    }
-
 }
