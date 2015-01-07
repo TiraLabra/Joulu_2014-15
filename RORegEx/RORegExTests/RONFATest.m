@@ -110,8 +110,15 @@
 
 - (void)testORWithParentheses {
     RONFA* NFA = [[RONFA alloc] initWithRegEx:@"(aaaargh)|b"];
-    XCTAssert(NSEqualRanges([NFA findMatch:@"b"],NSMakeRange(0, 1)), @"Correct OR match");
+    XCTAssert(NSEqualRanges([NFA findMatch:@"aaaargh"],NSMakeRange(0, 7)), @"Correct OR match");
 }
+
+
+- (void)testNestedOR {
+    RONFA* NFA = [[RONFA alloc] initWithRegEx:@"(aaaargh|blaah)|d"];
+    XCTAssert(NSEqualRanges([NFA findMatch:@"ablaahhhh"],NSMakeRange(1, 5)), @"Correct OR match");
+}
+
 
 - (void)testORWithOperators {
     RONFA* NFA = [[RONFA alloc] initWithRegEx:@"(aa|ca*)|d"];
