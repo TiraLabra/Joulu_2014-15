@@ -42,7 +42,8 @@
 
 -(id) initWithRegEx:(NSString *)regEx {
     //this is to be used if the desired initial state doesn't exist yet:
-    self=[self initWithState:[[ROState alloc]init] withRegEx:regEx];
+    ROState* blankInitialState=[[ROState alloc]init];
+    self=[self initWithState:blankInitialState withRegEx:regEx];
     return self;
 }
 
@@ -103,6 +104,9 @@
                 NSString* subexpression=[regEx substringWithRange:NSMakeRange(i+1, j-i-1)];
                 RONFA* subNFA=[[RONFA alloc] initWithState:currentState withRegEx:subexpression];
                 i=j;
+                //if the initial state of the subexpression changed (due to nesting), we must update all the properties of freshly created currentState to reflect it!!! (remember the subNFA will be garbagecollected and its initialState with it!!!) if we only change currentState pointer to subNFA.initialState, currentState will no longer be linked to the states in *this* NFA, cannot do that :D
+                [currentState copyFromState:subNFA.initialState];
+                
                 //Here, the resulting NFA may have several final states:
                 self.nextStates=subNFA.finalStates;
                 //These states are freshly created, they have finality=YES and no nextStates added. Correct that:
@@ -112,9 +116,11 @@
             }
             else if ([character isEqualToString:@"|"]) {
                 //here we must make a new initial state for the superexpression, nest the current NFA inside it, and create another NFA for the other subexpression!!! forking into multiple final states ensues, but the current state is one of them.
+                //now the problem is that *if we have two current states, we are doing the same thing twice* or, if we break at the first option, we are not adding all the current states to the end states? is it enough just to add both and not do anything else before breaking???
                 NSString* theOtherSubexpression=[regEx substringWithRange:NSMakeRange(i+1, regEx.length-i-1)];
                 ROState* newInitialState = [[ROState alloc] init];
-                newInitialState.nextState=self.initialState;
+                //here we must be careful about infinite loops when moving pointers!; better create a new state pointer with all the properties of the initial state, and just forget the original initialstate!!
+                newInitialState.nextState=[self.initialState copy];
                 self.initialState=newInitialState;
                 ROState* theOtherState = [[ROState alloc] init];
                 newInitialState.alternateState=theOtherState; //the initial state is now a fork!
@@ -122,8 +128,9 @@
                 //we cannot edit self.currentStates within the loop!!!
                 //instead, save the current (final state) and the final states of the other subexpression in self.nextStates:
                 self.nextStates=theOtherNFA.finalStates;
-                [self.nextStates addObject:currentState];
-                //do not continue the loop, we created self.nextStates and they are the final states:
+                [self.nextStates addObjectsFromArray:[self.currentStates allObjects]];
+                //we have processed the rest of the expression and will not have to process the rest of the currentStates!
+                //we created self.nextStates and they are the final states, including all of the currentStates:
                 i=regEx.length;
                 break;
             }
@@ -145,7 +152,7 @@
     return self;
 }
 
--(BOOL) pruneForks {
+-(BOOL) pruneForks:(NSMutableSet*) setOfStates{
     BOOL forkDiscovered=YES;
     ROState* toBeRemoved; //the fork state to be removed
     ROState* toBeAdded;
@@ -156,7 +163,7 @@
         toBeAdded=nil;
         alternateToBeAdded=nil;
         //find the first fork state:
-        for (ROState* state in self.currentStates) {
+        for (ROState* state in setOfStates) {
             if (state.alternateState!= nil) {
                 forkDiscovered=YES;
                 toBeRemoved=state;
@@ -172,9 +179,9 @@
                 break;
             }
         }
-        if (toBeRemoved!=nil) [self.currentStates removeObject:toBeRemoved];
-        if (toBeAdded!= nil) [self.currentStates addObject:toBeAdded];
-        if (alternateToBeAdded!=nil) [self.currentStates addObject:alternateToBeAdded];
+        if (toBeRemoved!=nil) [setOfStates removeObject:toBeRemoved];
+        if (toBeAdded!= nil) [setOfStates addObject:toBeAdded];
+        if (alternateToBeAdded!=nil) [setOfStates addObject:alternateToBeAdded];
     }
     return forkDiscovered;
 }
@@ -189,32 +196,34 @@
     NSSortDescriptor* sortAscendingByStartIndex =[NSSortDescriptor sortDescriptorWithKey:@"startIndex" ascending:YES selector:@selector(compare:)];
     NSArray* sortedStates; //here we store the finished matches sorted according to descriptor
     NSMutableSet* finishedMatches=[NSMutableSet set];
+
+    //first we have to check if the initial states contain forks:
+    [self pruneForks:self.currentStates];
     
     while (i<string.length) {
-        //first we have to check if the current states contain forks:
-        [self pruneForks];
         //at this point, there are no forking states present so all the current states with matchingCharacter=nil are of the type "match any character"
         NSString* character=[string substringWithRange:NSMakeRange(i, 1)];
         //first iterate through current states:
         for (ROState* state in self.currentStates) {
             [self matchCharacter:character inState:state forIndex:i];
         }
-        //save the states for the next step:
-        self.currentStates=self.nextStates;
-        self.nextStates=[NSMutableSet set];
-        //update start indices before sorting and check finality:
-        for (ROState* state in self.currentStates) {
+        //update start indices to the new states *before* checking finality:
+        for (ROState* state in self.nextStates) {
             state.startIndex=state.nextStartIndex;
             state.nextStartIndex=[NSNumber numberWithUnsignedLong:NSUIntegerMax];
-            if (state.finality==YES) [finishedMatches addObject:state];
         }
-        //finally, check break condition:
+        //the next states have not yet been checked for forks! we have to do it before checking break condition:
+        [self pruneForks:self.nextStates];
+        for (ROState* state in self.nextStates) if (state.finality==YES) [finishedMatches addObject:state];
+        //finally, return a match if a final state is ahead:
         if (![finishedMatches count]==0) {
             sortedStates=[finishedMatches sortedArrayUsingDescriptors:@[sortAscendingByStartIndex]];
             NSNumber* matchStart=((ROState *)sortedStates[0]).startIndex;
             return NSMakeRange([matchStart intValue],i-[matchStart intValue]+1);
         }
         //proceed to the next character:
+        self.currentStates=self.nextStates;
+        self.nextStates=[NSMutableSet set];
         i++;
     }
     //only reached if none of the steps reached finality:

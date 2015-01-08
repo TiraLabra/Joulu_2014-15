@@ -23,4 +23,24 @@
     return self;
 }
 
+-(id) copyWithZone:(NSZone *)zone {
+    ROState* copy=[[ROState allocWithZone:zone]init];
+    copy.matchingCharacter=self.matchingCharacter;
+    copy.nextState=self.nextState;
+    copy.alternateState=self.alternateState;
+    copy.startIndex=self.startIndex;
+    copy.nextStartIndex=self.nextStartIndex;
+    copy.finality=self.finality;
+    return copy;
+}
+
+-(void) copyFromState:(ROState *)state {
+    self.matchingCharacter=state.matchingCharacter;
+    self.nextState=state.nextState;
+    self.alternateState=state.alternateState;
+    self.startIndex=state.startIndex;
+    self.nextStartIndex=state.nextStartIndex;
+    self.finality=state.finality;
+}
+
 @end

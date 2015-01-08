@@ -12,7 +12,7 @@
  *  A dumb class representing a single state in any finite automaton.
  */
 
-@interface ROState : NSObject
+@interface ROState : NSObject <NSCopying>
 /**
  *  The next state in the tree.
  */
@@ -38,4 +38,19 @@
  *  @brief Used by a finite automaton to save the next starting index until the end of step.
  */
 @property (strong,nonatomic) NSNumber* nextStartIndex;
+/**
+ *  Provides a copy of the ROstate object, as per NSCopying protocol.
+ *
+ *  @param The zone identifies an area of memory from which to allocate for the new instance. If zone is NULL, the new instance is allocated from the default zone, which is returned from the function NSDefaultMallocZone.
+ *
+ *  @return An ROState object with same properties as the original.
+ */
+-(id)copyWithZone:(NSZone *) zone;
+/**
+ *  Copies the properties of an existing state to this ROState.
+ *
+ *  @param state The ROState object to be copied from.
+ */
+ -(void)copyFromState:(ROState *) state;
 @end
+
