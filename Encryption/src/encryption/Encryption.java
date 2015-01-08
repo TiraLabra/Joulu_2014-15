@@ -7,10 +7,8 @@
 package encryption;
 
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.util.Random;
@@ -44,8 +42,12 @@ public class Encryption {
     // Private exponent for decryption.
     private static BigInteger dExponent;
     
+    // Private filehandler for handling reading and writing.
+    private static FileHandler fileHandler;
+    
     /**
      * Generates integers from the read data.
+     * NOT IN USE.
      */
     private static void generateInt2(){
         if ( !input.isEmpty() ){
@@ -86,9 +88,10 @@ public class Encryption {
                 i++;
             }
             
-            writeFile2(new File("encrypted.txt"), array, k);
+           fileHandler.writeFile2(new File("encrypted.txt"), array, k);
         }
     }
+    
     /**
      * Generates the integer from read data.
      */
@@ -116,7 +119,7 @@ public class Encryption {
                 return;
             }
             muodostettuLuku = muodostettuLuku.modPow(eExponent, nModulus);
-            writeFile(new File("encrypted.txt"), muodostettuLuku);
+            fileHandler.writeFile(new File("encrypted.txt"), muodostettuLuku);
         }
         else 
         {
@@ -127,6 +130,7 @@ public class Encryption {
     /** 
      * Reads the integers into strings and makes them BigIntegers for 
      * decrypting.
+     * NOT IN USE yet
      * @param fileToDecrypt, file containing encrypted integers.
      */
     private static void generateString2(File fileToDecrypt){
@@ -151,7 +155,7 @@ public class Encryption {
                 i++;
             }
         }
-        catch(Exception ex){
+        catch(IOException ex){
             System.out.println("Error...");
             System.out.println(ex.getMessage());
         }
@@ -164,17 +168,7 @@ public class Encryption {
                         generateStringFromBigIntegerString(array[j]);
             }
             
-            File fout = new File("decrypted.txt");
-            try{
-                FileWriter fwr = new FileWriter(fout);
-                try (BufferedWriter bwr = new BufferedWriter(fwr)) {
-                    bwr.write(decryptedText);
-                    bwr.close();
-                }
-            }
-            catch ( IOException ex ){
-                System.out.println("File writing failed: " + ex.getMessage());
-            }
+            fileHandler.writeDecrypted(decryptedText);
         }
     }
     
@@ -210,69 +204,25 @@ public class Encryption {
         
         String array_str = "";
         
-        try {
-            FileReader fr = new FileReader(fileToDecrypt);
-            BufferedReader bfr = new BufferedReader(fr);
-            String read = bfr.readLine();
-            bfr.close();
-
-            luettu = new BigInteger(read);
-            
-        }catch ( IOException ex ){
-            System.out.println("Error...");
-            System.out.println(ex.getMessage());
-        }   
+        BigInteger dataFromFile = fileHandler.readEncryptedData(fileToDecrypt);
         
-        if ( luettu != null ){
+        if ( dataFromFile != null ){
             
-            luettu = luettu.modPow(dExponent, nModulus);
+            dataFromFile = dataFromFile.modPow(dExponent, nModulus);
             
             while ( true ){
-                BigInteger jakojaannos = luettu.mod(modulusLuku);
+                BigInteger jakojaannos = dataFromFile.mod(modulusLuku);
                 String tmp = new String(jakojaannos.toByteArray());
-                luettu = luettu.subtract(jakojaannos);
+                dataFromFile = dataFromFile.subtract(jakojaannos);
                 array_str = array_str + tmp;
-                luettu = luettu.divide(modulusLuku);
-                if ( luettu.equals(BigInteger.valueOf(0L))){
+                dataFromFile = dataFromFile.divide(modulusLuku);
+                if ( dataFromFile.equals(BigInteger.valueOf(0L))){
                     break;
                 }
             }
         }
-        
-      //  array_str = removePadding(array_str);
-        
-        File fout = new File("decrypted.txt");
-        try{
-            FileWriter fwr = new FileWriter(fout);
-            try (BufferedWriter bwr = new BufferedWriter(fwr)) {
-                bwr.write(array_str);
-                bwr.close();
-            }
-        }
-        catch ( IOException ex ){
-            System.out.println("File writing failed: " + ex.getMessage());
-        }
-    }
-    
-    /**
-     * Reads contents of a file
-     * @param fileToRead file which data is to be read.
-     * @throws Exception 
-     */
-    private static void readContents(File fileToRead) throws Exception{
-        if ( fileToRead.canRead()) {
-            FileReader fr = new FileReader(fileToRead);
-            BufferedReader bfr = new BufferedReader(fr);
-            String tmp = bfr.readLine();
-            while ( tmp != null ){
-                input = input + tmp;
-                tmp = bfr.readLine();
-            }
-           // addPadding();
-        }
-        else{
-            throw new Exception("File cannot be read!");
-        }
+    //  array_str = removePadding(array_str);  
+        fileHandler.writeDecrypted(array_str);
     }
     
     /**
@@ -341,12 +291,10 @@ public class Encryption {
         BigInteger [] debugVariable = fii.divideAndRemainder(e);
         
         if ( debugVariable[0].compareTo(BigInteger.ZERO) == 0){
-            System.out.println("Ei ole sopiva luku...");
             generationFailed = true;
         }
         
         if ( debugVariable[1].compareTo(BigInteger.ZERO) == 0 ){
-            System.out.println("Ei ole sopiva luku...");
             generationFailed = true;
         }
         
@@ -374,8 +322,8 @@ public class Encryption {
             // fails so that key-pair is generated
             generateKeys(); 
         }else{
-            writeFileExponentModulus(new File("public.key"), e, n);
-            writeFileExponentModulus(new File("private.key"), d, n);
+            fileHandler.writeFileExponentModulus(new File("public.key"), e, n);
+            fileHandler.writeFileExponentModulus(new File("private.key"), d, n);
         }
         
         /**
@@ -407,42 +355,16 @@ public class Encryption {
             System.out.println("Keys seem to be working.");
             System.out.println(decrypt);
         }
-        */
-        
+        */   
     }
     
-    /**
-     * @param fileToWrite file where data is written into
-     * @param exponent exponent bytearray
-     * @param modulus modulus bytearray
-     */
-    private static void writeFileExponentModulus(File fileToWrite, 
-            BigInteger exponent, 
-            BigInteger modulus ){
-    
-        try{
-            FileWriter fwr = new FileWriter(fileToWrite);
-            try(BufferedWriter bfw = new BufferedWriter(fwr)){
-                bfw.write(exponent.toString());
-                bfw.write("\n");
-                bfw.write(modulus.toString());
-                bfw.write("\n");
-                bfw.close();
-            }
-        }
-        catch ( IOException ex ){
-            System.out.println("Error...");
-            System.out.println(ex.getMessage());
-        }
-    }
-    
-    /**
+       /**
      * Read the exponent and modulus from given file. Private exponent d and
      * public exponent e variables will be same, but those are used in different
      * situations.
-     * @param fileToRead input file for data
+     * @param fileToRead
      */
-    private static void readFileExponentModulus(File fileToRead){
+    public static void readFileExponentModulus(File fileToRead){
         
          try {
             FileReader fr = new FileReader(fileToRead);
@@ -467,44 +389,11 @@ public class Encryption {
     }
     
     /**
-     * @param fileToWrite file where data is written into
-     * @param BigInteger to write into the file
-     */
-    private static void writeFile(File fileToWrite, BigInteger encryptedInt ){
-        
-        try{
-            FileWriter fw = new FileWriter(fileToWrite);
-            try(BufferedWriter bwr = new BufferedWriter(fw)){
-                bwr.write(encryptedInt.toString());
-                bwr.close();
-            }
-        }catch( IOException ex ){
-            System.out.println("Error, something happened.");
-            System.out.println(ex.getMessage());
-        }
-    }
-    
-    private static void writeFile2(File fileToWrite, BigInteger[] array, int count){
-        
-        try{
-            FileWriter fw = new FileWriter(fileToWrite);
-            try(BufferedWriter bwr = new BufferedWriter(fw)){
-                for ( int i = 0; i < count; i++ ){
-                    bwr.write(array[i].toString());
-                    bwr.write("\n");
-                }
-                bwr.close();
-            }
-        }catch( Exception ex ){
-            System.out.println("Error, something happened.");
-            System.out.println(ex.getMessage());
-        }
-    }
-    
-    /**
      * @param args the command line arguments
      */
     public static void main(String[] args) {
+        
+        fileHandler = new FileHandler();
         
         if ( args.length == 0 ){
             System.out.println("Generate public and private keys with command: -generate_keys");
@@ -529,7 +418,9 @@ public class Encryption {
                     //readFileExponentModulus(new File("G:\\GITREPO\\Joulu_2014-15\\Encryption\\public.key"));
                     //readContents(new File("G:\\GITREPO\\Joulu_2014-15\\Encryption\\dist\\README.TXT"));
                     readFileExponentModulus(new File(args[1]));
-                    readContents(new File(args[2]));
+                    
+                    //input = fileHandler.readContents(new File("G:\\GITREPO\\Joulu_2014-15\\Encryption\\testi.txt"));
+                    input = fileHandler.readContents(new File(args[2]));
                     //generateInt2();
                     generateInt();
                 }catch (Exception ex) {
@@ -542,6 +433,7 @@ public class Encryption {
                 //readFileExponentModulus(new File("G:\\GITREPO\\Joulu_2014-15\\Encryption\\private.key"));
                 //generateString(new File("G:\\GITREPO\\Joulu_2014-15\\Encryption\\encrypted.txt"));                
                 readFileExponentModulus(new File(args[1]));
+
                 //generateString2(new File(args[2]));
                 //generateString2(new File("G:\\GITREPO\\Joulu_2014-15\\Encryption\\encrypted.txt"));                
                 generateString(new File(args[2]));
