@@ -14,15 +14,24 @@ public class TextInterface {
     private static int size;
 
     /**
-     * Creates the game and sets the size of the board
+     * Creates the game and sets the size of the board as well as the game mode
      */
     public TextInterface() {
         size = 0;
+        int gameMode = 0;
 
-        while (size != 3 && size != 5) {
-            System.out.println("Board size? (number x number - 3/5): ");
+        while (size != 3 && size != 5 && size != 7) {
+            System.out.println("Board size? (number x number - 3/5/7): ");
             try {
                 size = Integer.parseInt(reader.next());
+            } catch (Exception ex) {
+            }
+        }
+        
+        while (gameMode != 1 && gameMode != 2 && gameMode != 3 && gameMode != 4) {
+            System.out.println("Game mode? (1 = human vs ai, 2 = ai vs human, 3 = ai vs ai, 4 = human vs human): ");
+            try {
+                gameMode = Integer.parseInt(reader.next());
             } catch (Exception ex) {
             }
         }
@@ -35,15 +44,15 @@ public class TextInterface {
             System.out.println("5 in a row to win!");
         }
 
-        Game game = new Game(size);
+        Game game = new Game(size, gameMode);
     }
 
     /**
-     * Shows the current board state and the evaluated minmax values of each
+     * Shows the current board state and the evaluated minmax value of each
      * possible move
      *
      * @param board the current game board
-     * @param evaluationBoard the evaluated minmax values of each possible move
+     * @param evaluationBoard the evaluated minmax value of each possible move
      * @param showEvaluation is the evaluationBoard to be shown or not
      */
     public static void showBoardState(int[][] board, int[][] evaluationBoard, boolean showEvaluation) {
