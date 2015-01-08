@@ -3,28 +3,30 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package reitinhaku.loogiikka;
+package reitinhaku.logiikka;
 
 /**
  *
  * @author Samuel
  */
 public class Polku {
+
     private Solmu solmu;
-    private double kustannus;
+    private int kustannus;
+    private int heuristiikka;
     private Polku edellinen;
-    
+
     /**
      *
      * @param solmu
      * @param kustannus
      * @param edellinen
      */
-    public Polku(Solmu solmu, double kustannus, Polku edellinen) {
-        this.solmu=solmu;
-        this.kustannus=kustannus;
+    public Polku(Solmu solmu, int kustannus, Polku edellinen) {
+        this.solmu = solmu;
+        this.kustannus = kustannus;
         this.edellinen = edellinen;
-        
+
     }
 
     /**
@@ -39,8 +41,16 @@ public class Polku {
      *
      * @return
      */
-    public double getKustannus() {
+    public int getKustannus() {
         return kustannus;
+    }
+
+    /**
+     *
+     * @param k
+     */
+    public void setKustannus(int k) {
+        kustannus = k;
     }
 
     /**
@@ -50,5 +60,5 @@ public class Polku {
     public Polku getEdellinen() {
         return edellinen;
     }
-    
+
 }
