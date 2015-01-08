@@ -121,19 +121,24 @@
 
 - (void)testORWithParentheses {
     RONFA* NFA = [[RONFA alloc] initWithRegEx:@"(aaaargh)|b"];
-    XCTAssert(NSEqualRanges([NFA findMatch:@"aaaargh"],NSMakeRange(0, 7)), @"Correct OR match");
+    XCTAssert(NSEqualRanges([NFA findMatch:@"aaaargh"],NSMakeRange(0, 7)), @"Correct OR with parentheses");
 }
 
 
 - (void)testNestedOR {
     RONFA* NFA = [[RONFA alloc] initWithRegEx:@"(aaaargh|blaah)|d"];
-    XCTAssert(NSEqualRanges([NFA findMatch:@"ablaahhhh"],NSMakeRange(1, 5)), @"Correct OR match");
+    XCTAssert(NSEqualRanges([NFA findMatch:@"ablaahhhh"],NSMakeRange(1, 5)), @"Correct nested OR");
 }
 
 
 - (void)testORWithOperators {
     RONFA* NFA = [[RONFA alloc] initWithRegEx:@"(aa|ca*)|d"];
-    XCTAssert(NSEqualRanges([NFA findMatch:@"bllcaaaaa"],NSMakeRange(3, 2)), @"Correct OR match");
+    XCTAssert(NSEqualRanges([NFA findMatch:@"bllcaaaaa"],NSMakeRange(3, 2)), @"Correct OR with *");
+}
+
+- (void)testComplexRegEx {
+    RONFA* NFA = [[RONFA alloc] initWithRegEx:@"(abc|c*d(l|b.)a)|(lr?)"];
+    XCTAssert(NSEqualRanges([NFA findMatch:@"cdbra"],NSMakeRange(0, 5)), @"Correct complex match");
 }
 
 - (void)testPerformancePathological20 {
