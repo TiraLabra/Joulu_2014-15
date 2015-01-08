@@ -137,7 +137,7 @@
 
 - (void)testPerformancePathological {
     // This is an example of a performance test case.
-    int n=2;
+    int n=40;
     NSString* regEx=[NSString string];
     NSString* stringToMatch=[NSString string];
     for (int i=0; i<n; i++) regEx=[regEx stringByAppendingString:@"a?"];

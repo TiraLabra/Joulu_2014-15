@@ -32,6 +32,10 @@
  *  @discussion Note that a set contains strong references and the set must be strong. Hence, retain cycles of states pointing back to the NFA must be avoided. This is no problem as long as the state is automaton-agnostic.
 */
 @property (strong, nonatomic)NSMutableSet* finalStates;
+/**
+ *  Contains the regular expression used for constructing the automaton.
+ */
+@property (strong, nonatomic)NSString* regEx;
 @end
 
 @implementation RONFA
@@ -47,6 +51,7 @@
     if (self == nil) return self;
     //Here we implement the class-specific initialization:
     self.operators = [NSCharacterSet characterSetWithCharactersInString:@".*()|?"];
+    self.regEx=regEx; //save the regex for reinitialization
     self.finalStates=[NSMutableSet set];
     self.initialState=state;
     [self rewind]; //creates the currentStates array and adds the initial state there
@@ -137,11 +142,47 @@
     self.finalStates=self.currentStates;
     //after initialization, return the automaton to the beginning for running:
     [self rewind];
-
     return self;
 }
 
+-(BOOL) pruneForks {
+    BOOL forkDiscovered=YES;
+    ROState* toBeRemoved; //the fork state to be removed
+    ROState* toBeAdded;
+    ROState* alternateToBeAdded; //the two children of the fork state, to be added
+    while (forkDiscovered) {
+        forkDiscovered=NO;
+        toBeRemoved=nil;
+        toBeAdded=nil;
+        alternateToBeAdded=nil;
+        //find the first fork state:
+        for (ROState* state in self.currentStates) {
+            if (state.alternateState!= nil) {
+                forkDiscovered=YES;
+                toBeRemoved=state;
+                //never link a fork state back to itself (creates an infinite loop!)
+                toBeAdded=state.nextState;
+                alternateToBeAdded=state.alternateState;
+                //also, remember to propagate the starting index of the match from any fork state to both of the subsequent states, as the fork state does not enter matchCharacter method!!
+                //*don't* overwrite smaller start indices if already present (greedy matching):
+                if (state.nextState.startIndex>state.startIndex) state.nextState.startIndex=state.startIndex;
+                if (state.alternateState.startIndex>state.startIndex) state.alternateState.startIndex=state.startIndex;
+                //this particular fork has been processed (even if multiple branches ended up in the same fork), so we can remove it from current states.
+                //cannot add and remove objects from within the iteration loop. we have states to add and a fork to remove, so get out of the loop:
+                break;
+            }
+        }
+        if (toBeRemoved!=nil) [self.currentStates removeObject:toBeRemoved];
+        if (toBeAdded!= nil) [self.currentStates addObject:toBeAdded];
+        if (alternateToBeAdded!=nil) [self.currentStates addObject:alternateToBeAdded];
+    }
+    return forkDiscovered;
+}
+
 -(NSRange)findMatch:(NSString *)string {
+    //we must reinitialize the machine to reset start indices:
+    [self initWithRegEx:self.regEx];
+    
     long i=0; //the letter we are at in the string
     
     //break condition checking requires ascending order:
@@ -151,37 +192,7 @@
     
     while (i<string.length) {
         //first we have to check if the current states contain forks:
-        BOOL forkDiscovered=YES;
-        ROState* toBeRemoved; //the fork state to be removed
-        ROState* toBeAdded;
-        ROState* alternateToBeAdded; //the two children of the fork state, to be added
-        while (forkDiscovered) {
-            forkDiscovered=NO;
-            toBeRemoved=nil;
-            toBeAdded=nil;
-            alternateToBeAdded=nil;
-            //find the first fork state:
-            for (ROState* state in self.currentStates) {
-                if (state.alternateState!= nil) {
-                    forkDiscovered=YES;
-                    toBeRemoved=state;
-                    //never link a fork state back to itself (creates an infinite loop!)
-                    toBeAdded=state.nextState;
-                    alternateToBeAdded=state.alternateState;
-                    //also, remember to propagate the starting index of the match from any fork state to both of the subsequent states, as the fork state does not enter matchCharacter method!!
-                    //*don't* overwrite smaller start indices if already present (greedy matching):
-                    if (state.nextState.startIndex>state.startIndex) state.nextState.startIndex=state.startIndex;
-                    if (state.alternateState.startIndex>state.startIndex) state.alternateState.startIndex=state.startIndex;
-                    //this particular fork has been processed (even if multiple branches ended up in the same fork), so we can remove it from current states.
-                    //cannot add and remove objects from within the iteration loop. we have states to add and a fork to remove, so get out of the loop:
-                    break;
-                }
-            }
-            if (toBeRemoved!=nil) [self.currentStates removeObject:toBeRemoved];
-            if (toBeAdded!= nil) [self.currentStates addObject:toBeAdded];
-            if (alternateToBeAdded!=nil) [self.currentStates addObject:alternateToBeAdded];
-        }
-        
+        [self pruneForks];
         //at this point, there are no forking states present so all the current states with matchingCharacter=nil are of the type "match any character"
         NSString* character=[string substringWithRange:NSMakeRange(i, 1)];
         //first iterate through current states:
