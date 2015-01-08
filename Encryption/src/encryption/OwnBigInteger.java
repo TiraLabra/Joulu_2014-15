@@ -6,6 +6,7 @@
 
 package encryption;
 
+import java.nio.ByteBuffer;
 import java.util.Random;
 
 /**
@@ -18,6 +19,7 @@ public class OwnBigInteger {
     private byte[] data;
 
     private final static long BYTE_MODULUS = 256;
+    private final static ByteBuffer longConverter = ByteBuffer.allocate(Long.BYTES);
     /**
      * Creates OwnBigInteger instance from byte array.
      * @param data 
@@ -33,17 +35,10 @@ public class OwnBigInteger {
      */
     public static OwnBigInteger valueOf(long value){
         
-        byte [] array = new byte[8];
+        longConverter.putLong(value);
         
-        int i = 0;
-        while ( value > 0 ){
-            
-            long tmp = value % BYTE_MODULUS;
-            value = value - tmp;
-            value = value / BYTE_MODULUS;
-            array[i] = (byte) tmp;
-            i++;
-        }
+        byte [] array = longConverter.array();
+        longConverter.clear();
         
         return new OwnBigInteger(array);
     }
