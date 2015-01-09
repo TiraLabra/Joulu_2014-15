@@ -110,7 +110,38 @@ public class OwnBigInteger {
     }
     
     public OwnBigInteger add(OwnBigInteger value){
-        byte [] newValue = new byte[value.data.length + this.data.length];
+        int maxLength = this.data.length + 1;
+        if ( maxLength < value.data.length ){
+            maxLength = value.data.length + 1;
+        }
+        
+        byte [] newValue = new byte[maxLength];
+        
+        // Starting position is in the end of byte[] array.
+        int pos1 = data.length;
+        int pos2 = value.data.length;
+        int pos3 = maxLength-1;
+        byte tmpCarry = 0x0;
+        
+        for ( int i = pos3; i > 0; i--, pos1--, pos2-- ){
+            
+            int tmp1 = 0; 
+            int tmp2 = 0;
+            
+            if ( pos1 >= 0 ) {
+                tmp1 = data[pos1];
+            }
+            
+            if ( pos2 >= 0 ){
+                tmp2 = value.data[pos2];
+            }
+            
+            int tmp3 = tmp1 + tmp2 + tmpCarry;
+            
+            newValue[i] = (byte)(tmp3 & 0xff);
+            tmp3 >>= 8;
+            tmpCarry = (byte)(tmp3 & 0xff);
+        }
         
         // TODO
         
@@ -220,6 +251,18 @@ public class OwnBigInteger {
         // TODO
         
         return 1;
+    }
+    
+    /**
+     * Returns OwnBigInteger which is this^-1 mod value.
+     * @param value modulus value.
+     * @return new OwnBigInteger value.
+     */
+    public OwnBigInteger modInverse(OwnBigInteger value){
+        byte [] newValue = new byte[Integer.MAX_VALUE];
+        
+        
+        return new OwnBigInteger(newValue);
     }
 }
 
