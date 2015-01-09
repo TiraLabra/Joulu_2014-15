@@ -15,6 +15,12 @@ import java.util.Random;
  */
 public class OwnBigInteger {
     
+    public static OwnBigInteger ZERO = OwnBigInteger.valueOf(0L);
+    
+    public static OwnBigInteger ONE = OwnBigInteger.valueOf(1L);
+    
+    public static OwnBigInteger TEN = OwnBigInteger.valueOf(10L);
+    
     // Content
     private byte[] data;
 
@@ -26,6 +32,16 @@ public class OwnBigInteger {
      */
     public OwnBigInteger(byte[] data) {
         this.data = data;
+        // TODO needs to be checked that this works correctly.
+    }
+    
+    /**
+     * Creates OwnBigInteger instance from String value
+     * @param data 
+     */
+    public OwnBigInteger(String data){
+        this.data = data.getBytes();
+        // TODO
     }
     
     /**
@@ -42,7 +58,7 @@ public class OwnBigInteger {
         
         return new OwnBigInteger(array);
     }
-    
+
     /**
      * Compares if two OwnBigIntegers are same or not
      * @param value
@@ -92,4 +108,119 @@ public class OwnBigInteger {
         
         return new OwnBigInteger(array);
     }
+    
+    public OwnBigInteger add(OwnBigInteger value){
+        byte [] newValue = new byte[value.data.length + this.data.length];
+        
+        // TODO
+        
+        return new OwnBigInteger(newValue);
+    }
+    
+    /**
+     * Subtracts parameter value from this OwnBigInteger.
+     * @param value value to subtract from this.
+     * @return new OwnBigInteger representation.
+     */
+    public OwnBigInteger subtract(OwnBigInteger value){
+        
+        byte [] newValue = new byte[value.data.length+this.data.length];
+        
+        // TODO
+        
+        return new OwnBigInteger(newValue);
+    }
+    
+    /**
+     * Multiplies this OwnBigInteger with the given value.
+     * @param value OwnBigInteger that multiplies this OwnBigInteger
+     * @return new OwnBigInteger representation.
+     */
+    public OwnBigInteger multiply(OwnBigInteger value){
+        
+        byte [] newValue = new byte[value.data.length + this.data.length];
+        
+        // TODO
+        
+        return new OwnBigInteger(newValue);
+    }
+    
+    /**
+     * Divides this OwnBigInteger with the parameter value, and returns both the 
+     * division and remaining parts in OwnBigInteger array.
+     * @param value Divider.
+     * @return array containing division and remainder.
+     */
+    public OwnBigInteger [] divideAndRemainder(OwnBigInteger value){
+        
+        OwnBigInteger [] array = new OwnBigInteger[2];
+        
+        // TODO
+        
+        return array;
+    }
+    
+    /**
+     * Modulus function for OwnBigIntegers
+     * @param value modulus
+     * @return new OwnBigInteger representation.
+     */
+    public OwnBigInteger mod(OwnBigInteger value){
+        byte [] newValue = new byte[this.data.length + value.data.length];
+        
+        // TODO
+        
+        return new OwnBigInteger(newValue);
+    }
+    
+    /**
+     * Modulus exponent function for OwnBigInteger.
+     * result is calculated like: this OwnBigInteger^exponent mod modulus
+     * @param exponent exponent value.
+     * @param modulus modulus value.
+     * @return new OwnBigInteger representation.
+     */
+    public OwnBigInteger modPow(OwnBigInteger exponent, OwnBigInteger modulus){
+        
+        byte [] newValue = new byte[this.data.length + exponent.data.length];
+        
+        // TODO
+        
+        return new OwnBigInteger(newValue);
+    }
+    
+    /**
+     * Power function for OwnBigInteger.
+     * @param exponent exponent value.
+     * @return new OwnBigInteger representation.
+     */
+    public OwnBigInteger pow(OwnBigInteger exponent){
+        
+        byte [] newValue = new byte[Integer.MAX_VALUE];
+        
+        // TODO
+        
+        return new OwnBigInteger(newValue);
+    }
+
+    /**
+     * Compares this OwnBigInteger with the parameter value. 
+     * Returns 0 if the values are same.
+     * Returns 1 if 
+     * Returns -1 if
+     * @param value to compare to this OwnBigInteger
+     * @return integer -1, 0 or 1.
+     */
+    public int compareTo(OwnBigInteger value){
+        
+        if ( this.equals(value) ){
+            return 0;
+        }
+        
+        // TODO
+        
+        return 1;
+    }
 }
+
+
