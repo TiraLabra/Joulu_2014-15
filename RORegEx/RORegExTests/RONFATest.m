@@ -9,7 +9,6 @@
 #import <Cocoa/Cocoa.h>
 #import <XCTest/XCTest.h>
 #import "RONFA.h"
-#import "ROState.h"
 
 @interface RONFATest : XCTestCase
 
@@ -77,24 +76,24 @@
     XCTAssert(NSEqualRanges([NFA findMatch:@"aaaa"],NSMakeRange(0, 4)), @"Correct . match");
 }
 
-- (void)testZeroCharactersMatch {
-    RONFA* NFA = [[RONFA alloc] initWithRegEx:@"aa*a"];
-    XCTAssert(NSEqualRanges([NFA findMatch:@"aaa"],NSMakeRange(0, 3)), @"Correct * match");
+- (void)testZeroStarMatch {
+    RONFA* NFA = [[RONFA alloc] initWithRegEx:@"ab*a"];
+    XCTAssert(NSEqualRanges([NFA findMatch:@"aa"],NSMakeRange(0, 2)), @"Correct one * match");
 }
 
-- (void)testAnyStringMatch {
-    RONFA* NFA = [[RONFA alloc] initWithRegEx:@"a*a"];
-    XCTAssert(NSEqualRanges([NFA findMatch:@"abffa"],NSMakeRange(0, 5)), @"Correct * match");
+- (void)testTwoStarMatch {
+    RONFA* NFA = [[RONFA alloc] initWithRegEx:@"abf*a"];
+    XCTAssert(NSEqualRanges([NFA findMatch:@"abffa"],NSMakeRange(0, 5)), @"Correct two * match");
 }
 
 - (void)testOperatorCombination {
-    RONFA* NFA = [[RONFA alloc] initWithRegEx:@"a*a."];
-    XCTAssert(NSEqualRanges([NFA findMatch:@"graaaaagh"],NSMakeRange(2, 3)), @"Correct *a. match");
+    RONFA* NFA = [[RONFA alloc] initWithRegEx:@".*a"];
+    XCTAssert(NSEqualRanges([NFA findMatch:@"graaaaagh"],NSMakeRange(0, 3)), @"Correct .* match");
 }
 
 - (void)testOptionalCharacter {
     RONFA* NFA = [[RONFA alloc] initWithRegEx:@"ab?a"];
-    XCTAssert(NSEqualRanges([NFA findMatch:@"aa"],NSMakeRange(0, 2)), @"Correct b? match");
+    XCTAssert(NSEqualRanges([NFA findMatch:@"aba"],NSMakeRange(0, 3)), @"Correct b? match");
 }
 
 - (void)testOptionalCharacters {
@@ -108,8 +107,8 @@
 }
 
 - (void)testSeveralParenthesesAndOperators {
-    RONFA* NFA = [[RONFA alloc] initWithRegEx:@"((*)*)a"];
-    XCTAssert(NSEqualRanges([NFA findMatch:@"aa"],NSMakeRange(0, 1)), @"Correct minimal nested operator match");
+    RONFA* NFA = [[RONFA alloc] initWithRegEx:@"((a*)a*)a"];
+    XCTAssert(NSEqualRanges([NFA findMatch:@"aa"],NSMakeRange(0, 1)), @"Correct *minimal* nested operator match");
 }
 
 
@@ -133,12 +132,17 @@
 
 - (void)testORWithOperators {
     RONFA* NFA = [[RONFA alloc] initWithRegEx:@"(aa|ca*)|d"];
-    XCTAssert(NSEqualRanges([NFA findMatch:@"bllcaaaaa"],NSMakeRange(3, 2)), @"Correct OR with *");
+    XCTAssert(NSEqualRanges([NFA findMatch:@"bllcaaaaa"],NSMakeRange(3, 1)), @"Correct OR with a*");
 }
 
 - (void)testComplexRegEx {
     RONFA* NFA = [[RONFA alloc] initWithRegEx:@"(abc|c*d(l|b.)a)|(lr?)"];
     XCTAssert(NSEqualRanges([NFA findMatch:@"cdbra"],NSMakeRange(0, 5)), @"Correct complex match");
+}
+
+- (void)testOptionalParentheses {
+    RONFA* NFA = [[RONFA alloc] initWithRegEx:@"(a|b)*c"];
+    XCTAssert(NSEqualRanges([NFA findMatch:@"abbabac"],NSMakeRange(0, 7)), @"Correct optional subexpression match");
 }
 
 - (void)testPerformancePathological20 {

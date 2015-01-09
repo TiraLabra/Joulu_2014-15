@@ -57,39 +57,10 @@
     self.initialState=state;
     [self rewind]; //creates the currentStates array and adds the initial state there
     for (long i=0; i<regEx.length; i++) {
-        //we need a loop over multiple current states, in case the OR operator is present!!
         for (ROState* currentState in self.currentStates) {
             NSString* character=[regEx substringWithRange:NSMakeRange(i, 1)];
-            //check if the next character (if any) is an operator first:
-            NSString* nextCharacter;
-            if (i<regEx.length-1) nextCharacter=[regEx substringWithRange:NSMakeRange(i+1, 1)];
-            if ([nextCharacter isEqualToString:@"?"]) {
-                //this means the character is optional, i.e. we have a fork and a match. implementation akin to *:
-                currentState.alternateState=[[ROState alloc] init];
-                currentState.alternateState.matchingCharacter=character;
-                //create the next state that makes matching optional:
-                currentState.nextState=[[ROState alloc] init];
-                currentState.alternateState.nextState=currentState.nextState;
-                [self.nextStates addObject:currentState.nextState];
-                //skip over question mark:
-                i++;
-                //self.nextStates exist already, skip creating them:
-                continue;
-            }
-            //Here, we have the default behavior of matching the character:
-            if ([character rangeOfCharacterFromSet:self.operators].location == NSNotFound) {
-                currentState.matchingCharacter = character;
-            }
-            else if ([character isEqualToString:@"."]) {
-                //any character matches. matchingCharacter is already nil by default =)
-            }
-            else if ([character isEqualToString:@"*"]) {
-                //we have to match zero or more characters.
-                //currentState becomes a forking state. The NFA moves immediately to the next state (matches zero characters). The alternate arrow points to "any character" state (matches one character), which points back here. *never* link a fork state directly back to itself (creates an infinite loop when matching)!
-                currentState.alternateState=[[ROState alloc] init]; //the any character state
-                currentState.alternateState.nextState=currentState; //the current fork state
-            }
-            else if ([character isEqualToString:@"("]) {
+            //checking order: 1) parentheses 2) operators 3) next char operators 4) single char match
+            if ([character isEqualToString:@"("]) {
                 //here we must implement recursive NFAs for the expression in parentheses
                 //first, find the corresponding closing parenthesis:
                 long parentheses=1;
@@ -114,6 +85,8 @@
                 //self.nextStates exist already, skip creating them:
                 continue;
             }
+            
+            //2) check operators:
             else if ([character isEqualToString:@"|"]) {
                 //here we must make a new initial state for the superexpression, nest the current NFA inside it, and create another NFA for the other subexpression!!! forking into multiple final states ensues, but the current state is one of them.
                 //now the problem is that *if we have two current states, we are doing the same thing twice* or, if we break at the first option, we are not adding all the current states to the end states? is it enough just to add both and not do anything else before breaking???
@@ -133,6 +106,46 @@
                 //we created self.nextStates and they are the final states, including all of the currentStates:
                 i=regEx.length;
                 break;
+            }
+            //if the operator is * or ?, we have to make the previous matching group optional! how to add fork in place of *previous state*, as we don't know how many steps are in between before we arrived at currentState??
+            
+            //3) check next character operators:
+            NSString* nextCharacter;
+            if (i<regEx.length-1) nextCharacter=[regEx substringWithRange:NSMakeRange(i+1, 1)];
+            if ([nextCharacter isEqualToString:@"?"]) {
+                //this means the character is optional, i.e. we have a fork and a match.:
+                currentState.alternateState=[[ROState alloc] init];
+                if (![character isEqualToString:@"."]) currentState.alternateState.matchingCharacter=character; //this makes sure we can also have . combine with operators
+                //create the next state that makes matching optional:
+                currentState.nextState=[[ROState alloc] init];
+                //we go here also after a single match:
+                currentState.alternateState.nextState=currentState.nextState;
+                [self.nextStates addObject:currentState.nextState];
+                //skip over question mark:
+                i++;
+                //self.nextStates exist already, skip creating them:
+                continue;
+            }
+            else if ([nextCharacter isEqualToString:@"*"]) {
+                //like ?, but we can match more than one character:
+                currentState.alternateState=[[ROState alloc] init];
+                if (![character isEqualToString:@"."]) currentState.alternateState.matchingCharacter=character; //this makes sure we can also have . combine with operators
+                currentState.alternateState.nextState=currentState;
+                //create the next state that makes matching optional:
+                currentState.nextState=[[ROState alloc] init];
+                [self.nextStates addObject:currentState.nextState];
+                //skip over the asterisk:
+                i++;
+                //self.nextStates exist already, skip creating them:
+                continue;
+            }
+            
+            //4) *finally* match character, including . operator:
+            if ([character rangeOfCharacterFromSet:self.operators].location == NSNotFound) {
+                currentState.matchingCharacter = character;
+            }
+            else if ([character isEqualToString:@"."]) {
+                //any character matches. matchingCharacter is already nil by default =)
             }
             //we do not need to explicitly create pointers to the successive states, as the pointers form a tree starting from initialState
             //create the next state:
