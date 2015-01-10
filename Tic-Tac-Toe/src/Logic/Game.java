@@ -226,20 +226,20 @@ public class Game {
             if ((whosTurn == 1 && turnCount % 2 == 0) || (whosTurn == 2 && turnCount % 2 == 1)) {
                 for (int i = 0; i < board.length; i++) {
                     for (int j = 0; j < board.length; j++) {
-                        if ((j == 0 || j == 1 || j == 2) && board[i][j] == board[i][j + 1] && board[i][j] == board[i][j + 2]
-                                && board[i][j] != 0) {
+                        if (board[i][j] != 0 && (j == 0 || j == 1 || j == 2) && board[i][j] == board[i][j + 1]
+                                && board[i][j] == board[i][j + 2]) {
                             count++;
                         }
-                        if ((i == 0 || i == 1 || i == 2) && board[i][j] == board[i + 1][j] && board[i][j] == board[i + 2][j]
-                                && board[i][j] != 0) {
+                        if (board[i][j] != 0 && (i == 0 || i == 1 || i == 2) && board[i][j] == board[i + 1][j]
+                                && board[i][j] == board[i + 2][j]) {
                             count++;
                         }
-                        if ((i == 2 || i == 3 || i == 4) && (j == 0 || j == 1 || j == 2) && board[i][j] == board[i - 1][j + 1]
-                                && board[i][j] == board[i - 2][j + 2] && board[i][j] != 0) {
+                        if (board[i][j] != 0 && (i == 2 || i == 3 || i == 4) && (j == 0 || j == 1 || j == 2)
+                                && board[i][j] == board[i - 1][j + 1] && board[i][j] == board[i - 2][j + 2]) {
                             count++;
                         }
-                        if (((i == 0 || i == 1 || i == 2) && (j == 0 || j == 1 || j == 2)) && board[i][j] == board[i + 1][j + 1]
-                                && board[i][j] == board[i + 2][j + 2] && board[i][j] != 0) {
+                        if (board[i][j] != 0 && ((i == 0 || i == 1 || i == 2) && (j == 0 || j == 1 || j == 2))
+                                && board[i][j] == board[i + 1][j + 1] && board[i][j] == board[i + 2][j + 2]) {
                             count++;
                         }
                     }
@@ -247,20 +247,20 @@ public class Game {
             } else {
                 for (int i = 0; i < board.length; i++) {
                     for (int j = 0; j < board.length; j++) {
-                        if ((j == 0 || j == 1 || j == 2) && board[i][j] == board[i][j + 1] && board[i][j] == board[i][j + 2]
-                                && board[i][j] != 0) {
+                        if (board[i][j] != 0 && (j == 0 || j == 1 || j == 2) && board[i][j] == board[i][j + 1]
+                                && board[i][j] == board[i][j + 2]) {
                             count--;
                         }
-                        if ((i == 0 || i == 1 || i == 2) && board[i][j] == board[i + 1][j] && board[i][j] == board[i + 2][j]
-                                && board[i][j] != 0) {
+                        if (board[i][j] != 0 && (i == 0 || i == 1 || i == 2) && board[i][j] == board[i + 1][j]
+                                && board[i][j] == board[i + 2][j]) {
                             count--;
                         }
-                        if ((i == 2 || i == 3 || i == 4) && (j == 0 || j == 1 || j == 2) && board[i][j] == board[i - 1][j + 1]
-                                && board[i][j] == board[i - 2][j + 2] && board[i][j] != 0) {
+                        if (board[i][j] != 0 && (i == 2 || i == 3 || i == 4) && (j == 0 || j == 1 || j == 2)
+                                && board[i][j] == board[i - 1][j + 1] && board[i][j] == board[i - 2][j + 2]) {
                             count--;
                         }
-                        if (((i == 0 || i == 1 || i == 2) && (j == 0 || j == 1 || j == 2)) && board[i][j] == board[i + 1][j + 1]
-                                && board[i][j] == board[i + 2][j + 2] && board[i][j] != 0) {
+                        if (board[i][j] != 0 && ((i == 0 || i == 1 || i == 2) && (j == 0 || j == 1 || j == 2))
+                                && board[i][j] == board[i + 1][j + 1] && board[i][j] == board[i + 2][j + 2]) {
                             count--;
                         }
                     }
@@ -271,20 +271,20 @@ public class Game {
             if ((whosTurn == 1 && turnCount % 2 == 0) || (whosTurn == 2 && turnCount % 2 == 1)) {
                 for (int i = 0; i < board.length; i++) {
                     for (int j = 0; j < board.length; j++) {
-                        if ((j == 0 || j == 1 || j == 2 || j == 3) && board[i][j] == board[i][j + 1] && board[i][j] == board[i][j + 2]
-                                && board[i][j] == board[i][j + 3] && board[i][j] != 0) {
+                        if (board[i][j] != 0 && (j == 0 || j == 1 || j == 2 || j == 3) && board[i][j] == board[i][j + 1]
+                                && board[i][j] == board[i][j + 2] && board[i][j] == board[i][j + 3]) {
                             count++;
                         }
-                        if ((i == 0 || i == 1 || i == 2 || i == 3) && board[i][j] == board[i + 1][j] && board[i][j] == board[i + 2][j]
-                                && board[i][j] == board[i + 3][j] && board[i][j] != 0) {
+                        if (board[i][j] != 0 && (i == 0 || i == 1 || i == 2 || i == 3) && board[i][j] == board[i + 1][j]
+                                && board[i][j] == board[i + 2][j] && board[i][j] == board[i + 3][j]) {
                             count++;
                         }
-                        if ((i == 3 || i == 4 || i == 5 || i == 6) && (j == 0 || j == 1 || j == 2 || j == 3) && board[i][j] == board[i - 1][j + 1] && board[i][j] == board[i - 2][j + 2]
-                                && board[i][j] == board[i - 3][j + 3] && board[i][j] != 0) {
+                        if (board[i][j] != 0 && (i == 3 || i == 4 || i == 5 || i == 6) && (j == 0 || j == 1 || j == 2 || j == 3)
+                                && board[i][j] == board[i - 1][j + 1] && board[i][j] == board[i - 2][j + 2] && board[i][j] == board[i - 3][j + 3]) {
                             count++;
                         }
-                        if (((i == 0 || i == 1 || i == 2 || i == 3) && (j == 0 || j == 1 || j == 2) || (i == 2 && j == 2)) && board[i][j] == board[i + 1][j + 1]
-                                && board[i][j] == board[i + 2][j + 2] && board[i][j] == board[i + 3][j + 3] && board[i][j] != 0) {
+                        if (board[i][j] != 0 && ((i == 0 || i == 1 || i == 2 || i == 3) && (j == 0 || j == 1 || j == 2) || (i == 2 && j == 2))
+                                && board[i][j] == board[i + 1][j + 1] && board[i][j] == board[i + 2][j + 2] && board[i][j] == board[i + 3][j + 3]) {
                             count++;
                         }
                     }
@@ -292,20 +292,20 @@ public class Game {
             } else {
                 for (int i = 0; i < board.length; i++) {
                     for (int j = 0; j < board.length; j++) {
-                        if ((j == 0 || j == 1 || j == 2 || j == 3) && board[i][j] == board[i][j + 1] && board[i][j] == board[i][j + 2]
-                                && board[i][j] == board[i][j + 3] && board[i][j] != 0) {
+                        if (board[i][j] != 0 && (j == 0 || j == 1 || j == 2 || j == 3) && board[i][j] == board[i][j + 1]
+                                && board[i][j] == board[i][j + 2] && board[i][j] == board[i][j + 3]) {
                             count--;
                         }
-                        if ((i == 0 || i == 1 || i == 2 || i == 3) && board[i][j] == board[i + 1][j] && board[i][j] == board[i + 2][j]
-                                && board[i][j] == board[i + 3][j] && board[i][j] != 0) {
+                        if (board[i][j] != 0 && (i == 0 || i == 1 || i == 2 || i == 3) && board[i][j] == board[i + 1][j]
+                                && board[i][j] == board[i + 2][j] && board[i][j] == board[i + 3][j]) {
                             count--;
                         }
-                        if ((i == 3 || i == 4 || i == 5 || i == 6) && (j == 0 || j == 1 || j == 2 || j == 3) && board[i][j] == board[i - 1][j + 1]
-                                && board[i][j] == board[i - 2][j + 2] && board[i][j] == board[i - 3][j + 3] && board[i][j] != 0) {
+                        if (board[i][j] != 0 && (i == 3 || i == 4 || i == 5 || i == 6) && (j == 0 || j == 1 || j == 2 || j == 3)
+                                && board[i][j] == board[i - 1][j + 1] && board[i][j] == board[i - 2][j + 2] && board[i][j] == board[i - 3][j + 3]) {
                             count--;
                         }
-                        if (((i == 0 || i == 1 || i == 2 || i == 3) && (j == 0 || j == 1 || j == 2) || (i == 2 && j == 2)) && board[i][j] == board[i + 1][j + 1]
-                                && board[i][j] == board[i + 2][j + 2] && board[i][j] == board[i + 3][j + 3] && board[i][j] != 0) {
+                        if (board[i][j] != 0 && ((i == 0 || i == 1 || i == 2 || i == 3) && (j == 0 || j == 1 || j == 2) || (i == 2 && j == 2))
+                                && board[i][j] == board[i + 1][j + 1] && board[i][j] == board[i + 2][j + 2] && board[i][j] == board[i + 3][j + 3]) {
                             count--;
                         }
                     }
@@ -354,16 +354,16 @@ public class Game {
         if (board.length == 3) {
             for (int i = 0; i < board.length; i++) {
                 for (int j = 0; j < board.length; j++) {
-                    if (j == 0 && board[i][j] == board[i][j + 1] && board[i][j] == board[i][j + 2] && board[i][j] != 0) {
+                    if (board[i][j] != 0 && j == 0 && board[i][j] == board[i][j + 1] && board[i][j] == board[i][j + 2]) {
                         return true;
                     }
-                    if (i == 0 && board[i][j] == board[i + 1][j] && board[i][j] == board[i + 2][j] && board[i][j] != 0) {
+                    if (board[i][j] != 0 && i == 0 && board[i][j] == board[i + 1][j] && board[i][j] == board[i + 2][j]) {
                         return true;
                     }
-                    if (i == 2 && j == 0 && board[i][j] == board[i - 1][j + 1] && board[i][j] == board[i - 2][j + 2] && board[i][j] != 0) {
+                    if (board[i][j] != 0 && i == 2 && j == 0 && board[i][j] == board[i - 1][j + 1] && board[i][j] == board[i - 2][j + 2]) {
                         return true;
                     }
-                    if (i == 0 && j == 0 && board[i][j] == board[i + 1][j + 1] && board[i][j] == board[i + 2][j + 2] && board[i][j] != 0) {
+                    if (board[i][j] != 0 && i == 0 && j == 0 && board[i][j] == board[i + 1][j + 1] && board[i][j] == board[i + 2][j + 2]) {
                         return true;
                     }
                 }
@@ -371,20 +371,20 @@ public class Game {
         } else if (board.length == 5) {
             for (int i = 0; i < board.length; i++) {
                 for (int j = 0; j < board.length; j++) {
-                    if ((j == 0 || j == 1) && board[i][j] == board[i][j + 1] && board[i][j] == board[i][j + 2] && board[i][j] == board[i][j + 3]
-                            && board[i][j] != 0) {
+                    if (board[i][j] != 0 && (j == 0 || j == 1) && board[i][j] == board[i][j + 1] && board[i][j] == board[i][j + 2]
+                            && board[i][j] == board[i][j + 3]) {
                         return true;
                     }
-                    if ((i == 0 || i == 1) && board[i][j] == board[i + 1][j] && board[i][j] == board[i + 2][j] && board[i][j] == board[i + 3][j]
-                            && board[i][j] != 0) {
+                    if (board[i][j] != 0 && (i == 0 || i == 1) && board[i][j] == board[i + 1][j] && board[i][j] == board[i + 2][j]
+                            && board[i][j] == board[i + 3][j]) {
                         return true;
                     }
-                    if ((i == 3 || i == 4) && (j == 0 || j == 1) && board[i][j] == board[i - 1][j + 1] && board[i][j] == board[i - 2][j + 2]
-                            && board[i][j] == board[i - 3][j + 3] && board[i][j] != 0) {
+                    if (board[i][j] != 0 && (i == 3 || i == 4) && (j == 0 || j == 1) && board[i][j] == board[i - 1][j + 1]
+                            && board[i][j] == board[i - 2][j + 2] && board[i][j] == board[i - 3][j + 3]) {
                         return true;
                     }
-                    if (((i == 0 || i == 1) && (j == 0 || j == 1)) && board[i][j] == board[i + 1][j + 1]
-                            && board[i][j] == board[i + 2][j + 2] && board[i][j] == board[i + 3][j + 3] && board[i][j] != 0) {
+                    if (board[i][j] != 0 && ((i == 0 || i == 1) && (j == 0 || j == 1)) && board[i][j] == board[i + 1][j + 1]
+                            && board[i][j] == board[i + 2][j + 2] && board[i][j] == board[i + 3][j + 3]) {
                         return true;
                     }
                 }
@@ -392,20 +392,20 @@ public class Game {
         } else if (board.length == 7) {
             for (int i = 0; i < board.length; i++) {
                 for (int j = 0; j < board.length; j++) {
-                    if ((j == 0 || j == 1 || j == 2) && board[i][j] == board[i][j + 1] && board[i][j] == board[i][j + 2]
-                            && board[i][j] == board[i][j + 3] && board[i][j] == board[i][j + 4] && board[i][j] != 0) {
+                    if (board[i][j] != 0 && (j == 0 || j == 1 || j == 2) && board[i][j] == board[i][j + 1]
+                            && board[i][j] == board[i][j + 2] && board[i][j] == board[i][j + 3] && board[i][j] == board[i][j + 4]) {
                         return true;
                     }
-                    if ((i == 0 || i == 1 || i == 2) && board[i][j] == board[i + 1][j] && board[i][j] == board[i + 2][j]
-                            && board[i][j] == board[i + 3][j] && board[i][j] == board[i + 4][j] && board[i][j] != 0) {
+                    if (board[i][j] != 0 && (i == 0 || i == 1 || i == 2) && board[i][j] == board[i + 1][j]
+                            && board[i][j] == board[i + 2][j] && board[i][j] == board[i + 3][j] && board[i][j] == board[i + 4][j]) {
                         return true;
                     }
-                    if ((i == 4 || i == 5 || i == 6) && (j == 0 || j == 1 || j == 2) && board[i][j] == board[i - 1][j + 1] && board[i][j] == board[i - 2][j + 2]
-                            && board[i][j] == board[i - 3][j + 3] && board[i][j] == board[i - 4][j + 4] && board[i][j] != 0) {
+                    if (board[i][j] != 0 && (i == 4 || i == 5 || i == 6) && (j == 0 || j == 1 || j == 2) && board[i][j] == board[i - 1][j + 1]
+                            && board[i][j] == board[i - 2][j + 2] && board[i][j] == board[i - 3][j + 3] && board[i][j] == board[i - 4][j + 4]) {
                         return true;
                     }
-                    if (((i == 0 || i == 1 || i == 2) && (j == 0 || j == 1 || j == 2) || (i == 2 && j == 2)) && board[i][j] == board[i + 1][j + 1]
-                            && board[i][j] == board[i + 2][j + 2] && board[i][j] == board[i + 3][j + 3] && board[i][j] == board[i + 4][j + 4] && board[i][j] != 0) {
+                    if (board[i][j] != 0 && ((i == 0 || i == 1 || i == 2) && (j == 0 || j == 1 || j == 2) || (i == 2 && j == 2)) && board[i][j] == board[i + 1][j + 1]
+                            && board[i][j] == board[i + 2][j + 2] && board[i][j] == board[i + 3][j + 3] && board[i][j] == board[i + 4][j + 4]) {
                         return true;
                     }
                 }
