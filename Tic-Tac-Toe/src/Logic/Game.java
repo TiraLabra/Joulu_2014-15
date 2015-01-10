@@ -10,6 +10,24 @@ import Interface.TextInterface;
  */
 public class Game {
 
+//    16:15 < Xatalos> kysymys: kumpi on tässä tärkeämpää, että koodi on "siistimpää" 
+//                 (enemmän metodeja, enemmän testejä) vai tehokkaampaa (vähemmän 
+//                 erillisiä metodeja - ymmärtääkseni javassa metodien kutsuminen 
+//                 on jotenkin erityisen tehotonta)
+//    16:17 < Xatalos> etenkin kun tässä on yksi metodi (evaluateMove) jota kutsutaan 
+//                 jopa satojatuhansia kertoja....
+//    16:17 < Xatalos> se on aika pitkä, mutta mietin että jos sitä paloittelee, niin 
+//                 siitä voisi seurata aikamoista tehokkuustappiota
+//    16:18 < OOliOO> mielellään selkeämpää
+//    16:19 < OOliOO> ei kai se metodien kutsuminen voi niin hidasta olla :O
+//    16:26 < Xatalos> haha..
+//    16:26 < Xatalos> But wait, if you invoke the method now, we'll throw in a 
+//                 SECOND method call, absolutely free! Pay only shipping and 
+//                 handling! Seriously, though. There's overhead in method calls, 
+//                 just as there's overhead in having more code to load. At some 
+//                 point one becomes more expensive than the other. The only way 
+//                 to tell is by benchmarking your code. –  Marc B Jun 27 '11 at 
+//                 15:15 
     /**
      * Creates the game board and initiates the first move
      *
@@ -369,26 +387,112 @@ public class Game {
                 }
             }
         } else if (board.length == 5) {
-            for (int i = 0; i < board.length; i++) {
-                for (int j = 0; j < board.length; j++) {
-                    if (board[i][j] != 0 && (j == 0 || j == 1) && board[i][j] == board[i][j + 1] && board[i][j] == board[i][j + 2]
-                            && board[i][j] == board[i][j + 3]) {
+            for (int i = 0; i < 5; i++) {
+                int i1 = board[i][1];
+                if (i1 != 0) {
+                    int i2 = board[i][2];
+                    int i3 = board[i][3];
+                    if (i1 == i2 && i2 == i3) {
+                        int i0 = board[i][0];
+                        int i4 = board[i][4];
+                        if (i0 == i1 || i4 == i3) {
+                            return true;
+                        }
+                    }
+                }
+            }
+            for (int i = 0; i < 5; i++) {
+                int i1 = board[1][i];
+                if (i1 != 0) {
+                    int i2 = board[2][i];
+                    int i3 = board[3][i];
+                    if (i1 == i2 && i2 == i3) {
+                        int i0 = board[0][i];
+                        int i4 = board[4][i];
+                        if (i0 == i1 || i4 == i3) {
+                            return true;
+                        }
+                    }
+                }
+            }
+            int i22 = board[2][2];
+            if (i22 != 0) {
+                int i11 = board[1][1];
+                int i33 = board[3][3];
+                if (i11 == i22 && i22 == i33) {
+                    int i00 = board[0][0];
+                    int i44 = board[4][4];
+                    if (i00 == i11 || i33 == i44) {
                         return true;
                     }
-                    if (board[i][j] != 0 && (i == 0 || i == 1) && board[i][j] == board[i + 1][j] && board[i][j] == board[i + 2][j]
-                            && board[i][j] == board[i + 3][j]) {
-                        return true;
-                    }
-                    if (board[i][j] != 0 && (i == 3 || i == 4) && (j == 0 || j == 1) && board[i][j] == board[i - 1][j + 1]
-                            && board[i][j] == board[i - 2][j + 2] && board[i][j] == board[i - 3][j + 3]) {
-                        return true;
-                    }
-                    if (board[i][j] != 0 && ((i == 0 || i == 1) && (j == 0 || j == 1)) && board[i][j] == board[i + 1][j + 1]
-                            && board[i][j] == board[i + 2][j + 2] && board[i][j] == board[i + 3][j + 3]) {
+                }
+                int i31 = board[3][1];
+                int i13 = board[1][3];
+                if (i31 == i22 && i22 == i13) {
+                    int i40 = board[4][0];
+                    int i04 = board[0][4];
+                    if (i40 == i22 || i04 == i22) {
                         return true;
                     }
                 }
             }
+            int i21 = board[2][1];
+            int i23 = board[2][3];
+            int i32 = board[3][2];
+            int i12 = board[1][2];
+            if (i21 != 0) {
+                if (i21 == i32) {
+                    int i10 = board[1][0];
+                    int i43 = board[4][3];
+                    if (i10 == i21 && i32 == i43) {
+                        return true;
+                    }
+                }
+                if (i21 == i12) {
+                    int i03 = board[0][3];
+                    int i30 = board[3][0];
+                    if (i21 == i03 && i12 == i30) {
+                        return true;
+                    } 
+                }
+            }
+            if (i23 != 0) {
+                if (i23 == i12) {
+                    int i01 = board[0][1];
+                    int i34 = board[3][4];
+                    if (i01 == i12 && i23 == i34) {
+                        return true;
+                    }
+                }
+                if (i23 == i32) {
+                    int i41 = board[4][1];
+                    int i14 = board[1][4];
+                    if (i14 == i23 && i32 == i41) {
+                        return true;
+                    } 
+                }
+            }
+            // OLD (INFERIOR) METHOD HERE:
+//            for (int i = 0; i < board.length; i++) {
+//                for (int j = 0; j < board.length; j++) {
+//                    if (board[i][j] != 0 && (j == 0 || j == 1) && board[i][j] == board[i][j + 1] && board[i][j] == board[i][j + 2]
+//                            && board[i][j] == board[i][j + 3]) {
+//                        return true;
+//                    }
+//                    if (board[i][j] != 0 && (i == 0 || i == 1) && board[i][j] == board[i + 1][j] && board[i][j] == board[i + 2][j]
+//                            && board[i][j] == board[i + 3][j]) {
+//                        return true;
+//                    }
+//                    if (board[i][j] != 0 && (i == 3 || i == 4) && (j == 0 || j == 1) && board[i][j] == board[i - 1][j + 1]
+//                            && board[i][j] == board[i - 2][j + 2] && board[i][j] == board[i - 3][j + 3]) {
+//                        return true;
+//                    }
+//                    if (board[i][j] != 0 && ((i == 0 || i == 1) && (j == 0 || j == 1)) && board[i][j] == board[i + 1][j + 1]
+//                            && board[i][j] == board[i + 2][j + 2] && board[i][j] == board[i + 3][j + 3]) {
+//                        return true;
+//                    }
+//                }
+//            }
         } else if (board.length == 7) {
             for (int i = 0; i < board.length; i++) {
                 for (int j = 0; j < board.length; j++) {

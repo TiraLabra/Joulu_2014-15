@@ -35,5 +35,19 @@ public class LogicTest {
         board3[3][3] = 2;
         board3[4][4] = 2;
         assertEquals(true, Game.checkForVictoryOrLoss(board3));
+        
+        int[][] board4 = new int[5][5];
+        board4[1][0] = 1;
+        board4[2][1] = 1;
+        board4[3][2] = 1;
+        board4[4][3] = 1;
+        assertEquals(true, Game.checkForVictoryOrLoss(board4));
+        
+        int[][] board5 = new int[5][5];
+        board5[0][1] = 1;
+        board5[2][1] = 1;
+        board5[3][2] = 1;
+        board5[4][3] = 1;
+        assertEquals(false, Game.checkForVictoryOrLoss(board5));
     }
 }
