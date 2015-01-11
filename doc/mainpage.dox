@@ -1,0 +1,7 @@
+/**
+\mainpage putkijuoksu
+
+`putkijuoksu` is a dynamic dungeon generator.
+
+\image html "src/vk2-screen.png"
+*/
