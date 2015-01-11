@@ -23,8 +23,25 @@ public class UnitTestOwnBigInteger {
         Assert.assertTrue(test3.equals(test2));
     }
     
+    @Test
+    public static void TestSubtracting(){
+        OwnBigInteger test1 = OwnBigInteger.ONE;
+        OwnBigInteger test2 = test1.subtract(test1);
+        
+        Assert.assertTrue(test2.equals(OwnBigInteger.ZERO));
+    }
+    
+    @Test
+    public static void TestMultiply(){
+        OwnBigInteger test1 = OwnBigInteger.ONE;
+        OwnBigInteger test2 = test1.multiply(OwnBigInteger.TEN);
+        
+        Assert.assertTrue(test2.equals(OwnBigInteger.TEN));
+    }
+    
     public static void main(String [] args){
         TestAdding(); // also tests converting long values to byte arrays
-        
+        TestSubtracting(); // Simple test
+        TestMultiply(); // Simple test
     }
 }
