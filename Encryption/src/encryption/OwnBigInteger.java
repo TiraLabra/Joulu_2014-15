@@ -217,7 +217,20 @@ public class OwnBigInteger {
         
         byte [] newValue = new byte[value.data.length + this.data.length];
         
+        OwnBigInteger tmp = new OwnBigInteger(this);
+        OwnBigInteger multiplier = OwnBigInteger.ONE;
+        
+        
         // TODO
+        while ( !multiplier.equals(value)){
+            tmp = tmp.add(tmp);
+            multiplier.add(multiplier);
+            
+            if ( multiplier.add(multiplier).compareTo(value) > 1){
+                // going over. need to reset something, or check how much we are going over.
+                // so we can continue calculating those sums.
+            }
+        }
         
         return new OwnBigInteger(newValue);
     }
