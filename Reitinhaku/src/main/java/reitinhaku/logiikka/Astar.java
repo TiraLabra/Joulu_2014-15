@@ -1,56 +1,57 @@
 package reitinhaku.logiikka;
 
 import reitinhaku.tietorakenteet.Prioriteettijono;
-import java.util.ArrayList;
+import reitinhaku.tietorakenteet.Listasolmu;
 
 /**
- *
- * @author Samuel
+ * Luokka vastaa A* haun toiminnasta
  */
 public class Astar {
 
-    private Verkko kartta;
+    private Verkko verkko;
     private Solmu lahto;
     private Solmu maali;
 
     /**
      *
-     * @param k
-     * @param lahto
-     * @param maali
+     * @param verkko haussa käytetty verkko
+     * @param lahto lahtosolmu
+     * @param maali maalisolmu
      */
-    public Astar(Verkko k, Solmu lahto, Solmu maali) {
-        this.kartta = k;
+    public Astar(Verkko verkko, Solmu lahto, Solmu maali) {
+        this.verkko = verkko;
         this.lahto = lahto;
         this.maali = maali;
 
     }
 
     /**
-     * alustava Astar
+     * A* haku
      *
      * @return palauttaa parhaan polum, jos sellainen löytyy
      */
-    public Polku haku() {
+    public Solmu haku() {
         Heuristiikka heur = new Heuristiikka(maali);
         Prioriteettijono keko = new Prioriteettijono(1000, heur);
-        keko.lisaa(new Polku(lahto, lahto.getPaino(), null));
-        ArrayList<Solmu> kasitellyt = new ArrayList<>();
-
+        keko.lisaa(lahto);
+        lahto.setKustannus(0);
         while (!keko.isEmpty()) {
-            Polku polku = keko.popMin();            
-            if (!kasitellyt.contains(polku.getSolmu())) {
-                kasitellyt.add(polku.getSolmu());
-                if (polku.getSolmu().equals(maali)) {
-                    return polku;
+            Solmu solmu = keko.popMin();
+                if (solmu.equals(maali)) {
+                    return solmu;
                 }
-                for (Solmu s : kartta.getNaapurit(polku.getSolmu())) {
-                    Polku uusi = new Polku(s, polku.getKustannus() + s.getPaino(),  polku);
-                    keko.lisaa(uusi);
+                    Listasolmu listanaapuri = verkko.getNaapurit(solmu).getEka();
+                    while (listanaapuri != null) {
+                        Solmu naapuri = listanaapuri.getSolmu();
+                        if (naapuri.getKustannus() > solmu.getKustannus() + naapuri.getPaino()) {
+                            naapuri.setKustannus(solmu.getKustannus() + naapuri.getPaino());
+                            naapuri.setEdellinen(solmu);
+                            keko.lisaa(naapuri);
+                        }
+                        listanaapuri = listanaapuri.getSeuraava();
+                    }
                 }
-            }
+            
+            return null;
         }
-
-        return null;
     }
-}

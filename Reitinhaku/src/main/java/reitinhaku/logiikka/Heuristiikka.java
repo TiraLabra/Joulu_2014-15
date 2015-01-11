@@ -1,24 +1,28 @@
 package reitinhaku.logiikka;
 
 /**
- *
- * @author Samuel
+ * heuristiikka luokka vastaa kustannusarvion maalisolmuun laskemisesta ja vertailusta solmujen välillä
  */
-public class Heuristiikka  {
+public class Heuristiikka {
 
     private final Solmu maalisolmu;
 
     /**
-     *
-     * @param maali
+     * 
+     * @param maali maalisolmu
      */
     public Heuristiikka(Solmu maali) {
         this.maalisolmu = maali;
     }
 
-
-    public int compare(Polku p1, Polku p2) {
-        if (taxicabArvio(p1.getSolmu(),maalisolmu) + p1.getKustannus() < taxicabArvio(p2.getSolmu(),maalisolmu) + p2.getKustannus()) {
+    /**
+     * vertaa solmujen s1 ja s2 kustannusarviota maalisolmuun
+     * @param s1 solmu 1
+     * @param s2 solmu 2
+     * @return 1 jos kustannusarvio s1:sta maalisolmuun on pienempi kuin s2:sta
+     */
+    public int vertaa(Solmu s1, Solmu s2) {
+        if (manhattanEtaisyys(s1, maalisolmu) + s1.getKustannus() < manhattanEtaisyys(s2, maalisolmu) + s2.getKustannus()) {
             return 1;
         } else {
             return -1;
@@ -26,17 +30,24 @@ public class Heuristiikka  {
     }
 
     /**
-     *
-     * @param alku
-     * @param loppu
-     * @return
+     * laskee kahden solmun välisen Manhattan etäisyyden
+     * @param alku alkusolmu
+     * @param loppu maalisolmu
+     * @return manhattan etäisyys
      */
-    public int taxicabArvio(Solmu alku, Solmu loppu) {
-
-        int dx = Math.abs(alku.getX() - loppu.getX());
-        int dy = Math.abs(alku.getY() - loppu.getY());
-        int kustannus = dx + dy;
+    public int manhattanEtaisyys(Solmu alku, Solmu loppu) {
+        int kustannus = Math.abs(alku.getX() - loppu.getX()) + Math.abs(alku.getY() - loppu.getY());
         return kustannus;
     }
 
+    /**
+     * laskee kahden solmun välisen Euklidisen etäisyyden
+     * @param alku alkusolmu
+     * @param loppu maalisolmu
+     * @return  euklidinen etäisyys
+     */
+    public double euklidinenEtaisyys(Solmu alku, Solmu loppu) {
+        double kustannus = Math.sqrt(Math.pow(alku.getX() - loppu.getX(), 2) + Math.pow(alku.getY() - loppu.getY(), 2));    
+        return kustannus;
+    }
 }

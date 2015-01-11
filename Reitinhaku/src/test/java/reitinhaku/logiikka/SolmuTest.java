@@ -16,9 +16,9 @@ import static org.junit.Assert.*;
  *
  * @author Samuel
  */
-public class KekoTest {
+public class SolmuTest {
     
-    public KekoTest() {
+    public SolmuTest() {
     }
     
     @BeforeClass

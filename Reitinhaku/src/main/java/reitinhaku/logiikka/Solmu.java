@@ -1,14 +1,14 @@
 package reitinhaku.logiikka;
 
 /**
- *
- * @author Samuel
+ * Solmu luokka kuvaa verkon yksittäisen solmun tietoja 
  */
 public class Solmu {
-
-    private int paino;
+    private int paino;// kustannus solmuun siirtymiselle 
     private int x;
     private int y;
+    private int kustannus; //pienin tunnettu kustannus alkusolmusta kyseiseen solmuun
+    private Solmu polku; // solmua edeltävä solmu pienimmän tunnetun kustannuksen polussa
 
     /**
      *
@@ -20,12 +20,9 @@ public class Solmu {
         this.x = x;
         this.y = y;
         this.paino = paino;
+        this.kustannus = Integer.MAX_VALUE;
     }
 
-    /**
-     *
-     * @return
-     */
     /**
      *
      * @return
@@ -50,5 +47,36 @@ public class Solmu {
         return paino;
     }
 
+    /**
+     *
+     * @return
+     */
+    public int getKustannus() {
+        return kustannus;
+    }
+
+    /**
+     *
+     * @return
+     */
+    public Solmu getEdellinen() {
+        return polku;
+    }
+
+    /**
+     *
+     * @param k
+     */
+    public void setKustannus(int k) {
+        kustannus = k;
+    }
+
+    /**
+     *
+     * @param s
+     */
+    public void setEdellinen(Solmu s) {
+        this.polku = s;
+    }
 
 }
