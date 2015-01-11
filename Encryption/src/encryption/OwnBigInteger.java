@@ -25,7 +25,7 @@ public class OwnBigInteger {
     private byte[] data;
 
     private final static long BYTE_MODULUS = 256;
-    private final static ByteBuffer longConverter = ByteBuffer.allocate(Long.BYTES);
+    //private final static ByteBuffer longConverter = ByteBuffer.allocate(Long.BYTES);
     /**
      * Creates OwnBigInteger instance from byte array.
      * @param data 
@@ -33,6 +33,14 @@ public class OwnBigInteger {
     public OwnBigInteger(byte[] data) {
         this.data = data;
         // TODO needs to be checked that this works correctly.
+    }
+    
+    /** 
+     * Creates OwnBigInteger instance from another one, useful for long value.
+     * @param value 
+     */
+    public OwnBigInteger(OwnBigInteger value){
+        this.data = value.data;
     }
     
     /**
@@ -50,6 +58,8 @@ public class OwnBigInteger {
      * @return OwnBigInteger instance
      */
     public static OwnBigInteger valueOf(long value){
+        
+        ByteBuffer longConverter = ByteBuffer.allocate(Long.BYTES);
         
         longConverter.putLong(value);
         
@@ -109,8 +119,14 @@ public class OwnBigInteger {
         return new OwnBigInteger(array);
     }
     
+    /**
+     * Adds parameter OwnBigInteger into this value and returns a new OwnBigInteger.
+     * @param value OwnBigInteger value to be added to this.
+     * @return OwnBigInteger
+     */
     public OwnBigInteger add(OwnBigInteger value){
         int maxLength = this.data.length + 1;
+        
         if ( maxLength < value.data.length ){
             maxLength = value.data.length + 1;
         }
@@ -118,8 +134,8 @@ public class OwnBigInteger {
         byte [] newValue = new byte[maxLength];
         
         // Starting position is in the end of byte[] array.
-        int pos1 = data.length;
-        int pos2 = value.data.length;
+        int pos1 = data.length-1;
+        int pos2 = value.data.length-1;
         int pos3 = maxLength-1;
         byte tmpCarry = 0x0;
         
@@ -158,6 +174,36 @@ public class OwnBigInteger {
         byte [] newValue = new byte[value.data.length+this.data.length];
         
         // TODO
+        int pos1 = value.data.length-1;
+        int pos2 = this.data.length - value.data.length;
+        if ( pos2 < 0 ){
+            // result will be negative. so maybe we should do addition to value instead.
+            return value.add(this);
+        }
+        
+        int j;
+        byte tmpCarry;
+        for ( int i = pos2; i < value.data.length; i++ ){
+            if ( this.data[i] < value.data[i] ){
+                // Need a carry from before!!!
+                // This can have huge recursion effects.
+                // Stop moving towards 0 when the index position doesn't contain 0.
+                for ( j = i-1; ;j-- ){
+                    
+                    if ( this.data[j] > 0 ){
+                        this.data[j] = this.data[j]--;
+                        tmpCarry = (byte)0xFF;
+                        break;
+                    }
+                    else {
+                        this.data[j] = (byte)0xFF;
+                    }
+                }
+                newValue[i] = (byte)(tmpCarry - value.data[i]);
+            }else{
+                newValue[i] = (byte)(this.data[i] - value.data[i]);
+            }
+        }
         
         return new OwnBigInteger(newValue);
     }
