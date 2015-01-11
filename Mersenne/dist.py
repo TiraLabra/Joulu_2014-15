@@ -34,12 +34,12 @@ def lognormal(v,m,s): # log-normal distribution
     w = map(lambda x: exp(m+s*probit(x)), v)
     return list(w)
 
-def cauchy(v,x0,g): # Cauchy distribution
-    w = map(lambda x: x0 + g*tan(pi*(r-0.5)), v)
+def cauchy(v,x0,g): # Cauchy distribution; xm (location), g > 0 (scale)
+    w = map(lambda x: x0 + g*tan(pi*(x-0.5)), v)
     return list(w)
 
 def logcauchy(v,m,s): # log-Cauchy distribution
-    w = map(lambda x: exp(m+s*tan(pi*(r-0.5))), v)
+    w = map(lambda x: exp(m+s*tan(pi*(x-0.5))), v)
     return list(w)
 
 def logistic(v,m,s): # logistic distribution

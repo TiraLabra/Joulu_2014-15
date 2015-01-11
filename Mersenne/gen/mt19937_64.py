@@ -28,7 +28,7 @@ class mt19937_64(object): # MT19937 64-bit variant of the Mersenne Twister prng
         self.idx %= 312
         return y
     
-    def vectorize(self,n): # extracts n floats from [0,1]
+    def randarray(self,n): # extracts n floats from [0,1]
         v = [0]*n
         for i in range(0,n):
             v[i] = self.extract()/0xffffffffffffffff
