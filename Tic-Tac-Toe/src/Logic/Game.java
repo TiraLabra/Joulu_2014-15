@@ -141,9 +141,6 @@ public class Game {
                                 evaluationBoard[i][j] = evaluateMove(newBoard, 1, 1);
                             }
                         }
-//                        if (evaluationBoard[i][j] == 0) {
-//                            evaluationBoard[i][j] = - Math.max(Math.abs(i - board.length / 2), Math.abs(j - board.length / 2));
-//                        }
                         newBoard[i][j] = 0;
                     } else {
                         if (newBoard[i][j] == 1 || newBoard[i][j] == 2) {
@@ -387,6 +384,8 @@ public class Game {
                 }
             }
         } else if (board.length == 5) {
+            // first check if the center positions are taken - if yes, then proceed to check outer positions
+            // otherwise abandon the checking process
             for (int i = 0; i < 5; i++) {
                 int i1 = board[i][1];
                 if (i1 != 0) {
@@ -453,7 +452,7 @@ public class Game {
                     int i30 = board[3][0];
                     if (i21 == i03 && i12 == i30) {
                         return true;
-                    } 
+                    }
                 }
             }
             if (i23 != 0) {
@@ -469,7 +468,7 @@ public class Game {
                     int i14 = board[1][4];
                     if (i14 == i23 && i32 == i41) {
                         return true;
-                    } 
+                    }
                 }
             }
             // OLD (INFERIOR) METHOD HERE:
