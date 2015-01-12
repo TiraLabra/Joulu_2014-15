@@ -56,61 +56,34 @@
     self.finalStates=[NSMutableSet set];
     self.initialState=state;
     [self rewind]; //creates the currentStates array and adds the initial state there
+    ROState* submatchStart; //for operators that apply to previous character or parenthesis expression, we have to save the start of the matching subgroup:
     for (long i=0; i<regEx.length; i++) {
         for (ROState* currentState in self.currentStates) {
             NSString* character=[regEx substringWithRange:NSMakeRange(i, 1)];
-            //checking order: 1) parentheses 2) operators 3) next char operators 4) single char match
-            if ([character isEqualToString:@"("]) {
-                //here we must implement recursive NFAs for the expression in parentheses
-                //first, find the corresponding closing parenthesis:
-                long parentheses=1;
-                long j=i;
-                while (parentheses>0) {
-                    j++;
-                    NSString* subcharacter=[regEx substringWithRange:NSMakeRange(j, 1)];
-                    if ([subcharacter isEqualToString:@"("]) parentheses++;
-                    if ([subcharacter isEqualToString:@")"]) parentheses--;
-                }
-                //make a new NFA for the subexpression, set the current state as its initial state and skip to the end:
-                NSString* subexpression=[regEx substringWithRange:NSMakeRange(i+1, j-i-1)];
-                RONFA* subNFA=[[RONFA alloc] initWithState:currentState withRegEx:subexpression];
-                i=j;
-                //if the initial state of the subexpression changed (due to nesting), we must update all the properties of freshly created currentState to reflect it!!! (remember the subNFA will be garbagecollected and its initialState with it!!!) if we only change currentState pointer to subNFA.initialState, currentState will no longer be linked to the states in *this* NFA, cannot do that :D
-                [currentState copyFromState:subNFA.initialState];
-                
-                //Here, the resulting NFA may have several final states:
-                self.nextStates=subNFA.finalStates;
-                //These states are freshly created, they have finality=YES and no nextStates added. Correct that:
-                for (ROState* state in subNFA.finalStates) state.finality=NO;
-                //self.nextStates exist already, skip creating them:
+            
+            //checking order: 1) previous char operators 2) parentheses 3) operators 4) single char match
+            
+            //1) operators that affect the previous character (or submatch in parentheses):
+            
+            //if the operator is * or ?, we have to make the previous matching group optional!
+            if ([character isEqualToString:@"?"]) {
+                //this means the previous submatch is optional, i.e. we have to construct a fork and insert it before the submatch. submatchStart is copied to alternateState, nextState is new:
+                [self insertFork:submatchStart];
+                //current state is here the match state of a submatch. we have to set the fork to direct to the same state as the submatch:
+                submatchStart.nextState=currentState;
+                [self.nextStates addObject:submatchStart.nextState];
                 continue;
             }
-            
-            //2) check operators:
-            else if ([character isEqualToString:@"|"]) {
-                //here we must make a new initial state for the superexpression, nest the current NFA inside it, and create another NFA for the other subexpression!!! forking into multiple final states ensues, but the current state is one of them.
-                //now the problem is that *if we have two current states, we are doing the same thing twice* or, if we break at the first option, we are not adding all the current states to the end states? is it enough just to add both and not do anything else before breaking???
-                NSString* theOtherSubexpression=[regEx substringWithRange:NSMakeRange(i+1, regEx.length-i-1)];
-                ROState* newInitialState = [[ROState alloc] init];
-                //here we must be careful about infinite loops when moving pointers!; better create a new state pointer with all the properties of the initial state, and just forget the original initialstate!!
-                newInitialState.nextState=[self.initialState copy];
-                self.initialState=newInitialState;
-                ROState* theOtherState = [[ROState alloc] init];
-                newInitialState.alternateState=theOtherState; //the initial state is now a fork!
-                RONFA* theOtherNFA =[[RONFA alloc] initWithState:theOtherState withRegEx:theOtherSubexpression];
-                //we cannot edit self.currentStates within the loop!!!
-                //instead, save the current (final state) and the final states of the other subexpression in self.nextStates:
-                self.nextStates=theOtherNFA.finalStates;
-                [self.nextStates addObjectsFromArray:[self.currentStates allObjects]];
-                //we have processed the rest of the expression and will not have to process the rest of the currentStates!
-                //we created self.nextStates and they are the final states, including all of the currentStates:
-                i=regEx.length;
-                break;
+            if ([character isEqualToString:@"*"]) {
+                //this means the previous submatch is optional, i.e. we have to construct a fork and insert it before the submatch. submatchStart is copied to alternateState, nextState is new:
+                [self insertFork:submatchStart];
+                //current state is here the match state of a submatch. we have to set the end of the submatch to direct to the same state as the fork, or back to the start of the match:
+                currentState.alternateState=submatchStart;
+                currentState.nextState=submatchStart.nextState; //here submatchstart is the fork state now!
+                [self.nextStates addObject:submatchStart.nextState];
+                continue;
             }
-            //if the operator is * or ?, we have to make the previous matching group optional! how to add fork in place of *previous state*, as we don't know how many steps are in between before we arrived at currentState??
-            
-            //3) check next character operators:
-            NSString* nextCharacter;
+            /*NSString* nextCharacter;
             if (i<regEx.length-1) nextCharacter=[regEx substringWithRange:NSMakeRange(i+1, 1)];
             if ([nextCharacter isEqualToString:@"?"]) {
                 //this means the character is optional, i.e. we have a fork and a match.:
@@ -138,6 +111,59 @@
                 i++;
                 //self.nextStates exist already, skip creating them:
                 continue;
+            }*/
+            
+            //from here on, the current state marks the start of a new submatch
+            submatchStart=currentState;
+            
+            //2) parentheses (submatch)
+            if ([character isEqualToString:@"("]) {
+                //here we must implement recursive NFAs for the expression in parentheses
+                //first, find the corresponding closing parenthesis:
+                long parentheses=1;
+                long j=i;
+                while (parentheses>0) {
+                    j++;
+                    NSString* subcharacter=[regEx substringWithRange:NSMakeRange(j, 1)];
+                    if ([subcharacter isEqualToString:@"("]) parentheses++;
+                    if ([subcharacter isEqualToString:@")"]) parentheses--;
+                }
+                //make a new NFA for the subexpression, set the current state as its initial state and skip to the end:
+                NSString* subexpression=[regEx substringWithRange:NSMakeRange(i+1, j-i-1)];
+                RONFA* subNFA=[[RONFA alloc] initWithState:currentState withRegEx:subexpression];
+                i=j;
+                //if the initial state of the subexpression changed (due to nesting), we must update all the properties of freshly created currentState to reflect it!!! (remember the subNFA will be garbagecollected and its initialState with it!!!) if we only change currentState pointer to subNFA.initialState, currentState will no longer be linked to the states in *this* NFA, cannot do that :D
+                [currentState copyFromState:subNFA.initialState];
+                
+                //Here, the resulting NFA may have several final states:
+                self.nextStates=subNFA.finalStates;
+                //These states are freshly created, they have finality=YES and no nextStates added. Correct that:
+                for (ROState* state in subNFA.finalStates) state.finality=NO;
+                //self.nextStates exist already, skip creating them:
+                continue;
+            }
+            
+            //3) check operators:
+            //the or operator applies to the whole match, not just the previous character, so we don't need submatchStart:
+            else if ([character isEqualToString:@"|"]) {
+                //here we must make a new initial state for the superexpression, nest the current NFA inside it, and create another NFA for the other subexpression!!! forking into multiple final states ensues, but the current state is one of them.
+                //now the problem is that *if we have two current states, we are doing the same thing twice* or, if we break at the first option, we are not adding all the current states to the end states? is it enough just to add both and not do anything else before breaking???
+                NSString* theOtherSubexpression=[regEx substringWithRange:NSMakeRange(i+1, regEx.length-i-1)];
+                ROState* newInitialState = [[ROState alloc] init];
+                //here we must be careful about infinite loops when moving pointers!; better create a new state pointer with all the properties of the initial state, and just forget the original initialstate!!
+                newInitialState.nextState=[self.initialState copy];
+                self.initialState=newInitialState;
+                ROState* theOtherState = [[ROState alloc] init];
+                newInitialState.alternateState=theOtherState; //the initial state is now a fork!
+                RONFA* theOtherNFA =[[RONFA alloc] initWithState:theOtherState withRegEx:theOtherSubexpression];
+                //we cannot edit self.currentStates within the loop!!!
+                //instead, save the current (final state) and the final states of the other subexpression in self.nextStates:
+                self.nextStates=theOtherNFA.finalStates;
+                [self.nextStates addObjectsFromArray:[self.currentStates allObjects]];
+                //we have processed the rest of the expression and will not have to process the rest of the currentStates!
+                //we created self.nextStates and they are the final states, including all of the currentStates:
+                i=regEx.length;
+                break;
             }
             
             //4) *finally* match character, including . operator:
@@ -163,6 +189,14 @@
     //after initialization, return the automaton to the beginning for running:
     [self rewind];
     return self;
+}
+
+-(void) insertFork:(ROState*) oldState {
+    //the method inserts a fork in place of oldState and copies oldState to its alternateState:
+    ROState* newState=[oldState copy];
+    oldState.matchingCharacter=nil;
+    oldState.alternateState=newState;
+    oldState.nextState=[[ROState alloc]init];
 }
 
 -(BOOL) pruneForks:(NSMutableSet*) setOfStates{
