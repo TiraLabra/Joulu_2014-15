@@ -61,7 +61,7 @@
         for (ROState* currentState in self.currentStates) {
             NSString* character=[regEx substringWithRange:NSMakeRange(i, 1)];
             
-            //checking order: 1) previous char operators 2) parentheses 3) operators 4) single char match
+            //checking order: 1) previous char operators 2) parentheses 3) OR 4) single char match
             
             //1) operators that affect the previous character (or submatch in parentheses):
             
@@ -83,39 +83,9 @@
                 [self.nextStates addObject:submatchStart.nextState];
                 continue;
             }
-            /*NSString* nextCharacter;
-            if (i<regEx.length-1) nextCharacter=[regEx substringWithRange:NSMakeRange(i+1, 1)];
-            if ([nextCharacter isEqualToString:@"?"]) {
-                //this means the character is optional, i.e. we have a fork and a match.:
-                currentState.alternateState=[[ROState alloc] init];
-                if (![character isEqualToString:@"."]) currentState.alternateState.matchingCharacter=character; //this makes sure we can also have . combine with operators
-                //create the next state that makes matching optional:
-                currentState.nextState=[[ROState alloc] init];
-                //we go here also after a single match:
-                currentState.alternateState.nextState=currentState.nextState;
-                [self.nextStates addObject:currentState.nextState];
-                //skip over question mark:
-                i++;
-                //self.nextStates exist already, skip creating them:
-                continue;
-            }
-            else if ([nextCharacter isEqualToString:@"*"]) {
-                //like ?, but we can match more than one character:
-                currentState.alternateState=[[ROState alloc] init];
-                if (![character isEqualToString:@"."]) currentState.alternateState.matchingCharacter=character; //this makes sure we can also have . combine with operators
-                currentState.alternateState.nextState=currentState;
-                //create the next state that makes matching optional:
-                currentState.nextState=[[ROState alloc] init];
-                [self.nextStates addObject:currentState.nextState];
-                //skip over the asterisk:
-                i++;
-                //self.nextStates exist already, skip creating them:
-                continue;
-            }*/
             
             //from here on, the current state marks the start of a new submatch
             submatchStart=currentState;
-            
             //2) parentheses (submatch)
             if ([character isEqualToString:@"("]) {
                 //here we must implement recursive NFAs for the expression in parentheses
@@ -143,24 +113,18 @@
                 continue;
             }
             
-            //3) check operators:
+            //3) OR:
             //the or operator applies to the whole match, not just the previous character, so we don't need submatchStart:
             else if ([character isEqualToString:@"|"]) {
                 //here we must make a new initial state for the superexpression, nest the current NFA inside it, and create another NFA for the other subexpression!!! forking into multiple final states ensues, but the current state is one of them.
                 //now the problem is that *if we have two current states, we are doing the same thing twice* or, if we break at the first option, we are not adding all the current states to the end states? is it enough just to add both and not do anything else before breaking???
                 NSString* theOtherSubexpression=[regEx substringWithRange:NSMakeRange(i+1, regEx.length-i-1)];
-                ROState* newInitialState = [[ROState alloc] init];
-                //here we must be careful about infinite loops when moving pointers!; better create a new state pointer with all the properties of the initial state, and just forget the original initialstate!!
-                newInitialState.nextState=[self.initialState copy];
-                self.initialState=newInitialState;
-                ROState* theOtherState = [[ROState alloc] init];
-                newInitialState.alternateState=theOtherState; //the initial state is now a fork!
-                RONFA* theOtherNFA =[[RONFA alloc] initWithState:theOtherState withRegEx:theOtherSubexpression];
+                [self insertFork:self.initialState];
+                RONFA* theOtherNFA =[[RONFA alloc] initWithState:self.initialState.nextState withRegEx:theOtherSubexpression];
                 //we cannot edit self.currentStates within the loop!!!
-                //instead, save the current (final state) and the final states of the other subexpression in self.nextStates:
+                //instead, save all the current (final) state(s) and the final state(s) of the other subexpression in self.nextStates:
                 self.nextStates=theOtherNFA.finalStates;
                 [self.nextStates addObjectsFromArray:[self.currentStates allObjects]];
-                //we have processed the rest of the expression and will not have to process the rest of the currentStates!
                 //we created self.nextStates and they are the final states, including all of the currentStates:
                 i=regEx.length;
                 break;
@@ -193,9 +157,9 @@
 
 -(void) insertFork:(ROState*) oldState {
     //the method inserts a fork in place of oldState and copies oldState to its alternateState:
-    ROState* newState=[oldState copy];
+    ROState* newOldState=[oldState copy];
     oldState.matchingCharacter=nil;
-    oldState.alternateState=newState;
+    oldState.alternateState=newOldState;
     oldState.nextState=[[ROState alloc]init];
 }
 
@@ -255,7 +219,7 @@
             [self matchCharacter:character inState:state forIndex:i];
         }
         //update start indices to the new states *before* checking finality. we have to *also* update the start indices for currentStates that are *not* in nextStates, i.e. non-matched ones!! this loop automatically sets next indices to -1!
-        NSMutableSet* statesToBeUpdated=[[NSMutableSet alloc]init];
+        NSMutableSet* statesToBeUpdated=[NSMutableSet set];
         [statesToBeUpdated unionSet:self.currentStates];
         [statesToBeUpdated unionSet:self.nextStates];
         for (ROState* state in statesToBeUpdated) {
