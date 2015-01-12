@@ -24,7 +24,7 @@ public class PixelsView extends JPanel {
 
     @Override
     public void paintComponent(Graphics g) {
-        setBackground(Color.WHITE);
+        setBackground(Color.GRAY);
         g.setColor(Color.WHITE);
         g.fillRect(0, 0, 240, 240);
         g.setColor(Color.BLACK);
@@ -40,11 +40,10 @@ public class PixelsView extends JPanel {
 
         @Override
         public void mouseClicked(MouseEvent e) {
+            // calculate from mouse coordinantes which pixel to update
             if (e.getX() < 240 && e.getY() < HEIGHT + 240) {
-                System.out.println("" + e.getX());
-                int index = (e.getX() / 30) * (1 + (HEIGHT - e.getY()) / 30);
+                int index = (e.getX() / 30) + (8 * (e.getY() / 30));
                 cursor.update(index);
-                repaint();
             }
         }
 

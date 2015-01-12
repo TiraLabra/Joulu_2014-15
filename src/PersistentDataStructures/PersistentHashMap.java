@@ -35,9 +35,8 @@ public class PersistentHashMap<K, V> implements IPersistentHashMap<K, V> {
     }
 
     /**
-     *
+     * returns the value associated with the given key
      * @param key
-     * @return PersistentHashMap
      */
     @Override
     public V get(K key) {
@@ -58,9 +57,9 @@ public class PersistentHashMap<K, V> implements IPersistentHashMap<K, V> {
     }
 
     /**
-     *
+     * returns a new PersistentHashMap without the given key
      * @param key
-     * @return
+     * @return PersistentHashMap
      */
     @Override
     public PersistentHashMap dissoc(K key) {
@@ -78,6 +77,11 @@ public class PersistentHashMap<K, V> implements IPersistentHashMap<K, V> {
         public LeafNode find(int hash, K key, int level);
     }
 
+    /**
+     * empty node, used when initializing an empty hashmap
+     * @param <K> key
+     * @param <V> value
+     */
     private static class EmptyNode<K,V> implements Node<K,V> {
 
         @Override
@@ -97,6 +101,11 @@ public class PersistentHashMap<K, V> implements IPersistentHashMap<K, V> {
 
     }
 
+    /**
+     * InternalNode can hold LeafNodes of other InternalNodes
+     * @param <K> key
+     * @param <V> value
+     */
     private static class InternalNode<K,V> implements Node<K,V> {
         private final Node<K,V>[] nodes;
         private final int bitmap;
@@ -174,7 +183,10 @@ public class PersistentHashMap<K, V> implements IPersistentHashMap<K, V> {
                 // node exists
                 Update u = this.nodes[index(pos)].dissoc(hash, level + 5, key);
                 if (u.root == null) {
+                    // after removal the child node is empty
                     if (this.nodes.length > 0) {
+                        // after removal this node is not empty
+                        // copy this node and remove the null pointer
                         InternalNode<K,V> newNode = this.copyWithout(pos);
                         u.root = newNode;
                         return u;
@@ -182,6 +194,8 @@ public class PersistentHashMap<K, V> implements IPersistentHashMap<K, V> {
                         return u;
                     }
                 } else {
+                    // after removal the child pointer still has values
+                    // construct a new InternalNode and then return that
                     Node[] newNodes = Arrays.copyOf(this.nodes, this.nodes.length);
                     newNodes[index(pos)] = u.root;
                     InternalNode<K,V> newNode = new InternalNode<> (newNodes, this.bitmap);
@@ -206,6 +220,12 @@ public class PersistentHashMap<K, V> implements IPersistentHashMap<K, V> {
 
     }
 
+    /**
+     * LeafNode holds the actual value, and a reference
+     * to the next value in the case of a hash collision
+     * @param <K> key
+     * @param <V> level
+     */
     private static class LeafNode<K,V> implements Node<K,V> {
         private final K key;
         private final V value;
@@ -223,6 +243,14 @@ public class PersistentHashMap<K, V> implements IPersistentHashMap<K, V> {
             this.next = next;
         }
 
+        /**
+         * Recursively copy part of this linked list,
+         * return the new root node
+         * @param node
+         * @param numOfCopies
+         * @param last
+         * @return LeafNode
+         */
         private LeafNode<K,V> copy(LeafNode<K,V> node, int numOfCopies, LeafNode<K,V> last) {
             if (node == null) {
                 return null;
@@ -237,6 +265,14 @@ public class PersistentHashMap<K, V> implements IPersistentHashMap<K, V> {
             return new Update(new LeafNode(key, value, copy(first, numOfCopies, next)), 0);
         }
 
+        /**
+         * add a key value pair to this linked list
+         * @param first
+         * @param key
+         * @param value
+         * @param rank
+         * @return 
+         */
         private Update add (LeafNode first, K key, V value, int rank) {
             if (this.key.equals(key)) {
                 return update(key, value, first, rank, this.next);
@@ -247,6 +283,14 @@ public class PersistentHashMap<K, V> implements IPersistentHashMap<K, V> {
             }
         }
 
+        /**
+         * remove a key value pair from this linked list
+         * @param first
+         * @param key
+         * @param value
+         * @param rank
+         * @return 
+         */
         private Update remove (LeafNode first, K key, V value, int rank) {
             if (this.key.equals(key)) {
                 if (rank == 0) {
@@ -261,11 +305,24 @@ public class PersistentHashMap<K, V> implements IPersistentHashMap<K, V> {
             }
         }
 
+        /**
+         * associate a value with the given hash
+         * @param hash
+         * @param level
+         * @param key
+         * @param value
+         * @return 
+         */
         @Override
         public Update assoc(int hash, int level, K key, V value) {
             if (hash == this.key.hashCode()) {
+                // a hash collision has occurred
+                // add the new value to this linked list
                 return add(this, key, value, 0);
             } else {
+                // the given hash does not exist in this hash map
+                // create a new InternalNode and this LeafNode to it
+                // then assoc on the new InternalNode
                 InternalNode<K,V> iNode = new InternalNode<>(new Node[0], 0);
                 Update u = iNode.assoc(this.key.hashCode(), level, this.key, this.value);
                 return new Update(u.root.assoc(hash, level, key, value).root, 1);
@@ -275,8 +332,11 @@ public class PersistentHashMap<K, V> implements IPersistentHashMap<K, V> {
         @Override
         public Update dissoc(int hash, int level, K key) {
             if (hash == this.key.hashCode()) {
+                // this linked list holds the key if it exists
                 return remove(this, key, value, 0);
             } else {
+                // key was not found
+                // return this node unchanged
                 return new Update(this, 0);
             }
         }
@@ -294,6 +354,10 @@ public class PersistentHashMap<K, V> implements IPersistentHashMap<K, V> {
 
     }
 
+    /**
+     * internal class used to carry the changed count 
+     * from a leaf to the root in recursive operations
+     */
     private static class Update {
         private Node root;
         private final int countDelta;
