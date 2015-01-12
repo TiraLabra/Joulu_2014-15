@@ -43,4 +43,17 @@
     self.finality=state.finality;
 }
 
+
+-(void)propagateStartIndex {
+    if (self.nextState.startIndex>self.startIndex) self.nextState.startIndex=self.startIndex;
+    if (self.alternateState.startIndex>self.startIndex) self.alternateState.startIndex=self.startIndex;
+    if (self.nextState.nextStartIndex>self.startIndex) self.nextState.nextStartIndex=self.startIndex;
+    if (self.alternateState.nextStartIndex>self.startIndex) self.alternateState.nextStartIndex=self.startIndex;
+}
+
+-(void)updateStartIndices {
+    self.startIndex=self.nextStartIndex;
+    self.nextStartIndex=[NSNumber numberWithUnsignedLong:NSUIntegerMax];
+}
+
 @end

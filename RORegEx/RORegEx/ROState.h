@@ -52,5 +52,14 @@
  *  @param state The ROState object to be copied from.
  */
  -(void)copyFromState:(ROState *) state;
+/**
+ *  Propagates startIndex to startIndex and nextStartIndex of subsequent states, if they are higher.
+ */
+-(void)propagateStartIndex;
+/**
+ *  Sets startIndex=nextStartIndex and nextStartIndex=-1.
+ */
+-(void)updateStartIndices;
+
 @end
 
