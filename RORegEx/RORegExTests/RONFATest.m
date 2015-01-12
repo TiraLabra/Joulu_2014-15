@@ -78,7 +78,7 @@
 
 - (void)testZeroStarMatch {
     RONFA* NFA = [[RONFA alloc] initWithRegEx:@"ab*a"];
-    XCTAssert(NSEqualRanges([NFA findMatch:@"aa"],NSMakeRange(0, 2)), @"Correct one * match");
+    XCTAssert(NSEqualRanges([NFA findMatch:@"aa"],NSMakeRange(0, 2)), @"Correct zero * match");
 }
 
 - (void)testTwoStarMatch {
@@ -98,7 +98,7 @@
 
 - (void)testOptionalCharacters {
     RONFA* NFA = [[RONFA alloc] initWithRegEx:@"a?a?aa"];
-    XCTAssert(NSEqualRanges([NFA findMatch:@"aa"],NSMakeRange(0, 2)), @"Correct a?a?aa match");
+    XCTAssert(NSEqualRanges([NFA findMatch:@"aa"],NSMakeRange(0, 2)), @"Correct a?a? non-match");
 }
 
 - (void)testParentheses {
@@ -143,6 +143,11 @@
 - (void)testOptionalParentheses {
     RONFA* NFA = [[RONFA alloc] initWithRegEx:@"(a|b)*c"];
     XCTAssert(NSEqualRanges([NFA findMatch:@"abbabac"],NSMakeRange(0, 7)), @"Correct optional subexpression match");
+}
+
+- (void)testOperatorsForParentheses {
+    RONFA* NFA = [[RONFA alloc] initWithRegEx:@"(aaa)*c"];
+    XCTAssert(NSEqualRanges([NFA findMatch:@"c"],NSMakeRange(0, 1)), @"Correct missing subexpression match");
 }
 
 - (void)testPerformancePathological20 {
