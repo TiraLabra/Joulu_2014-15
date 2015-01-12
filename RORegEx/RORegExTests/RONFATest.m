@@ -150,6 +150,11 @@
     XCTAssert(NSEqualRanges([NFA findMatch:@"c"],NSMakeRange(0, 1)), @"Correct missing subexpression match");
 }
 
+- (void)testSubexpressionReturnToStart {
+    RONFA* NFA = [[RONFA alloc] initWithRegEx:@"b(aaa)*c"];
+    XCTAssert(NSEqualRanges([NFA findMatch:@"babaaac"],NSMakeRange(2, 5)), @"Correct missing subexpression match");
+}
+
 - (void)testPerformancePathological20 {
     // This is an example of a performance test case.
     int n=20;

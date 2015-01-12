@@ -254,8 +254,11 @@
         for (ROState* state in self.currentStates) {
             [self matchCharacter:character inState:state forIndex:i];
         }
-        //update start indices to the new states *before* checking finality:
-        for (ROState* state in self.nextStates) {
+        //update start indices to the new states *before* checking finality. we have to *also* update the start indices for currentStates that are *not* in nextStates, i.e. non-matched ones!! this loop automatically sets next indices to -1!
+        NSMutableSet* statesToBeUpdated=[[NSMutableSet alloc]init];
+        [statesToBeUpdated unionSet:self.currentStates];
+        [statesToBeUpdated unionSet:self.nextStates];
+        for (ROState* state in statesToBeUpdated) {
             state.startIndex=state.nextStartIndex;
             state.nextStartIndex=[NSNumber numberWithUnsignedLong:NSUIntegerMax];
         }
@@ -278,13 +281,13 @@
 }
 
 -(void)matchCharacter:(NSString *) character inState:(ROState *)state forIndex:(long) i{
+    NSNumber* matchStartIndex;
     //because of nondeterminism, at character match we get two branches!
     //(remember to compare NSStrings, not pointers =)
     if ([character isEqualToString:state.matchingCharacter] || state.matchingCharacter==nil) {
         //matching character found, or "any character" match!
         //first add the next state:
         [self.nextStates addObject:state.nextState];
-        NSNumber *matchStartIndex;
         //if the current state is not yet in a matching branch, we are at the beginning of a match and must mark the start index for the next step:
         if ([state.startIndex isEqualToNumber:[NSNumber numberWithUnsignedLong:NSUIntegerMax]]) matchStartIndex=[NSNumber numberWithUnsignedLong:i];
         //if we are already in a matching branch, propagate old starting index:
