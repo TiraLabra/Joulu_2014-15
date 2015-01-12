@@ -1,16 +1,11 @@
+package persistentDataStructures;
+
 
 import java.util.Arrays;
 
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
-
 /**
  *
- * @author laurikin
+ * @author Lauri Kinnunen
  * @param <K> key
  * @param <V> value
  */
@@ -30,23 +25,43 @@ public class PersistentHashMap<K, V> implements IPersistentHashMap<K, V> {
         this.count = count;
     }
 
+    /**
+     * returns the number of items stored in this PersistentHashMap
+     * @return int
+     */
     @Override
     public int count() {
         return this.count;
     }
 
+    /**
+     *
+     * @param key
+     * @return PersistentHashMap
+     */
     @Override
     public V get(K key) {
         LeafNode<K,V> l = this.root.find(key.hashCode(), key, 0);
         return l == null? null : l.value;
     }
 
+    /**
+     * returns a new PersistentHashMap that associates the given index with the given value
+     * @param key
+     * @param value
+     * @return PersistentHashMap
+     */
     @Override
     public PersistentHashMap<K, V> assoc(K key, V value) {
         Update u = this.root.assoc(key.hashCode(), 0, key, value);
         return new PersistentHashMap<>(u.root, this.count + u.countDelta);
     }
 
+    /**
+     *
+     * @param key
+     * @return
+     */
     @Override
     public PersistentHashMap dissoc(K key) {
         Update u = this.root.dissoc(key.hashCode(), 0, key);

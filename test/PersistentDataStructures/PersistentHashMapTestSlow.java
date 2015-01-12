@@ -1,4 +1,7 @@
+package PersistentDataStructures;
 
+
+import persistentDataStructures.PersistentHashMap;
 import java.util.ArrayList;
 import java.util.Collections;
 import static org.junit.Assert.assertEquals;
