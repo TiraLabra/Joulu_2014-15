@@ -7,11 +7,11 @@
 //
 
 #import <Foundation/Foundation.h>
-/**
+/*!
  *  A simple category for matching an NSString with a regular expression.
  */
 @interface NSString (RORegEx)
-/**
+/*!
  *  Method for matching the string with a given regular expression.
  *
  *  @param regEx The regular expression.

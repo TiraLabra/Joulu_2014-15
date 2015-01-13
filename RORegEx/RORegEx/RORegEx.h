@@ -8,12 +8,12 @@
 
 #import <Foundation/Foundation.h>
 
-/**
+/*!
  Represents an interpreter with a specific regular expression.
  */
 
 @interface RORegEx : NSObject
-/**
+/*!
  *  @brief Initializes the regular expression interpreter.
  *
  *  @param regEx The required regular expression.
@@ -21,7 +21,7 @@
  *  @return A regular expression interpreter with the given expression.
  */
 -(id) initWith:(NSString *)regEx;
-/**
+/*!
  *  @brief Matches the input string to the regular expression.
  *
  *  @param input The string to be processed.

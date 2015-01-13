@@ -11,7 +11,7 @@
 
 @interface RORegEx ()
 
-/**
+/*!
  *  The nondeterministic finite automaton used in the implementation of the interpreter.
  */
 @property (strong, nonatomic)RONFA* NFA;

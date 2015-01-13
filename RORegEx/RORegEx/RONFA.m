@@ -10,29 +10,29 @@
 #import "ROState.h"
 
 @interface RONFA ()
-/**
+/*!
  *  @brief The starting state of the automaton.
  *  @discussion Contains pointers to all the other states; hence, it need be the only strong reference to a state.
  */
 @property (strong, nonatomic)ROState* initialState;
-/**
+/*!
  *  The current states in the construction and running of the automaton. There are several as the running is done in parallel.
  */
 @property (strong, nonatomic)NSMutableSet* currentStates;
-/**
+/*!
  *  The current states for the next step.
  */
 @property (strong, nonatomic)NSMutableSet* nextStates;
-/**
+/*!
  *  The predefined regexp operators that are not treated as literals.
  */
 @property NSCharacterSet* operators;
-/**
+/*!
  *  @brief Contains all the states of the automaton that indicate a pattern match, i.e. those that have finality=YES.
  *  @discussion Note that a set contains strong references and the set must be strong. Hence, retain cycles of states pointing back to the NFA must be avoided. This is no problem as long as the state is automaton-agnostic.
 */
 @property (strong, nonatomic)NSMutableSet* finalStates;
-/**
+/*!
  *  Contains the regular expression used for constructing the automaton.
  */
 @property (strong, nonatomic)NSString* regEx;
