@@ -179,12 +179,9 @@
                 alternateToBeAdded=state.alternateState;
                 //also, remember to propagate the starting index of the match from any fork state to both of the subsequent states, as the fork state does not enter matchCharacter method!!
                 //the fork states start indices have already been updated, so their nextStartIndex=-1.
-                [state propagateStartIndex]; //now the child states have correct start indices copied from here.
-                [state.nextState updateStartIndices]; //this one may cause an already updated start index to be lost? or not??
-                [state.alternateState updateStartIndices];
                 //*don't* overwrite smaller start indices if already present (greedy matching):
-                /*if (state.nextState.startIndex>state.startIndex) state.nextState.startIndex=state.startIndex;
-                if (state.alternateState.startIndex>state.startIndex) state.alternateState.startIndex=state.startIndex;*/
+                if (state.nextState.startIndex>state.startIndex) state.nextState.startIndex=state.startIndex;
+                if (state.alternateState.startIndex>state.startIndex) state.alternateState.startIndex=state.startIndex;
                 //this particular fork has been processed (even if multiple branches ended up in the same fork), so we can remove it from current states.
                 //cannot add and remove objects from within the iteration loop. we have states to add and a fork to remove, so get out of the loop:
                 break;

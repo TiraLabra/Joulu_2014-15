@@ -53,7 +53,7 @@
  */
  -(void)copyFromState:(ROState *) state;
 /**
- *  Propagates startIndex to startIndex and nextStartIndex of subsequent states, if they are higher.
+ *  Propagates startIndex to startIndex and nextStartIndex of subsequent states, but only if they are higher. The implementation results in a greedy matching automaton, where lowest start indices prevail.
  */
 -(void)propagateStartIndex;
 /**
