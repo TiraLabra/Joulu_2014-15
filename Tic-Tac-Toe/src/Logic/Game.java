@@ -10,24 +10,6 @@ import Interface.TextInterface;
  */
 public class Game {
 
-//    16:15 < Xatalos> kysymys: kumpi on tässä tärkeämpää, että koodi on "siistimpää" 
-//                 (enemmän metodeja, enemmän testejä) vai tehokkaampaa (vähemmän 
-//                 erillisiä metodeja - ymmärtääkseni javassa metodien kutsuminen 
-//                 on jotenkin erityisen tehotonta)
-//    16:17 < Xatalos> etenkin kun tässä on yksi metodi (evaluateMove) jota kutsutaan 
-//                 jopa satojatuhansia kertoja....
-//    16:17 < Xatalos> se on aika pitkä, mutta mietin että jos sitä paloittelee, niin 
-//                 siitä voisi seurata aikamoista tehokkuustappiota
-//    16:18 < OOliOO> mielellään selkeämpää
-//    16:19 < OOliOO> ei kai se metodien kutsuminen voi niin hidasta olla :O
-//    16:26 < Xatalos> haha..
-//    16:26 < Xatalos> But wait, if you invoke the method now, we'll throw in a 
-//                 SECOND method call, absolutely free! Pay only shipping and 
-//                 handling! Seriously, though. There's overhead in method calls, 
-//                 just as there's overhead in having more code to load. At some 
-//                 point one becomes more expensive than the other. The only way 
-//                 to tell is by benchmarking your code. –  Marc B Jun 27 '11 at 
-//                 15:15 
     /**
      * Creates the game board and initiates the first move
      *
@@ -51,7 +33,6 @@ public class Game {
      * = ai vs ai, 4 = human vs human)
      */
     public static void makeMove(int[][] board, int whosTurn, int gameMode) {
-        boolean gameOver = false;
         boolean containsSpace = false;
 
         // check if there's available space to make a move
@@ -64,7 +45,7 @@ public class Game {
             }
         }
 
-        // check if someone won the game during this turn
+        // check if someone won the game during this turn - if yes, announce the winner
 
         if (checkForVictoryOrLoss(board) == true) {
             // the result is a WIN
@@ -134,10 +115,12 @@ public class Game {
                             // evaluationBoard[i][j] = evaluateMove(newBoard, 1, 1);
                         } else if (whosTurn == 1 && (gameMode == 2 || gameMode == 3)) {
                             if (winThisTurn == false && lossNextTurn == false) {
+                                // AI's move evaluation must always be enabled
                                 evaluationBoard[i][j] = evaluateMove(newBoard, 2, 0);
                             }
                         } else if (whosTurn == 2 && (gameMode == 1 || gameMode == 3)) {
                             if (winThisTurn == false && lossNextTurn == false) {
+                                // AI's move evaluation must always be enabled
                                 evaluationBoard[i][j] = evaluateMove(newBoard, 1, 1);
                             }
                         }
@@ -152,6 +135,8 @@ public class Game {
         } else {
             evaluationBoard[board.length / 2][board.length / 2] = Integer.MAX_VALUE;
         }
+
+        // save the coordinates of the best possible move in two easily readable variables
 
         if ((whosTurn == 1 && (gameMode == 2 || gameMode == 3)) || (whosTurn == 2 && (gameMode == 1 || gameMode == 3))) {
             for (int i = 0; i < board.length; i++) {
@@ -173,9 +158,10 @@ public class Game {
             TextInterface.showBoardState(board, evaluationBoard, false);
         }
 
-        // makes the next move (depending on whose turn it is and if the player is a human or AI)
+        // make the next move (depending on whose turn it is and if the player is a human or AI)
 
         if ((whosTurn == 1 && (gameMode == 2 || gameMode == 3)) || (whosTurn == 2 && (gameMode == 1 || gameMode == 3))) {
+            // it's the AI's turn
             newBoard[besti][bestj] = whosTurn;
             if (whosTurn == 1) {
                 makeMove(newBoard, 2, gameMode);
@@ -183,6 +169,7 @@ public class Game {
                 makeMove(newBoard, 1, gameMode);
             }
         } else {
+            // it's the human player's turn
             String move = TextInterface.getMove(unavailableSpots);
             if (whosTurn == 1) {
                 newBoard[Integer.parseInt("" + move.charAt(2)) - 1][Integer.parseInt("" + move.charAt(0)) - 1] = 1;
@@ -207,8 +194,9 @@ public class Game {
      * board state
      */
     public static int evaluateMove(int[][] board, int whosTurn, int turnCount) {
-
         boolean containsSpace = false;
+
+        // check if there's available space to make a new (potential) move
 
         for (int i = 0; i < board.length; i++) {
             for (int j = 0; j < board.length; j++) {
@@ -217,6 +205,9 @@ public class Game {
                 }
             }
         }
+
+        // check if someone won the game during this (potential) turn - if yes, return the value of this result
+        // based on which player won
 
         if (checkForVictoryOrLoss(board) == true) {
             if ((whosTurn == 1 && turnCount % 2 == 0) || (whosTurn == 2 && turnCount % 2 == 1)) {
@@ -235,7 +226,7 @@ public class Game {
 
         int count = 0;
 
-        // limits the amount of turns being looked ahead and evaluates the value of the cutoff position
+        // limit the amount of turns being looked ahead and evaluate the value of the cutoff position
 
         if (board.length == 5 && turnCount == 5) {
             if ((whosTurn == 1 && turnCount % 2 == 0) || (whosTurn == 2 && turnCount % 2 == 1)) {
@@ -332,6 +323,8 @@ public class Game {
         int[][] newBoard = board;
         int[][] evaluationBoard = new int[board.length][board.length];
         int minMaxSum = 0;
+
+        // continue the recursive looking ahead of moves and return the overall score of this (potential) move
 
         outerloop:
         for (int i = 0; i < board.length; i++) {
@@ -471,6 +464,7 @@ public class Game {
                     }
                 }
             }
+
             // OLD (INFERIOR) METHOD HERE:
 //            for (int i = 0; i < board.length; i++) {
 //                for (int j = 0; j < board.length; j++) {
