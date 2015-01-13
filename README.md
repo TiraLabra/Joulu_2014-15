@@ -1,7 +1,7 @@
 RORegEx
 =============
 
-An Objective-C library that implements simple superlinear (but not exponential) regular expression pattern matching using a nondeterministic finite automaton.
+An Objective-C library that implements simple fast (polynomial instead of exponential scaling) regular expression pattern matching using a nondeterministic finite automaton.
 
 - Supports several matches in a single string; returns results as an NSTextMatchingResult object.
 - Currently provides greedy but minimal matching; returns the earliest and smallest match to the pattern.
