@@ -155,9 +155,84 @@
     XCTAssert(NSEqualRanges([NFA findMatch:@"babaaac"],NSMakeRange(2, 5)), @"Correct missing subexpression match");
 }
 
+- (void)testPerformancePathological5 {
+    // This is an example of a performance test case.
+    int n=5;
+    NSString* regEx=[NSString string];
+    NSString* stringToMatch=[NSString string];
+    for (int i=0; i<n; i++) regEx=[regEx stringByAppendingString:@"a?"];
+    for (int i=0; i<n; i++) regEx=[regEx stringByAppendingString:@"a"];
+    for (int i=0; i<n; i++) stringToMatch=[stringToMatch stringByAppendingString:@"a"];
+    RONFA* NFA = [[RONFA alloc] initWithRegEx:regEx];
+    [self measureBlock:^{
+        // Put the code you want to measure the time of here.
+        NSRange result=[NFA findMatch:stringToMatch];
+    }];
+}
+
+- (void)testPerformancePathological10 {
+    // This is an example of a performance test case.
+    int n=10;
+    NSString* regEx=[NSString string];
+    NSString* stringToMatch=[NSString string];
+    for (int i=0; i<n; i++) regEx=[regEx stringByAppendingString:@"a?"];
+    for (int i=0; i<n; i++) regEx=[regEx stringByAppendingString:@"a"];
+    for (int i=0; i<n; i++) stringToMatch=[stringToMatch stringByAppendingString:@"a"];
+    RONFA* NFA = [[RONFA alloc] initWithRegEx:regEx];
+    [self measureBlock:^{
+        // Put the code you want to measure the time of here.
+        NSRange result=[NFA findMatch:stringToMatch];
+    }];
+}
+
+- (void)testPerformancePathological15 {
+    // This is an example of a performance test case.
+    int n=10;
+    NSString* regEx=[NSString string];
+    NSString* stringToMatch=[NSString string];
+    for (int i=0; i<n; i++) regEx=[regEx stringByAppendingString:@"a?"];
+    for (int i=0; i<n; i++) regEx=[regEx stringByAppendingString:@"a"];
+    for (int i=0; i<n; i++) stringToMatch=[stringToMatch stringByAppendingString:@"a"];
+    RONFA* NFA = [[RONFA alloc] initWithRegEx:regEx];
+    [self measureBlock:^{
+        // Put the code you want to measure the time of here.
+        NSRange result=[NFA findMatch:stringToMatch];
+    }];
+}
+
 - (void)testPerformancePathological20 {
     // This is an example of a performance test case.
     int n=20;
+    NSString* regEx=[NSString string];
+    NSString* stringToMatch=[NSString string];
+    for (int i=0; i<n; i++) regEx=[regEx stringByAppendingString:@"a?"];
+    for (int i=0; i<n; i++) regEx=[regEx stringByAppendingString:@"a"];
+    for (int i=0; i<n; i++) stringToMatch=[stringToMatch stringByAppendingString:@"a"];
+    RONFA* NFA = [[RONFA alloc] initWithRegEx:regEx];
+    [self measureBlock:^{
+        // Put the code you want to measure the time of here.
+        NSRange result=[NFA findMatch:stringToMatch];
+    }];
+}
+
+- (void)testPerformancePathological25 {
+    // This is an example of a performance test case.
+    int n=25;
+    NSString* regEx=[NSString string];
+    NSString* stringToMatch=[NSString string];
+    for (int i=0; i<n; i++) regEx=[regEx stringByAppendingString:@"a?"];
+    for (int i=0; i<n; i++) regEx=[regEx stringByAppendingString:@"a"];
+    for (int i=0; i<n; i++) stringToMatch=[stringToMatch stringByAppendingString:@"a"];
+    RONFA* NFA = [[RONFA alloc] initWithRegEx:regEx];
+    [self measureBlock:^{
+        // Put the code you want to measure the time of here.
+        NSRange result=[NFA findMatch:stringToMatch];
+    }];
+}
+
+- (void)testPerformancePathological30 {
+    // This is an example of a performance test case.
+    int n=30;
     NSString* regEx=[NSString string];
     NSString* stringToMatch=[NSString string];
     for (int i=0; i<n; i++) regEx=[regEx stringByAppendingString:@"a?"];
@@ -215,4 +290,83 @@
     }];
 }
 
+- (void)testNSPerformancePathological5 {
+    // This is an example of a performance test case.
+    int n=5;
+    NSString* regEx=[NSString string];
+    NSString* stringToMatch=[NSString string];
+    for (int i=0; i<n; i++) regEx=[regEx stringByAppendingString:@"a?"];
+    for (int i=0; i<n; i++) regEx=[regEx stringByAppendingString:@"a"];
+    for (int i=0; i<n; i++) stringToMatch=[stringToMatch stringByAppendingString:@"a"];
+    // Create the NSRegularExpression
+    BOOL isCaseSensitive = NO;
+    NSError *error = NULL;
+    NSRegularExpressionOptions regexOptions = isCaseSensitive ? 0 : NSRegularExpressionCaseInsensitive;
+    NSRegularExpression *NSRegEx = [NSRegularExpression regularExpressionWithPattern:regEx options:regexOptions error:&error];
+    [self measureBlock:^{
+        // Put the code you want to measure the time of here.
+        NSTextCheckingResult* result = [NSRegEx firstMatchInString:stringToMatch options:0 range:NSMakeRange(0,n)];
+    }];
+}
+
+- (void)testNSPerformancePathological10 {
+    // This is an example of a performance test case.
+    int n=10;
+    NSString* regEx=[NSString string];
+    NSString* stringToMatch=[NSString string];
+    for (int i=0; i<n; i++) regEx=[regEx stringByAppendingString:@"a?"];
+    for (int i=0; i<n; i++) regEx=[regEx stringByAppendingString:@"a"];
+    for (int i=0; i<n; i++) stringToMatch=[stringToMatch stringByAppendingString:@"a"];
+    // Create the NSRegularExpression
+    BOOL isCaseSensitive = NO;
+    NSError *error = NULL;
+    NSRegularExpressionOptions regexOptions = isCaseSensitive ? 0 : NSRegularExpressionCaseInsensitive;
+    NSRegularExpression *NSRegEx = [NSRegularExpression regularExpressionWithPattern:regEx options:regexOptions error:&error];
+    [self measureBlock:^{
+        // Put the code you want to measure the time of here.
+        NSTextCheckingResult* result = [NSRegEx firstMatchInString:stringToMatch options:0 range:NSMakeRange(0,n)];
+    }];
+}
+
+- (void)testNSPerformancePathological15 {
+    // This is an example of a performance test case.
+    int n=15;
+    NSString* regEx=[NSString string];
+    NSString* stringToMatch=[NSString string];
+    for (int i=0; i<n; i++) regEx=[regEx stringByAppendingString:@"a?"];
+    for (int i=0; i<n; i++) regEx=[regEx stringByAppendingString:@"a"];
+    for (int i=0; i<n; i++) stringToMatch=[stringToMatch stringByAppendingString:@"a"];
+    // Create the NSRegularExpression
+    BOOL isCaseSensitive = NO;
+    NSError *error = NULL;
+    NSRegularExpressionOptions regexOptions = isCaseSensitive ? 0 : NSRegularExpressionCaseInsensitive;
+    NSRegularExpression *NSRegEx = [NSRegularExpression regularExpressionWithPattern:regEx options:regexOptions error:&error];
+    [self measureBlock:^{
+        // Put the code you want to measure the time of here.
+        NSTextCheckingResult* result = [NSRegEx firstMatchInString:stringToMatch options:0 range:NSMakeRange(0,n)];
+    }];
+}
+
+
+- (void)testNSPerformancePathological20 {
+    // This is an example of a performance test case.
+    int n=20;
+    NSString* regEx=[NSString string];
+    NSString* stringToMatch=[NSString string];
+    for (int i=0; i<n; i++) regEx=[regEx stringByAppendingString:@"a?"];
+    for (int i=0; i<n; i++) regEx=[regEx stringByAppendingString:@"a"];
+    for (int i=0; i<n; i++) stringToMatch=[stringToMatch stringByAppendingString:@"a"];
+    // Create the NSRegularExpression
+    BOOL isCaseSensitive = NO;
+    NSError *error = NULL;
+    NSRegularExpressionOptions regexOptions = isCaseSensitive ? 0 : NSRegularExpressionCaseInsensitive;
+    NSRegularExpression *NSRegEx = [NSRegularExpression regularExpressionWithPattern:regEx options:regexOptions error:&error];
+    [self measureBlock:^{
+        // Put the code you want to measure the time of here.
+        NSTextCheckingResult* result = [NSRegEx firstMatchInString:stringToMatch options:0 range:NSMakeRange(0,n)];
+    }];
+}
+
 @end
+
+
