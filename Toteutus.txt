@@ -12,6 +12,12 @@ RONFA-luokan sisäinen toteutus jakautuu vastaavasti initialisointi- ja matchaus
 
 RONFA-luokan findMatch:-metodi ajaa tilakonetta alkutilasta lähtien annetulla stringillä. Koska RONFA-luokka käyttää matchien tallentamiseen itse tilaolioita, tämän metodin alussa tilakone joudutaan konstruoimaan uudestaan edellisten tulosten poistamiseksi.
 
+ROState-luokka
+
+RONFA käyttää ROState-luokkaa esittämään yhtä mahdollista tilaa. Näin ollen tilan olennaiset ominaisuudet ovat matchaava kirjain (matchingCharacter), seuraavat mahdolliset tilat (nextState sekä alternateState) ja lopputila (finality). Näistä matchingCharacter voi olla nil, jos halutaan matchata mikä tahansa kirjain; alternateState taas on nil, mikäli tila ylipäänsä on matchaava tila, ja toinen tila, mikäli tila haarautuu. Tällöin matchingCharacter-arvoa ei lueta. Lisäksi luokka sisältää joka kierroksella päivitettävät startIndex ja nextStartIndex-kentät, joihin tilakone tallentaa kulloisenkin matchin aloitusindeksit.
+
+ROState-luokkaan ei ollut järkevää lisätä tilakoneen toteutuslogiikkaa, sillä mitkä tahansa operaattorit on toteutettavissa kolmea tilatyyppiä yhdistelemällä; näin ollen yksittäinen ROState on lähinnä olio, joka sisältää muutaman kentän sekä viittauksen muihin ROState-olioihin. Näistä konstruoituu RONFA:n initialisaatiossa puu, joka sisältää viittaukset kaikkiin mahdollisiin tilakoneen tiloihin. Olemassaoleviin tiloihin ei ole muita viittauksia kuin ensimmäisestä tilasta lähtevä, haarautuva linkitetty lista. Operaattoreista riippuen listaan syntyy myös silmukoita ja haarojen yhdistymisiä. Se, mitkä tilat päätyvät kulloinkin tilakoneen currentStates-joukkoon, riippuu siitä, mihin tilakoneen haaroihin stringin matchaus etenee.
+
 Paralleelin tilakoneen toteutus
 
 Olennaisesti tilakone koostuu kolmesta erityyppisestä tilasta: 1) kirjaimenmatchaustila, josta siirrytään kirjaimesta riippuen seuraavaan tilaan tai takaisin alkutilaan, 2) haarautuva tila, jota tarvitaan operaattorien toteutukseen ja josta siirrytään automaattisesti kahteen uuteen tilaan, sekä 3) lopputila, joka indikoi stringin matchausta ja jonka kohtaaminen (tässä toteutuksessa) lopettaa tilakoneen toiminnan ennen kuin string on käsitelty loppuun. Näistä haarautuva tila eroaa kirjaimenmatchaustilasta sikäli, että se vastaa säännöllisessä kielessä ns. epsilon-siirtymää, eli siitä siirrytään eteenpäin ilman, että luettavassa stringissä siirrytään eteenpäin.
@@ -23,12 +29,6 @@ Näiden tilojen tallennus on toteutettu NSMutableSet-joukkoon currentStates, jok
 Ahne algoritmitoteutus edellyttäisi tarkkaan ottaen sitä, että myös matchin loppupituutta maksimoitaisiin eli käytäisiin läpi pitemmät mahdolliset matchit, vaikka lyhyin match on jo löytynyt. Tämä on tavallisimpien regex-operaattorien oletusominaisuus, ja olisi helposti toteutettavissa sillä, että matchausta ei katkaista ensimmäisen matchin löytyessä; nykyinen toteutus kuitenkin preferoi mahdollisimman aikaisia ja lyhyitä matcheja.
 
 Koska matchaavien tilojen lisäksi kone saattaa sisältää myös haarautuvia tiloja, joista edetään ilman etenemistä stringissä, nämä tilat on otettava huomioon ennen kuin stringissä edetään seuraavaan kirjaimeen. Tämä tapahtuu jokaisen kirjaimen kohdalla pruneForks-metodilla. Metodi käy kaikki currentStatesin sisältämät tilat läpi ja haaran löydettyään lisää tämän haarat currentStatesiin sekä poistaa alkuperäisen tilan. Näin kirjaimen matchaukseen päädytään vasta siinä vaiheessa, kun kaikki haarautuvat tilat sekä niiden alla olevat haarautuvat tilat on poistettu ja currentStates sisältää ainoastaan sellaisia tiloja, joita matchataan stringin nykyiseen kirjaimeen. Itse kirjaimen matchaus on silmukassa eroteltu matchCharacter-metodiin, joka huolehtii matchauksen aloitusindeksin tallentamisesta.
-
-ROState-luokka
-
-RONFA käyttää ROState-luokkaa esittämään yhtä mahdollista tilaa. Näin ollen tilan olennaiset ominaisuudet ovat matchaava kirjain (matchingCharacter), seuraavat mahdolliset tilat (nextState sekä alternateState) ja lopputila (finality). Näistä matchingCharacter voi olla nil, jos halutaan matchata mikä tahansa kirjain; alternateState taas on nil, mikäli tila ylipäänsä on matchaava tila, ja toinen tila, mikäli tila haarautuu. Tällöin matchingCharacter-arvoa ei lueta. Lisäksi luokka sisältää joka kierroksella päivitettävät startIndex ja nextStartIndex-kentät, joihin tilakone tallentaa kulloisenkin matchin aloitusindeksit.
-
-ROState-luokkaan ei ollut järkevää lisätä tilakoneen toteutuslogiikkaa, sillä mitkä tahansa operaattorit on toteutettavissa kolmea tilatyyppiä yhdistelemällä; näin ollen yksittäinen ROState on lähinnä olio, joka sisältää muutaman kentän sekä viittauksen muihin ROState-olioihin. Näistä konstruoituu RONFA:n initialisaatiossa puu, joka sisältää viittaukset kaikkiin mahdollisiin tilakoneen tiloihin. Olemassaoleviin tiloihin ei ole muita viittauksia kuin ensimmäisestä tilasta lähtevä, haarautuva linkitetty lista. Operaattoreista riippuen listaan syntyy myös silmukoita ja haarojen yhdistymisiä. Se, mitkä tilat päätyvät kulloinkin tilakoneen currentStates-joukkoon, riippuu siitä, mihin tilakoneen haaroihin stringin matchaus etenee.
 
 Testaustulokset 
 
