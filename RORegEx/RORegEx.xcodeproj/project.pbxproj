@@ -226,7 +226,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "export LANG=en_US.US-ASCII\nheaderdoc2html -o ../Documentation RORegEx\ngatherheaderdoc ../Documentation";
+			shellScript = "headerdoc2html -o ../Documentation RORegEx\ngatherheaderdoc ../Documentation";
 		};
 /* End PBXShellScriptBuildPhase section */
 

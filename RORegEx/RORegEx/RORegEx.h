@@ -9,7 +9,9 @@
 #import <Foundation/Foundation.h>
 
 /*!
- Represents an interpreter with a specific regular expression.
+ *  @class RORegEx
+ *
+ *  @abstract Represents an interpreter with a specific regular expression.
  */
 
 @interface RORegEx : NSObject

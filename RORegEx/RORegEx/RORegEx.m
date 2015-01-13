@@ -9,6 +9,10 @@
 #import "RORegEx.h"
 #import "RONFA.h"
 
+/*!
+ The internal implementation of the RegEx interpreter. The methods and properties here are only used inside the RORegEx class.
+ */
+
 @interface RORegEx ()
 
 /*!

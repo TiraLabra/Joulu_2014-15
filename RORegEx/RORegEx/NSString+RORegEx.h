@@ -8,7 +8,9 @@
 
 #import <Foundation/Foundation.h>
 /*!
- *  A simple category for matching an NSString with a regular expression.
+ *  @category NSString
+ *
+ *  @abstract A simple category for matching an NSString with a regular expression.
  */
 @interface NSString (RORegEx)
 /*!
