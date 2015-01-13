@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-1.40.11 (TeX Live 2010) (format=pdflatex 2011.2.9)  13 JAN 2015 16:12
+This is pdfTeX, Version 3.1415926-1.40.11 (TeX Live 2010) (format=pdflatex 2011.2.9)  13 JAN 2015 16:29
 entering extended mode
  \write18 enabled.
  file:line:error style messages enabled.
@@ -308,15 +308,14 @@ LaTeX Font Info:    Try loading font information for U+msb on input line 12.
 (/usr/local/texlive/2010/texmf-dist/tex/latex/amsfonts/umsb.fd
 File: umsb.fd 2009/06/22 v3.00 AMS symbols B
 )
-Overfull \hbox (9.43068pt too wide) in paragraph at lines 17--18
-\T1/cmr/m/n/12 RORegEx on ra-ja-pin-ta-luok-ka, jo-ka si-säl-tää kir-jas-to-käy
-t-tö-liit-ty-män sään-nöl-li-sen lausek-
- []
+LaTeX Font Info:    Try loading font information for T1+cmtt on input line 13.
 
-
-Overfull \hbox (2.9776pt too wide) in paragraph at lines 21--22
-\T1/cmr/m/n/12 matc-haus-lo-gii-kan. Luok-ka ini-tia-li-soi-daan ha-lu-tul-la r
-e-gexil-lä, jon-ka jäl-keen findMatch:-
+(/usr/local/texlive/2010/texmf-dist/tex/latex/base/t1cmtt.fd
+File: t1cmtt.fd 1999/05/25 v2.5h Standard LaTeX font definitions
+)
+Overfull \hbox (1.25772pt too wide) in paragraph at lines 17--18
+[]\T1/cmtt/m/n/12 RORegEx \T1/cmr/m/n/12 on ra-ja-pin-ta-luok-ka, jo-ka si-säl-
+tää kir-jas-to-käyt-tö-liit-ty-män sään-nöl-li-sen lausek-
  []
 
 [1
@@ -328,44 +327,49 @@ Overfull \hbox (14.82095pt too wide) in paragraph at lines 49--50
 i sen si-jaan haa-rau-tuu $\OML/cmm/m/it/12 m$\T1/cmr/m/n/12 :nnellä
  []
 
-[3] <Performance.pdf, id=21, 643.40375pt x 488.82625pt>
+[3] <Performance.pdf, id=22, 643.40375pt x 488.82625pt>
 File: Performance.pdf Graphic file (type pdf)
  <use Performance.pdf>
-Overfull \hbox (16.59296pt too wide) in paragraph at lines 57--58
-\T1/cmr/m/n/12 for-mance-Pat-ho-lo-gicaln, mis-sä strin-gin pi-tuus on $\OML/cm
-m/m/it/12 n \OT1/cmr/m/n/12 = 5\OML/cmm/m/it/12 ; \OT1/cmr/m/n/12 10\OML/cmm/m/
-it/12 ; \OT1/cmr/m/n/12 12\OML/cmm/m/it/12 ; \OT1/cmr/m/n/12 15\OML/cmm/m/it/12
- ; \OT1/cmr/m/n/12 18\OML/cmm/m/it/12 ; \OT1/cmr/m/n/12 20\OML/cmm/m/it/12 ; \O
-T1/cmr/m/n/12 25\OML/cmm/m/it/12 ; \OT1/cmr/m/n/12 30\OML/cmm/m/it/12 ; \OT1/cm
-r/m/n/12 40\OML/cmm/m/it/12 ; \OT1/cmr/m/n/12 60\OML/cmm/m/it/12 ; \OT1/cmr/m/n
-/12 80\OML/cmm/m/it/12 :$
+Overfull \hbox (124.70122pt too wide) in paragraph at lines 57--58
+[]\T1/cmr/m/n/12 Lausekkeen $\OT1/cmr/m/n/12 (\OML/cmm/m/it/12 a\OT1/cmr/m/n/12
+ ?)[](\OML/cmm/m/it/12 a\OT1/cmr/m/n/12 )[]$ \T1/cmr/m/n/12 matc-hauk-sen skaa-
+lau-tu-vuus on osoi-tet-tu tes-teil-lä []\T1/cmtt/m/n/12 testPerformancePatholo
+gicaln\T1/cmr/m/n/12 ,
  []
 
-[4 <./Performance.pdf>] [5] [6] (./Toteutus.aux) ) 
+[4 <./Performance.pdf>]
+Overfull \hbox (90.87038pt too wide) in paragraph at lines 63--64
+\T1/cmr/m/n/12 ken-ne-tul-la []\T1/cmtt/m/n/12 NSRegularExpression\T1/cmr/m/n/1
+2 -oliolla. Tä-mä on teh-ty tes-teil-lä []\T1/cmtt/m/n/12 testNSPerformancePath
+ologicaln\T1/cmr/m/n/12 ,
+ []
+
+[5] [6] (./Toteutus.aux) ) 
 Here is how much of TeX's memory you used:
- 3370 strings out of 493747
- 43067 string characters out of 3143547
+ 3389 strings out of 493747
+ 43678 string characters out of 3143547
  107919 words of memory out of 3000000
- 6594 multiletter control sequences out of 15000+200000
- 21722 words of font info for 68 fonts, out of 3000000 for 9000
+ 6609 multiletter control sequences out of 15000+200000
+ 22035 words of font info for 69 fonts, out of 3000000 for 9000
  714 hyphenation exceptions out of 8191
- 38i,6n,24p,833b,244s stack positions out of 5000i,500n,10000p,200000b,50000s
-{/usr/local/texlive/2010/texm
-f-dist/fonts/enc/dvips/cm-super/cm-super-t1.enc}</usr/local/texlive/2010/texmf-
-dist/fonts/type1/public/amsfonts/cm/cmmi12.pfb></usr/local/texlive/2010/texmf-d
-ist/fonts/type1/public/amsfonts/cm/cmmi8.pfb></usr/local/texlive/2010/texmf-dis
-t/fonts/type1/public/amsfonts/cm/cmr12.pfb></usr/local/texlive/2010/texmf-dist/
-fonts/type1/public/amsfonts/cm/cmr8.pfb></usr/local/texlive/2010/texmf-dist/fon
-ts/type1/public/cm-super/sfbx1440.pfb></usr/local/texlive/2010/texmf-dist/fonts
-/type1/public/cm-super/sfbx1728.pfb></usr/local/texlive/2010/texmf-dist/fonts/t
-ype1/public/cm-super/sfrm1200.pfb></usr/local/texlive/2010/texmf-dist/fonts/typ
-e1/public/cm-super/sfrm1440.pfb></usr/local/texlive/2010/texmf-dist/fonts/type1
-/public/cm-super/sfrm2074.pfb></usr/local/texlive/2010/texmf-dist/fonts/type1/p
-ublic/cm-super/sfti1200.pfb>
-Output written on Toteutus.pdf (6 pages, 169492 bytes).
+ 38i,6n,24p,865b,244s stack positions out of 5000i,500n,10000p,200000b,50000s
+{/usr/local/texlive/2010/texmf-dist/fonts/enc/dvips/c
+m-super/cm-super-t1.enc}</usr/local/texlive/2010/texmf-dist/fonts/type1/public/
+amsfonts/cm/cmmi12.pfb></usr/local/texlive/2010/texmf-dist/fonts/type1/public/a
+msfonts/cm/cmmi8.pfb></usr/local/texlive/2010/texmf-dist/fonts/type1/public/ams
+fonts/cm/cmr12.pfb></usr/local/texlive/2010/texmf-dist/fonts/type1/public/amsfo
+nts/cm/cmr8.pfb></usr/local/texlive/2010/texmf-dist/fonts/type1/public/cm-super
+/sfbx1440.pfb></usr/local/texlive/2010/texmf-dist/fonts/type1/public/cm-super/s
+fbx1728.pfb></usr/local/texlive/2010/texmf-dist/fonts/type1/public/cm-super/sfr
+m1200.pfb></usr/local/texlive/2010/texmf-dist/fonts/type1/public/cm-super/sfrm1
+440.pfb></usr/local/texlive/2010/texmf-dist/fonts/type1/public/cm-super/sfrm207
+4.pfb></usr/local/texlive/2010/texmf-dist/fonts/type1/public/cm-super/sfti1200.
+pfb></usr/local/texlive/2010/texmf-dist/fonts/type1/public/cm-super/sftt1200.pf
+b>
+Output written on Toteutus.pdf (6 pages, 200103 bytes).
 PDF statistics:
- 112 PDF objects out of 1000 (max. 8388607)
- 76 compressed objects within 1 object stream
+ 116 PDF objects out of 1000 (max. 8388607)
+ 79 compressed objects within 1 object stream
  0 named destinations out of 1000 (max. 500000)
  6 words of extra memory for PDF output out of 10000 (max. 10000000)
 
