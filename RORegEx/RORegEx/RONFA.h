@@ -32,7 +32,7 @@
  */
 -(id) initWithState:(ROState *)state withRegEx:(NSString *)regEx;
 /**
- *  Returns the next range in the NSString that corresponds to the expression of the NFA, or a range of (0,0) if there is no match.
+ *  Returns the next (minimal) range in the NSString that corresponds to the expression of the NFA, or a range of (0,0) if there is no match.
  *
  *  @param regEx The regular expression used to construct the NFA.
  *

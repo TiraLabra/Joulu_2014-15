@@ -14,7 +14,7 @@
 
 @interface RORegEx : NSObject
 /**
- *  Initializes the regular expression interpreter.
+ *  @brief Initializes the regular expression interpreter.
  *
  *  @param regEx The required regular expression.
  *
@@ -22,7 +22,7 @@
  */
 -(id) initWith:(NSString *)regEx;
 /**
- *  Matches the input string to the regular expression.
+ *  @brief Matches the input string to the regular expression.
  *
  *  @param input The string to be processed.
  *

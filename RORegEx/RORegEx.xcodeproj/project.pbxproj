@@ -140,6 +140,7 @@
 				32C859951A403BD300969BF9 /* Sources */,
 				32C859961A403BD300969BF9 /* Frameworks */,
 				32C859971A403BD300969BF9 /* Headers */,
+				3271EF821A654908004E9011 /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -212,6 +213,22 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		3271EF821A654908004E9011 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "export LANG=en_US.US-ASCII\nheaderdoc2html -o ../Documentation RORegEx\ngatherheaderdoc ../Documentation";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		32C859951A403BD300969BF9 /* Sources */ = {
