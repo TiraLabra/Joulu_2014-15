@@ -1,19 +1,62 @@
-Projektin tarkoituksena on tarjota yksinkertainen ja helppokäyttöinen Regexp-tulkki Objective-C-kirjastona. Regexp eli säännöllinen lauseke tarkoittaa tietojenkäsittelyteoreettista lauseketta, joka määrittelee säännöllisen kielen; lausekkeita käytetään useissa tilantessa halutuntyyppisten merkkijonojen etsimiseen ja tunnistamiseen. Objective-C:lle on olemassa Applen Regexp-toteutus NSRegularExpression [1], jonka rajapinta on Objective-C:n tapaan raskaskäyttöinen eli edellyttää käyttäjältä runsaasti funktiokutsuja ja parametrien määrittelyjä; tosin tälle on olemassa yksinkertaistettu rajapintakirjasto [2].
+Projektin tarkoituksena on tarjota yksinkertainen ja helppokäyttöinen Regexp-
+tulkki Objective-C-kirjastona. Regexp eli säännöllinen lauseke tarkoittaa 
+tietojenkäsittelyteoreettista lauseketta, joka määrittelee säännöllisen kielen; 
+lausekkeita käytetään useissa tilantessa halutuntyyppisten merkkijonojen 
+etsimiseen ja tunnistamiseen. Objective-C:lle on olemassa Applen Regexp-toteutus 
+NSRegularExpression [1], jonka rajapinta on Objective-C:n tapaan 
+raskaskäyttöinen eli edellyttää käyttäjältä runsaasti funktiokutsuja ja 
+parametrien määrittelyjä; tosin tälle on olemassa yksinkertaistettu 
+rajapintakirjasto [2].
 
-Tässä projektissa regexpin esittämistä varten luodaan RORegEx-luokka, joka ottaa konstruktorissaan regexpin stringinä. Tälle oliolle toteutetaan checkString:NSString-funktio, joka palauttaa NSTextCheckingResult-luokan [3] olion, joka sisältää NSStringistä löydetyt regexpiä vastaavat osat. Toinen kirjaston käyttöliittymä on NSString-olioon lisätty funktiokutsu match:ekspressio, jossa ekspressio on RORegEx-olio ja palautusarvo sama kuin RORegExin checkString-funktiolla.
+Tässä projektissa regexpin esittämistä varten luodaan RORegEx-luokka, joka ottaa 
+konstruktorissaan regexpin stringinä. Tälle oliolle toteutetaan 
+checkString:NSString-funktio, joka palauttaa NSTextCheckingResult-luokan [3] 
+olion, joka sisältää NSStringistä löydetyt regexpiä vastaavat osat. Toinen 
+kirjaston käyttöliittymä on NSString-olioon lisätty funktiokutsu 
+match:ekspressio, jossa ekspressio on RORegEx-olio ja palautusarvo sama kuin 
+RORegExin checkString-funktiolla.
 
-Yksinkertaisin tapa toteuttaa Regexp-tulkki on epädeterministinen äärellinen automaatti [4], joka konstruoidaan osista regexpin perusteella ja joka sen jälkeen lukee stringiä merkki kerrallaan. Määritelmällisesti säännöllinen lauseke onkin sellainen lauseke, joka on tunnistettavissa äärellisellä automaatilla eli mallilla, jossa syöte luetaan merkki kerrallaan eteenpäin. Epädeterministisyys viittaa taas siihen, että merkistä riippuen automaatin suoritus voi haarautua useampaan eri tilaan, jotka kaikki tulee käydä läpi lopputuloksen saamiseksi. Deterministisessä automaatissa jokainen merkki ja tila määräävät seuraavan tilan yksikäsitteisesti.
+Yksinkertaisin tapa toteuttaa Regexp-tulkki on epädeterministinen äärellinen 
+automaatti [4], joka konstruoidaan osista regexpin perusteella ja joka sen 
+jälkeen lukee stringiä merkki kerrallaan. Määritelmällisesti säännöllinen 
+lauseke onkin sellainen lauseke, joka on tunnistettavissa äärellisellä 
+automaatilla eli mallilla, jossa syöte luetaan merkki kerrallaan eteenpäin. 
+Epädeterministisyys viittaa taas siihen, että merkistä riippuen automaatin 
+suoritus voi haarautua useampaan eri tilaan, jotka kaikki tulee käydä läpi 
+lopputuloksen saamiseksi. Deterministisessä automaatissa jokainen merkki ja tila 
+määräävät seuraavan tilan yksikäsitteisesti.
 
-Itse automaatin konstruoin suoraan lukemalla regexpiä merkki kerrallaan, en puolalaisen käänteisnotaation kautta kuten Thompson [4] tai Cox [5]. Epädeterministinen automaatti on mahdollista muuttaa deterministiseksi toteutuksen nopeuttamiseksi [5], mutta tämän toteuttaminen vaatisi todennäköisesti liikaa aikaa.
+Itse automaatin konstruoin suoraan lukemalla regexpiä merkki kerrallaan, en 
+puolalaisen käänteisnotaation kautta kuten Thompson [4] tai Cox [5]. 
+Epädeterministinen automaatti on mahdollista muuttaa deterministiseksi 
+toteutuksen nopeuttamiseksi [5], mutta tämän toteuttaminen vaatisi 
+todennäköisesti liikaa aikaa.
 
-Verrattuna nykyisin usein käytettyihin backtrackaukseen (eli lopusta alkuun lukemiseen) perustuviin algoritmeihin tämän algoritmin hyöty on sen hyvä skaalautuvuus [5]; äärellisellä automaatilla ei tosin voi toteuttaa kaikkia regexp-laajennuksia, kuten koodin haarautuvuutta sen mukaan, mikä matchatuista vaihtoehtoista on aiemmin löydetty. Varsinaiset matemaattisesti säännölliset lausekkeet eivät voi sisältää tätä ominaisuutta. Coxin äärellisellä automaatilla on toteutettu Googlen Re2-kirjasto [6]. NSRegularExpression, samoin kuin Javan regexp-toteutus, perustuvat sen sijaan backtrackaukseen, joten niiden suorituskyky ei ole taattu monimutkaisilla lausekkeilla.
+Verrattuna nykyisin usein käytettyihin backtrackaukseen (eli lopusta alkuun 
+lukemiseen) perustuviin algoritmeihin tämän algoritmin hyöty on sen hyvä 
+skaalautuvuus [5]; äärellisellä automaatilla ei tosin voi toteuttaa kaikkia 
+regexp-laajennuksia, kuten koodin haarautuvuutta sen mukaan, mikä matchatuista 
+vaihtoehtoista on aiemmin löydetty. Varsinaiset matemaattisesti säännölliset 
+lausekkeet eivät voi sisältää tätä ominaisuutta. Coxin äärellisellä automaatilla 
+on toteutettu Googlen Re2-kirjasto [6]. NSRegularExpression, samoin kuin Javan 
+regexp-toteutus, perustuvat sen sijaan backtrackaukseen, joten niiden 
+suorituskyky ei ole taattu monimutkaisilla lausekkeilla.
 
-Äärelliseen automaattiin perustuvan toteutuksen paras puoli on taattu lineaarinen aikavaativuus syötteen pituuden funktiona. Backtrackaukseen perustuva toteutus skaalautuisi eksponentiaalisesti. Algoritmin yksinkertaistamiseksi pidän tavoitteena ainoastaan tavallisella ascii-aakkostolla ja yleisimmillä regexp-operaattoreilla toimivaa tulkkia; esimerkiksi unicode-laajennus jätetään toistaiseksi tehtävän ulkopuolelle.
+Äärelliseen automaattiin perustuvan toteutuksen paras puoli on taattu 
+lineaarinen aikavaativuus syötteen pituuden funktiona. Backtrackaukseen 
+perustuva toteutus skaalautuisi eksponentiaalisesti. Algoritmin 
+yksinkertaistamiseksi pidän tavoitteena ainoastaan tavallisella ascii-
+aakkostolla ja yleisimmillä regexp-operaattoreilla toimivaa tulkkia; esimerkiksi 
+unicode-laajennus jätetään toistaiseksi tehtävän ulkopuolelle.
 
 Lähteet:
-[1] https://developer.apple.com/library/ios/documentation/Foundation/Reference/NSRegularExpression_Class/index.html
+[1] https://developer.apple.com/library/ios/documentation/Foundation/Reference/NS
+RegularExpression_Class/index.html
 [2] https://github.com/bendytree/Objective-C-RegEx-Categories
-[3] https://developer.apple.com/library/ios/documentation/AppKit/Reference/NSTextCheckingResult_Class/index.html
+[3] https://developer.apple.
+com/library/ios/documentation/AppKit/Reference/NSTextCheckingResult_Class/index.
+html
 [4] K. Thompson, Communications of the ACM 11 (6), 419-422 (1968).
-[5] R. Cox, Regular Expression Matching Can Be Simple And Fast, http://swtch.com/~rsc/regexp/regexp1.html (2007).
+[5] R. Cox, Regular Expression Matching Can Be Simple And Fast, http://swtch.
+com/~rsc/regexp/regexp1.html (2007).
 [6] https://code.google.com/p/re2/
