@@ -44,8 +44,6 @@
         if (start > originalInput.length) break;
         input=[originalInput substringFromIndex:start];
         ranges[i] = [self.NFA findMatch:input];
-        //reset the automaton:
-        [self.NFA rewind];
         //if there is no match, quit:
         if (NSEqualRanges(ranges[i],NSMakeRange(0, 0))) break;
         //move the range to the right location:
