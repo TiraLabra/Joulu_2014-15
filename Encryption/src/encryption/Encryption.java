@@ -264,9 +264,9 @@ public class Encryption {
     }
     /**
      * Generates BigInteger keys.
-     * public exponent e
-     * private exponent d
-     * and modulus n.
+     * public exponent e, picked from wikipedia, some nice primenumber.
+     * private exponent d, d = e modInverse ((p-1)*(q-1))
+     * and modulus n. n = p * q . (two probable prime numbers)
      * Writes them to a files private.key and public.key
      */
     private static void generateKeys(){

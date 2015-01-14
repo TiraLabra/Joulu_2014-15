@@ -6,7 +6,7 @@
 
 package encryption;
 
-import java.nio.ByteBuffer;
+import java.util.ArrayList;
 import java.util.Random;
 
 /**
@@ -22,7 +22,10 @@ public class OwnBigInteger {
     public static OwnBigInteger TEN = OwnBigInteger.valueOf(10L);
     
     // Content
-    private byte[] data;
+    //private byte[] data;
+    private ArrayList<Character> data;
+    
+    private int signum = 0; // 0 or 1 if positive, if negative -1. 
 
     private final static long BYTE_MODULUS = 256;
     //private final static ByteBuffer longConverter = ByteBuffer.allocate(Long.BYTES);
@@ -30,9 +33,8 @@ public class OwnBigInteger {
      * Creates OwnBigInteger instance from byte array.
      * @param data 
      */
-    public OwnBigInteger(byte[] data) {
+    public OwnBigInteger(ArrayList<Character> data) {
         this.data = data;
-        // TODO needs to be checked that this works correctly.
     }
     
     /** 
@@ -48,10 +50,25 @@ public class OwnBigInteger {
      * @param data 
      */
     public OwnBigInteger(String data){
-        this.data = data.getBytes();
-        // TODO
+        this.data = new ArrayList<>();
+        for ( char c : data.toCharArray() ){
+            this.data.add(c);
+        };
     }
     
+    /**
+     * Creates a string from the contents of a character array
+     * @return 
+     */
+    public String toString(){
+        String returnValue = "";
+        
+        for ( char c : this.data ){
+            returnValue = returnValue + c;
+        }
+        
+        return returnValue;
+    }
     /**
      * Creates OwnBigInteger from long value
      * @param value long type
@@ -59,14 +76,9 @@ public class OwnBigInteger {
      */
     public static OwnBigInteger valueOf(long value){
         
-        ByteBuffer longConverter = ByteBuffer.allocate(Long.BYTES);
+        String tmp = "" + value;
         
-        longConverter.putLong(value);
-        
-        byte [] array = longConverter.array();
-        longConverter.clear();
-        
-        return new OwnBigInteger(array);
+        return new OwnBigInteger(tmp);
     }
 
     /**
@@ -78,16 +90,16 @@ public class OwnBigInteger {
         
         boolean returnValue = false;
         
-        if ( this.data.length != value.data.length ){
+        if ( this.data.size() != value.data.size() ){
             return returnValue;
         }
-        int i = 0;
-        while ( i < this.data.length ){
-            
-            if ( this.data[i] != value.data[i] ){
+        
+        for ( int i = 0; i < this.data.size(); i++ ){
+            if ( this.data.get(i) != value.data.get(i) ){
                 return returnValue;
             }
-        }
+        } 
+        
         returnValue = true;
         
         return returnValue;
@@ -100,23 +112,23 @@ public class OwnBigInteger {
      * @return 
      */
     public OwnBigInteger probablePrime(int wantedBitLength, Random generator){
+  
+        int maxLength = wantedBitLength / 4; // 0 - 9 is 4 bits max.
         
-        int length = wantedBitLength / 8;
-        int remains = wantedBitLength % 8;
-        
-        if ( remains > 0 ){
-            length++;
+        String tmp = "";
+        for ( int i = 0; i < maxLength; i++ ){
+            int next = generator.nextInt(9); // max 1 decimal integer 0 - 9. but the first has to be with or 8.
+            
+            if ( i == 0 ){
+                next = next | 0x08; // highest bit has to be 1.
+            }
+            if ( i == maxLength - 1 ){
+                next = next | 0x01; // Lowest bit has to be 1.
+            }
+            tmp = tmp + next;
         }
         
-        byte [] array = new byte[length];
-        generator.nextBytes(array);
-        
-        array[0] = (byte) (array[0] | 0x01); // set the lowest bit to 1.
-        array[length-1] = (byte) (array[length-1] & remains); // set bits over remains to zero.
-        array[length-1] = (byte) (array[length-1] | (1 << remains)); // shift bit 1 enought times to left.
-        
-        
-        return new OwnBigInteger(array);
+        return new OwnBigInteger(tmp);
     }
     
     /**
@@ -125,43 +137,58 @@ public class OwnBigInteger {
      * @return OwnBigInteger
      */
     public OwnBigInteger add(OwnBigInteger value){
-        int maxLength = this.data.length + 1;
         
-        if ( maxLength < value.data.length ){
-            maxLength = value.data.length + 1;
+        StringBuilder sb = new StringBuilder();
+        
+        int endPos = this.data.size()-1;
+        int pos1 = this.data.size()-1;
+        int pos2 = value.data.size()-1;
+        int tmpCarry = 0;
+        
+        if ( endPos < pos2 ){
+            endPos = pos2;
         }
         
-        byte [] newValue = new byte[maxLength];
-        
-        // Starting position is in the end of byte[] array.
-        int pos1 = data.length-1;
-        int pos2 = value.data.length-1;
-        int pos3 = maxLength-1;
-        byte tmpCarry = 0x0;
-        
-        for ( int i = pos3; i > 0; i--, pos1--, pos2-- ){
+        while ( endPos >= 0 ){
             
-            int tmp1 = 0; 
-            int tmp2 = 0;
-            
-            if ( pos1 >= 0 ) {
-                tmp1 = data[pos1];
+            String valueWhereToAdd = "";
+            if ( pos1 >= 0 ){
+                valueWhereToAdd = "" + this.data.get(pos1);
             }
             
-            if ( pos2 >= 0 ){
-                tmp2 = value.data[pos2];
+            String valueToAdd = "";
+            if ( pos2 >= 0){
+                valueToAdd = "" + value.data.get(pos2);
             }
             
-            int tmp3 = tmp1 + tmp2 + tmpCarry;
+            int first = 0;
+            if ( !valueWhereToAdd.isEmpty() ){
+                first = Integer.parseInt(valueWhereToAdd);
+            }
             
-            newValue[i] = (byte)(tmp3 & 0xff);
-            tmp3 >>= 8;
-            tmpCarry = (byte)(tmp3 & 0xff);
-        }
+            int second = 0;
+            
+            if ( !valueToAdd.isEmpty() ){
+                second = Integer.parseInt(valueToAdd);
+            }
+            
+            int tmpResult = first + second + tmpCarry;
+            
+            if ( tmpResult > 10 ){
+                tmpCarry = 1;
+                tmpResult = tmpResult - 10; // need to remove this.
+            }else{
+                tmpCarry = 0;
+            }
+            
+            sb.insert(0, tmpResult);
+            
+            pos1--;
+            pos2--;
+            endPos--;
+        }      
         
-        // TODO
-        
-        return new OwnBigInteger(newValue);
+        return new OwnBigInteger(sb.toString());
     }
     
     /**
@@ -170,42 +197,70 @@ public class OwnBigInteger {
      * @return new OwnBigInteger representation.
      */
     public OwnBigInteger subtract(OwnBigInteger value){
-        
-        byte [] newValue = new byte[value.data.length+this.data.length];
-        
-        // TODO
-        int pos1 = value.data.length-1;
-        int pos2 = this.data.length - value.data.length;
-        if ( pos2 < 0 ){
-            // result will be negative. so maybe we should do addition to value instead.
-            return value.add(this);
+       
+        int pos1 = this.data.size()-1;
+        int pos2 = value.data.size()-1;
+        int endPos = this.data.size()-1;
+        if ( endPos< pos2 ){
+            endPos = pos2;
         }
         
-        int j;
-        byte tmpCarry;
-        for ( int i = pos2; i < value.data.length; i++ ){
-            if ( this.data[i] < value.data[i] ){
-                // Need a carry from before!!!
-                // This can have huge recursion effects.
-                // Stop moving towards 0 when the index position doesn't contain 0.
-                for ( j = i-1; ;j-- ){
-                    
-                    if ( this.data[j] > 0 ){
-                        this.data[j] = this.data[j]--;
-                        tmpCarry = (byte)0xFF;
+        StringBuilder sb = new StringBuilder();
+        
+        while ( endPos >= 0 ){
+            
+            String valueWhereToSubtract = "";
+            if ( pos1 >= 0 ){
+                valueWhereToSubtract = "" + this.data.get(pos1);
+            }
+            
+            String valueToSubtract = "";
+            if ( pos2 >= 0){
+                valueToSubtract = "" + value.data.get(pos2);
+            }
+            
+            int first = 0;
+            if ( !valueWhereToSubtract.isEmpty() ){
+                first = Integer.parseInt(valueWhereToSubtract);
+            }
+            
+            int second = 0;
+            
+            if ( !valueToSubtract.isEmpty() ){
+                second = Integer.parseInt(valueToSubtract);
+            }
+            if ( first < second ){
+                
+                if ( pos1 != 0 ){
+                    // Need to find from higher decimals where to decrease for the carry.
+                    first = first+10;
+                }
+                                
+                for ( int i = pos1-1; i > 0; i-- ){
+                    String carry = "" + this.data.get(i);
+                    int tmp = Integer.parseInt(carry);
+                    if ( tmp > 0 ){
+                        tmp--;
+                        String returnCarry = "" + tmp;
+                        this.data.set(i, returnCarry.charAt(0));
                         break;
-                    }
-                    else {
-                        this.data[j] = (byte)0xFF;
+                    }else{
+                        String returnCarry = "9";
+                        this.data.set(i, returnCarry.charAt(0));
+                        // if the integer is 0, then it has be "decreased" to 9.
                     }
                 }
-                newValue[i] = (byte)(tmpCarry - value.data[i]);
-            }else{
-                newValue[i] = (byte)(this.data[i] - value.data[i]);
             }
+            
+            int resultInt = first - second;
+            sb.insert(0, resultInt);
+            
+            pos1--;
+            pos2--;
+            endPos--;
         }
         
-        return new OwnBigInteger(newValue);
+        return new OwnBigInteger(sb.toString());
     }
     
     /**
@@ -214,25 +269,80 @@ public class OwnBigInteger {
      * @return new OwnBigInteger representation.
      */
     public OwnBigInteger multiply(OwnBigInteger value){
+
+        ArrayList<String> results = new ArrayList<>();        
         
-        byte [] newValue = new byte[value.data.length + this.data.length];
+        int pos1 = data.size()-1;
+        int pos2 = value.data.size()-1;
         
-        OwnBigInteger tmp = new OwnBigInteger(this);
-        OwnBigInteger multiplier = OwnBigInteger.ONE;
-        
-        
-        // TODO
-        while ( !multiplier.equals(value)){
-            tmp = tmp.add(tmp);
-            multiplier.add(multiplier);
-            
-            if ( multiplier.add(multiplier).compareTo(value) > 1){
-                // going over. need to reset something, or check how much we are going over.
-                // so we can continue calculating those sums.
-            }
+        int pos3 = data.size()-1;
+        if ( pos3 < pos2 ){
+            pos3 = pos2;
         }
         
-        return new OwnBigInteger(newValue);
+        StringBuilder sb = new StringBuilder();
+        
+        /**
+         *  123456 this  (this OwnBigInteger instance)
+         * *000111 value (parameter)
+         * -------
+         */
+        int tmpCarry = 0;
+        for ( ; pos2 >= 0; pos2-- ){ 
+            
+            String multiplyValue = "";
+            if ( pos2 >= 0){
+                multiplyValue = "" + value.data.get(pos2);
+            }
+            int multiplier = 0;
+            
+            if ( !multiplyValue.isEmpty() ){
+                multiplier = Integer.parseInt(multiplyValue);
+            }
+            
+            for ( int i = (value.data.size()-1) - pos2; i > 0; i-- ){
+                sb.insert(0, "0"); 
+            // when we have moved atleast one step from the initial last 
+            // position, we have to add zeroes to last positions. 
+            // Before multiply results.
+            }
+            
+            for ( ; pos1 >= 0; pos1-- ){
+                
+                String valueToMultiply = "";
+                if ( pos1 >= 0 ){
+                    valueToMultiply = "" + this.data.get(pos1);
+                }
+                
+                int multiplyThis = 0;
+                if ( !valueToMultiply.isEmpty() ){
+                    multiplyThis = Integer.parseInt(valueToMultiply);
+                }
+                
+                int result = multiplyThis * multiplier + tmpCarry;
+                int remainder = result % 10;
+                tmpCarry = result / 10;
+                
+                sb.insert(0, remainder);
+            }
+            if ( tmpCarry != 0 ){
+                // if tmpCarry has something still, it has to be inserted as a first.
+                sb.insert(0, tmpCarry); 
+            }
+            pos1 = data.size()-1; // reset the position
+            tmpCarry = 0;
+            results.add(sb.toString());
+            sb.delete(0, sb.length()); // time to start next multiply result.
+        }
+        
+        // Add all multiply results for final result. And return the final sum.
+        OwnBigInteger first = new OwnBigInteger(results.remove(0));
+        
+        for( String s : results ){
+            first = first.add(new OwnBigInteger(s));
+        }
+        
+        return first;
     }
     
     /**
@@ -256,11 +366,11 @@ public class OwnBigInteger {
      * @return new OwnBigInteger representation.
      */
     public OwnBigInteger mod(OwnBigInteger value){
-        byte [] newValue = new byte[this.data.length + value.data.length];
+        //byte [] newValue = new byte[this.data.length + value.data.length];
         
         // TODO
         
-        return new OwnBigInteger(newValue);
+        return new OwnBigInteger("12");
     }
     
     /**
@@ -272,11 +382,11 @@ public class OwnBigInteger {
      */
     public OwnBigInteger modPow(OwnBigInteger exponent, OwnBigInteger modulus){
         
-        byte [] newValue = new byte[this.data.length + exponent.data.length];
+        //byte [] newValue = new byte[this.data.length + exponent.data.length];
         
         // TODO
         
-        return new OwnBigInteger(newValue);
+        return new OwnBigInteger("12");
     }
     
     /**
@@ -286,11 +396,11 @@ public class OwnBigInteger {
      */
     public OwnBigInteger pow(OwnBigInteger exponent){
         
-        byte [] newValue = new byte[Integer.MAX_VALUE];
+        //byte [] newValue = new byte[Integer.MAX_VALUE];
         
         // TODO
         
-        return new OwnBigInteger(newValue);
+        return new OwnBigInteger("12");
     }
 
     /**
@@ -318,10 +428,10 @@ public class OwnBigInteger {
      * @return new OwnBigInteger value.
      */
     public OwnBigInteger modInverse(OwnBigInteger value){
-        byte [] newValue = new byte[Integer.MAX_VALUE];
+        //byte [] newValue = new byte[Integer.MAX_VALUE];
         
         
-        return new OwnBigInteger(newValue);
+        return new OwnBigInteger("12");
     }
 }
 

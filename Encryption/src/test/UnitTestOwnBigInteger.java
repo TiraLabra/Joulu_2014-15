@@ -33,14 +33,18 @@ public class UnitTestOwnBigInteger {
     
     @Test
     public static void TestMultiply(){
-        OwnBigInteger test1 = OwnBigInteger.ONE;
-        OwnBigInteger test2 = test1.multiply(OwnBigInteger.TEN);
+        long tmp1 = 123456789;
+        long tmp2 = 123456789;
+        OwnBigInteger test1 = new OwnBigInteger(OwnBigInteger.valueOf(tmp1));
+        OwnBigInteger test2 = test1.multiply(OwnBigInteger.valueOf(tmp2));
         
-        Assert.assertTrue(test2.equals(OwnBigInteger.TEN));
+        long tulos = tmp1 * tmp2;
+        
+        Assert.assertTrue(test2.equals(OwnBigInteger.valueOf(tulos)));
     }
     
     public static void main(String [] args){
-        TestAdding(); // also tests converting long values to byte arrays
+        TestAdding(); 
         TestSubtracting(); // Simple test
         TestMultiply(); // Simple test
     }
