@@ -6,6 +6,7 @@
 
 package encryption;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -347,6 +348,18 @@ public class OwnBigInteger {
         }
         
         return first;
+    }
+    
+    public OwnBigInteger divide(OwnBigInteger divider){
+        OwnBigInteger result = new OwnBigInteger("0");
+        
+        // If this is smaller than the divider, then return 0.
+        // Currently checks only lengths.
+        if ( divider.data.size() > this.data.size() ){
+            return result;
+        }
+        
+        return result;
     }
     
     /**
