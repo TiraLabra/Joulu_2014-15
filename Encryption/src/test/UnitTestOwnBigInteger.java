@@ -16,11 +16,16 @@ public class UnitTestOwnBigInteger {
     
     @Test
     public static void TestAdding(){
-        OwnBigInteger test1 = OwnBigInteger.valueOf(1L);
-        OwnBigInteger test2 = test1.add(OwnBigInteger.valueOf(2L));
+        long tmp1 = 983L;
+        long tmp2 = 567L;
+        OwnBigInteger test1 = OwnBigInteger.valueOf(tmp1);
+        OwnBigInteger test2 = OwnBigInteger.valueOf(tmp2);
         
-        OwnBigInteger test3 = OwnBigInteger.valueOf(3L);
-        Assert.assertTrue(test3.equals(test2));
+        OwnBigInteger result = test1.add(test2);
+
+        long res = tmp1+tmp2;
+        OwnBigInteger test3 = OwnBigInteger.valueOf(res);
+        Assert.assertTrue(test3.equals(result));
     }
     
     @Test
@@ -44,8 +49,8 @@ public class UnitTestOwnBigInteger {
     }
     
     public static void main(String [] args){
-        TestAdding(); 
-        TestSubtracting(); // Simple test
+       // TestAdding(); 
+       // TestSubtracting(); // Simple test
         TestMultiply(); // Simple test
     }
 }

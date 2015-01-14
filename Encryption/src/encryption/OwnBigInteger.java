@@ -174,7 +174,7 @@ public class OwnBigInteger {
             
             int tmpResult = first + second + tmpCarry;
             
-            if ( tmpResult > 10 ){
+            if ( tmpResult >= 10 ){
                 tmpCarry = 1;
                 tmpResult = tmpResult - 10; // need to remove this.
             }else{
@@ -186,7 +186,11 @@ public class OwnBigInteger {
             pos1--;
             pos2--;
             endPos--;
-        }      
+        }
+        
+        if ( tmpCarry != 0 ){
+            sb.insert(0, tmpCarry);
+        }
         
         return new OwnBigInteger(sb.toString());
     }
@@ -287,9 +291,9 @@ public class OwnBigInteger {
          * *000111 value (parameter)
          * -------
          */
-        int tmpCarry = 0;
+        
         for ( ; pos2 >= 0; pos2-- ){ 
-            
+            int tmpCarry = 0;
             String multiplyValue = "";
             if ( pos2 >= 0){
                 multiplyValue = "" + value.data.get(pos2);
