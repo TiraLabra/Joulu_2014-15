@@ -1,0 +1,7 @@
+Ensimmäisen viikon aikana opin jonkin verran testauksen ja spesifikaatioiden toteuttamisesta XCode-ympäristössä. Lisäksi luin ennen kaikkea äärellisten automaattien teoriaa ja mietin, miten automaatti olisi parhaiten toteutettavissa olioympäristössä.
+
+Ensimmäisen viikon tavoitteenani oli toteuttaa yksinkertaisin ja havainnollisin mahdollinen epädeterministinen tilakone Objective-C-rakenteilla. Tämän laajentaminen RegExp-tulkiksi ja uusien ominaisuuksien lisääminen on helppoa sen mukaan, kuinka paljon aikaa on käytettävissä.
+
+Testaamisen olen aloittanut yksittäisillä kirjaimilla ja stringeillä, jotka haluan tilakoneen tunnistavan. Tällä hetkellä tilakone tunnistaa minkä tahansa määrän stringin sisältäviä stringejä, eli mitään rekursioita tai haarautuvuutta eli epädeterministisyyttä ei ole vielä toteutettu.
+
+Epäselväksi ovat jääneet lähinnä monimutkaisempien tilojen ja epädeterminististen sisäkkäisten siirtymien toteutuksen tekniset yksityiskohdat sekä epädeterminististen siirtymien järjestyksen määräytyminen. Niitä en ole vielä toteuttanut edes alustavasti, mutta toistaiseksi tavoitteenani on saada koko tilakone koottua yhdeksi puuksi sisäkkäisillä RONFA- ja ROState-olioilla ilman muita uusia tietorakenteita.
