@@ -9,7 +9,7 @@ An Objective-C library that implements simple fast (polynomial instead of expone
 
 ## Installation
 
-Including NSString+RORegEx.h allows you to send a match:(NSString*) regEx command directly to an NSString object.
+Including NSString+RORegEx.h in your project allows sending a match:(NSString*) regEx command directly to an NSString object. The full XCode project is available for running all implemented tests.
 
 ## References
 
