@@ -241,7 +241,7 @@ public class OwnBigInteger {
                     first = first+10;
                 }
                                 
-                for ( int i = pos1-1; i > 0; i-- ){
+                for ( int i = pos1-1; i >= 0; i-- ){
                     String carry = "" + this.data.get(i);
                     int tmp = Integer.parseInt(carry);
                     if ( tmp > 0 ){
@@ -258,7 +258,14 @@ public class OwnBigInteger {
             }
             
             int resultInt = first - second;
-            sb.insert(0, resultInt);
+            // if the result in the first position is 0, we don't add it into the string.
+            // we should also check that first position doesn't contain zeroes.
+            if ( endPos == 0 && resultInt == 0 ){
+                
+            }
+            else{           
+                sb.insert(0, resultInt);
+            }
             
             pos1--;
             pos2--;
@@ -335,7 +342,6 @@ public class OwnBigInteger {
                 sb.insert(0, tmpCarry); 
             }
             pos1 = data.size()-1; // reset the position
-            tmpCarry = 0;
             results.add(sb.toString());
             sb.delete(0, sb.length()); // time to start next multiply result.
         }
@@ -359,6 +365,15 @@ public class OwnBigInteger {
             return result;
         }
         
+        // needs to compare if divider is bigger than this.
+        // TODO.
+        OwnBigInteger tmp = new OwnBigInteger(this);
+        
+        while ( tmp.compareTo(divider) > 0 ){
+            tmp = tmp.subtract(divider);
+            result = result.add(OwnBigInteger.ONE);
+        }
+        
         return result;
     }
     
@@ -373,6 +388,14 @@ public class OwnBigInteger {
         OwnBigInteger [] array = new OwnBigInteger[2];
         
         // TODO
+        array[0] = this.divide(value);
+        
+        if ( array[0].equals(ZERO)){
+            array[1] = value;
+        }else{
+            // formula for remainder: this - array[0] * value
+            array[1] = this.subtract(value.multiply(array[0]));
+        }
         
         return array;
     }
@@ -383,11 +406,10 @@ public class OwnBigInteger {
      * @return new OwnBigInteger representation.
      */
     public OwnBigInteger mod(OwnBigInteger value){
-        //byte [] newValue = new byte[this.data.length + value.data.length];
         
-        // TODO
+        OwnBigInteger [] array = divideAndRemainder(value);
         
-        return new OwnBigInteger("12");
+        return array[1];
     }
     
     /**
@@ -423,8 +445,8 @@ public class OwnBigInteger {
     /**
      * Compares this OwnBigInteger with the parameter value. 
      * Returns 0 if the values are same.
-     * Returns 1 if 
-     * Returns -1 if
+     * Returns 1 if this is bigger
+     * Returns -1 if this is smaller
      * @param value to compare to this OwnBigInteger
      * @return integer -1, 0 or 1.
      */
@@ -434,9 +456,52 @@ public class OwnBigInteger {
             return 0;
         }
         
-        // TODO
+        // Currently negative values aren't supported
+        if ( this.data.size() > value.data.size() ){
+            return 1;
+        }
         
-        return 1;
+        if ( this.data.size() < value.data.size() ){
+            return -1;
+        }
+        
+        int returnValue = 0;
+        // both values are equally long!
+        for ( int i = 0; i < this.data.size(); i++ ){
+            
+            // This data[i] number
+            String thisPos = "";
+            if ( i >= 0 ){
+                thisPos = "" + this.data.get(i);
+            }
+                
+            int thisValue = 0;
+            if ( !thisPos.isEmpty() ){
+                thisValue = Integer.parseInt(thisPos);
+            }
+            
+            // Parameter data[i] number
+            String paramPos = "";
+            if ( i >= 0 ){
+                paramPos = "" + value.data.get(i);
+            }
+                
+            int paramValue = 0;
+            if ( !paramPos.isEmpty() ){
+                paramValue = Integer.parseInt(paramPos);
+            }
+            
+            if ( thisValue > paramValue ){
+                returnValue = 1;
+                break;
+            }else if (thisValue < paramValue){
+                returnValue = -1;
+                break;
+            }
+            // No need for else. if thisValue == paramValue, we continue.
+        }
+        
+        return returnValue;
     }
     
     /**
