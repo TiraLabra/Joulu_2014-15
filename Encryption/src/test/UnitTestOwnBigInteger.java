@@ -147,14 +147,13 @@ public class UnitTestOwnBigInteger {
     }
     
     public static void main(String [] args){
-       // TestAdding(); 
-       //TestSubtracting(); // Simple test
-       // TestMultiply(); // Simple test
-        //TestDivision();
-        //TestDivideRemainder();
-        //TestStringCreation();
+        TestAdding(); 
+        TestSubtracting(); // Simple test
+        TestMultiply(); // Simple test
+        TestDivision();
+        TestDivideRemainder();
+        TestStringCreation();
         TestPower();
-        //TestDivideRemainder2();
-        
+        TestDivideRemainder2();
     }
 }
