@@ -578,6 +578,37 @@ public class OwnBigInteger {
     }
     
     /**
+     * Returns the greatest common divisor of this and value.
+     * @param value
+     * @return Greatest common divisor.
+     */
+    public OwnBigInteger gcd(OwnBigInteger value){
+        
+        OwnBigInteger tmp = new OwnBigInteger(this);
+        OwnBigInteger tmp2 = new OwnBigInteger(value);
+        
+        OwnBigInteger [] array = null;
+        
+        do{
+            if ( tmp.compareTo(tmp2) > 0 )
+            {
+                array = tmp.divideAndRemainder(tmp2);
+                tmp = tmp2;
+                tmp2 = array[1];
+            }
+            else if ( tmp.compareTo(tmp2) < 0 )
+            {
+                array = tmp2.divideAndRemainder(tmp);
+                tmp2 = tmp;
+                tmp = array[1];
+            } 
+            
+        }while ( !array[0].equals(ZERO) );
+        
+        return array[1];
+    }
+    
+    /**
      * Converts a given OwnBigInteger to binary representation.
      * This is used for modular exponention to make it faster.
      * @param valueToConvert
