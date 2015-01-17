@@ -5,6 +5,7 @@
  */
 package test;
 import encryption.OwnBigInteger;
+import java.math.BigInteger;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -74,6 +75,36 @@ public class UnitTestOwnBigInteger {
     }
     
     @Test
+    public static void TestStringCreation(){
+        
+        OwnBigInteger test1 = new OwnBigInteger("0000000531");
+        long tmp1 = 531L;
+        
+        Assert.assertTrue(test1.equals(OwnBigInteger.valueOf(tmp1)));
+    }
+    
+    @Test
+    public static void TestPower(){
+        
+        long tmp1 = 33;
+        long tmp2 = 33;
+        int tmp3 =  33;
+        
+        BigInteger big1 = BigInteger.valueOf(tmp1);
+        
+        OwnBigInteger obig1 = OwnBigInteger.valueOf(tmp1);
+        OwnBigInteger obig2 = OwnBigInteger.valueOf(tmp2);
+        
+        obig1 = obig1.pow(obig2);
+        big1 = big1.pow(tmp3);
+        
+        String eka = obig1.toString();
+        String toka = big1.toString();
+        
+        Assert.assertTrue(eka.equals(toka));
+    }
+    
+    @Test
     public static void TestDivideRemainder(){
         long tmp1 = 234549;
         long tmp2 = 43;
@@ -96,12 +127,34 @@ public class UnitTestOwnBigInteger {
         Assert.assertTrue(correct);
     }
     
+    @Test
+    public static void TestDivideRemainder2(){
+        long tmp1 = 33;
+        long tmp2 = 2;
+        OwnBigInteger test1 = OwnBigInteger.valueOf(tmp1);
+        OwnBigInteger test2 = OwnBigInteger.valueOf(tmp2);
+        
+        OwnBigInteger [] res = test1.divideAndRemainder(test2);
+        
+        test1 = res[0];
+        res = test1.divideAndRemainder(test2);
+        test1 = res[0];
+        
+        long result = tmp1 / tmp2;
+        result = result / tmp2;
+        
+        Assert.assertTrue(test1.equals(OwnBigInteger.valueOf(result)));
+    }
+    
     public static void main(String [] args){
        // TestAdding(); 
        //TestSubtracting(); // Simple test
        // TestMultiply(); // Simple test
         //TestDivision();
-        TestDivideRemainder();
+        //TestDivideRemainder();
+        //TestStringCreation();
+        TestPower();
+        //TestDivideRemainder2();
         
     }
 }

@@ -51,10 +51,30 @@ public class OwnBigInteger {
      * @param data 
      */
     public OwnBigInteger(String data){
+        
+        if ( data.length() == 0 ){
+            // should do something in this case.
+        }
+        
+        if ( data.length() > 1 ){
+            // if length is more than 1, then remove the beginning 0's.
+            int beginPos = 0;
+            for ( int i = 0; i < data.length(); i++ ){
+                if ( data.charAt(i) == '0' ){
+                    beginPos++;
+                }else{
+                    break;
+                }
+            }
+            data = data.substring(beginPos);
+        }
+        
         this.data = new ArrayList<>();
+            
         for ( char c : data.toCharArray() ){
             this.data.add(c);
         };
+        
     }
     
     /**
@@ -369,7 +389,7 @@ public class OwnBigInteger {
         // TODO.
         OwnBigInteger tmp = new OwnBigInteger(this);
         
-        while ( tmp.compareTo(divider) > 0 ){
+        while ( tmp.compareTo(divider) >= 0 ){
             tmp = tmp.subtract(divider);
             result = result.add(OwnBigInteger.ONE);
         }
@@ -379,7 +399,8 @@ public class OwnBigInteger {
     
     /**
      * Divides this OwnBigInteger with the parameter value, and returns both the 
-     * division and remaining parts in OwnBigInteger array.
+     * division and remaining parts in OwnBigInteger array. Array[0] contains the 
+     * division result. Array[1] contains the remainder.
      * @param value Divider.
      * @return array containing division and remainder.
      */
@@ -421,11 +442,28 @@ public class OwnBigInteger {
      */
     public OwnBigInteger modPow(OwnBigInteger exponent, OwnBigInteger modulus){
         
-        //byte [] newValue = new byte[this.data.length + exponent.data.length];
+        String expString = convertToBinary(exponent);
         
-        // TODO
+        OwnBigInteger result = new OwnBigInteger(ONE);
         
-        return new OwnBigInteger("12");
+        OwnBigInteger base = new OwnBigInteger(this);
+        base = base.mod(modulus);
+        
+        OwnBigInteger tmpExp = new OwnBigInteger(exponent);
+        int position = expString.length()-1;
+        while ( position > 0 ){
+            
+            OwnBigInteger modResult = tmpExp.mod(OwnBigInteger.valueOf(2L));
+            if ( modResult.equals(ONE)){
+                result = result.multiply(base).mod(modulus);
+            }
+            
+            position--;
+            base = base.multiply(base).mod(modulus);
+            tmpExp = OwnBigInteger.convertToDecimal(expString.substring(0, position));
+        }
+        
+        return result;
     }
     
     /**
@@ -435,11 +473,31 @@ public class OwnBigInteger {
      */
     public OwnBigInteger pow(OwnBigInteger exponent){
         
-        //byte [] newValue = new byte[Integer.MAX_VALUE];
+        if ( exponent.equals(ZERO)){
+            return ONE;
+        }
         
-        // TODO
+        if ( exponent.equals(ONE)){
+            return this;
+        }
         
-        return new OwnBigInteger("12");
+        OwnBigInteger base = new OwnBigInteger(this);
+        OwnBigInteger result = new OwnBigInteger(ONE);
+        OwnBigInteger expRes = new OwnBigInteger(exponent);
+        
+        while ( !expRes.equals(ZERO) ){
+            
+            OwnBigInteger [] tmpres = expRes.divideAndRemainder(OwnBigInteger.valueOf(2L));
+            expRes = tmpres[0];
+            if ( tmpres[1].equals(ONE)){
+                result = result.multiply(base);
+            }
+            
+            base = base.multiply(base);
+        }
+        result = result.multiply(base);
+
+        return result;
     }
 
     /**
@@ -514,6 +572,60 @@ public class OwnBigInteger {
         
         
         return new OwnBigInteger("12");
+    }
+    
+    /**
+     * Converts a given OwnBigInteger to binary representation.
+     * This is used for modular exponention to make it faster.
+     * @param valueToConvert
+     * @return Binary representation of the parameter value.
+     */
+    private String convertToBinary(OwnBigInteger valueToConvert){
+        
+        String returnValue = "";
+        
+        OwnBigInteger tmp = new OwnBigInteger(valueToConvert);
+        
+        OwnBigInteger [] array;
+        OwnBigInteger divider = OwnBigInteger.valueOf(2L);
+        
+        while ( !tmp.equals(ZERO) ){
+            
+            array = tmp.divideAndRemainder(divider);
+            if ( array[1].equals(ONE) ){
+                returnValue = returnValue + "1";
+            }else if ( array[1].equals(ZERO)){
+                returnValue = returnValue + "0";
+            }
+            
+            tmp = array[0];
+        }
+        
+        return returnValue;
+    }
+    
+    /**
+     * Converts Binary string to decimal representation OwnBigInteger.
+     * @param valueToConvert
+     * @return OwnBigInteger, decimal representation of the parameter value.
+     */
+    private static OwnBigInteger convertToDecimal(String valueToConvert){
+        
+        OwnBigInteger result = new OwnBigInteger(ZERO);
+        OwnBigInteger two = OwnBigInteger.valueOf(2L);
+        
+        long exponent = 0;
+        for ( int i = valueToConvert.length() - 1; i > 0; i--  ){
+        
+            if ( valueToConvert.charAt(i) == '1' ){
+                OwnBigInteger tmp = two.pow(OwnBigInteger.valueOf(exponent));
+                
+                result = result.add(tmp);
+            }
+            exponent++;
+        }
+        
+        return result;
     }
 }
 
