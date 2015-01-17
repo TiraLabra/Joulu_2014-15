@@ -76,61 +76,66 @@ public class Game {
         boolean lossNextTurn = false;
 
         // check if the center position is empty - if yes, choose that as the next move
+        // otherwise check if the position below the center position is empty - if yes, choose that as the next move (not used in 3x3)
         // otherwise check if there's any move that would immediately win the game - if yes, choose that as the next move
         // otherwise check if there's any move that would block a winning move by the opponent during the following turn 
         // - if yes, choose that as the next move
         // otherwise go through all possible moves and calculate the best next move
 
         if (board[board.length / 2][board.length / 2] != 0) {
-            for (int i = 0; i < board.length; i++) {
-                for (int j = 0; j < board.length; j++) {
-                    if (newBoard[i][j] == 0) {
-                        newBoard[i][j] = whosTurn;
-                        if (checkForVictoryOrLoss(newBoard) == true) {
-                            evaluationBoard[i][j] = Integer.MAX_VALUE;
-                            winThisTurn = true;
-                        }
-                        newBoard2 = newBoard;
-                        for (int k = 0; k < board.length; k++) {
-                            for (int l = 0; l < board.length; l++) {
-                                if (newBoard2[k][l] == 0) {
-                                    if (whosTurn == 1) {
-                                        newBoard2[k][l] = 2;
-                                    } else {
-                                        newBoard2[k][l] = 1;
+            if (board.length == 3 || (board[board.length / 2 + 1][board.length / 2] != 0)) {
+                for (int i = 0; i < board.length; i++) {
+                    for (int j = 0; j < board.length; j++) {
+                        if (newBoard[i][j] == 0) {
+                            newBoard[i][j] = whosTurn;
+                            if (checkForVictoryOrLoss(newBoard) == true) {
+                                evaluationBoard[i][j] = Integer.MAX_VALUE;
+                                winThisTurn = true;
+                            }
+                            newBoard2 = newBoard;
+                            for (int k = 0; k < board.length; k++) {
+                                for (int l = 0; l < board.length; l++) {
+                                    if (newBoard2[k][l] == 0) {
+                                        if (whosTurn == 1) {
+                                            newBoard2[k][l] = 2;
+                                        } else {
+                                            newBoard2[k][l] = 1;
+                                        }
+                                        if (checkForVictoryOrLoss(newBoard2) == true && winThisTurn == false) {
+                                            evaluationBoard[i][j] = Integer.MIN_VALUE;
+                                            lossNextTurn = true;
+                                        }
+                                        newBoard2[k][l] = 0;
                                     }
-                                    if (checkForVictoryOrLoss(newBoard2) == true && winThisTurn == false) {
-                                        evaluationBoard[i][j] = Integer.MIN_VALUE;
-                                        lossNextTurn = true;
-                                    }
-                                    newBoard2[k][l] = 0;
                                 }
                             }
-                        }
-                        if (whosTurn == 1 && (gameMode == 1 || gameMode == 4)) {
-                            // non-AI player's move evaluation disabled for now
-                            // evaluationBoard[i][j] = evaluateMove(newBoard, 2, 0);
-                        } else if (whosTurn == 2 && (gameMode == 2 || gameMode == 4)) {
-                            // non-AI player's move evaluation disabled for now
-                            // evaluationBoard[i][j] = evaluateMove(newBoard, 1, 1);
-                        } else if (whosTurn == 1 && (gameMode == 2 || gameMode == 3)) {
-                            if (winThisTurn == false && lossNextTurn == false) {
-                                // AI's move evaluation must always be enabled
-                                evaluationBoard[i][j] = evaluateMove(newBoard, 2, 0);
+                            if (whosTurn == 1 && (gameMode == 1 || gameMode == 4)) {
+                                // non-AI player's move evaluation disabled for now
+                                // evaluationBoard[i][j] = evaluateMove(newBoard, 2, 0);
+                            } else if (whosTurn == 2 && (gameMode == 2 || gameMode == 4)) {
+                                // non-AI player's move evaluation disabled for now
+                                // evaluationBoard[i][j] = evaluateMove(newBoard, 1, 1);
+                            } else if (whosTurn == 1 && (gameMode == 2 || gameMode == 3)) {
+                                if (winThisTurn == false && lossNextTurn == false) {
+                                    // AI's move evaluation must always be enabled
+                                    evaluationBoard[i][j] = evaluateMove(newBoard, 2, 0);
+                                }
+                            } else if (whosTurn == 2 && (gameMode == 1 || gameMode == 3)) {
+                                if (winThisTurn == false && lossNextTurn == false) {
+                                    // AI's move evaluation must always be enabled
+                                    evaluationBoard[i][j] = evaluateMove(newBoard, 1, 1);
+                                }
                             }
-                        } else if (whosTurn == 2 && (gameMode == 1 || gameMode == 3)) {
-                            if (winThisTurn == false && lossNextTurn == false) {
-                                // AI's move evaluation must always be enabled
-                                evaluationBoard[i][j] = evaluateMove(newBoard, 1, 1);
+                            newBoard[i][j] = 0;
+                        } else {
+                            if (newBoard[i][j] == 1 || newBoard[i][j] == 2) {
+                                unavailableSpots[i][j] = 1;
                             }
-                        }
-                        newBoard[i][j] = 0;
-                    } else {
-                        if (newBoard[i][j] == 1 || newBoard[i][j] == 2) {
-                            unavailableSpots[i][j] = 1;
                         }
                     }
                 }
+            } else {
+                evaluationBoard[board.length / 2 + 1][board.length / 2] = Integer.MAX_VALUE;
             }
         } else {
             evaluationBoard[board.length / 2][board.length / 2] = Integer.MAX_VALUE;
@@ -235,18 +240,30 @@ public class Game {
                         if (board[i][j] != 0 && (j == 0 || j == 1 || j == 2) && board[i][j] == board[i][j + 1]
                                 && board[i][j] == board[i][j + 2]) {
                             count++;
+                            if (j == 1) {
+                                count += 2;
+                            }
                         }
                         if (board[i][j] != 0 && (i == 0 || i == 1 || i == 2) && board[i][j] == board[i + 1][j]
                                 && board[i][j] == board[i + 2][j]) {
                             count++;
+                            if (i == 1) {
+                                count += 2;
+                            }
                         }
                         if (board[i][j] != 0 && (i == 2 || i == 3 || i == 4) && (j == 0 || j == 1 || j == 2)
                                 && board[i][j] == board[i - 1][j + 1] && board[i][j] == board[i - 2][j + 2]) {
                             count++;
+                            if (i == 3 && j == 1) {
+                                count += 2;
+                            }
                         }
                         if (board[i][j] != 0 && ((i == 0 || i == 1 || i == 2) && (j == 0 || j == 1 || j == 2))
                                 && board[i][j] == board[i + 1][j + 1] && board[i][j] == board[i + 2][j + 2]) {
                             count++;
+                            if (i == 1 && j == 1) {
+                                count += 2;
+                            }
                         }
                     }
                 }
@@ -256,18 +273,30 @@ public class Game {
                         if (board[i][j] != 0 && (j == 0 || j == 1 || j == 2) && board[i][j] == board[i][j + 1]
                                 && board[i][j] == board[i][j + 2]) {
                             count--;
+                            if (j == 1) {
+                                count -= 2;
+                            }
                         }
                         if (board[i][j] != 0 && (i == 0 || i == 1 || i == 2) && board[i][j] == board[i + 1][j]
                                 && board[i][j] == board[i + 2][j]) {
                             count--;
+                            if (i == 1) {
+                                count -= 2;
+                            }
                         }
                         if (board[i][j] != 0 && (i == 2 || i == 3 || i == 4) && (j == 0 || j == 1 || j == 2)
                                 && board[i][j] == board[i - 1][j + 1] && board[i][j] == board[i - 2][j + 2]) {
                             count--;
+                            if (i == 3 && j == 1) {
+                                count -= 2;
+                            }
                         }
                         if (board[i][j] != 0 && ((i == 0 || i == 1 || i == 2) && (j == 0 || j == 1 || j == 2))
                                 && board[i][j] == board[i + 1][j + 1] && board[i][j] == board[i + 2][j + 2]) {
                             count--;
+                            if (i == 1 && j == 1) {
+                                count -= 2;
+                            }
                         }
                     }
                 }
@@ -280,18 +309,30 @@ public class Game {
                         if (board[i][j] != 0 && (j == 0 || j == 1 || j == 2 || j == 3) && board[i][j] == board[i][j + 1]
                                 && board[i][j] == board[i][j + 2] && board[i][j] == board[i][j + 3]) {
                             count++;
+                            if (j == 1 || j == 2) {
+                                count += 2;
+                            }
                         }
                         if (board[i][j] != 0 && (i == 0 || i == 1 || i == 2 || i == 3) && board[i][j] == board[i + 1][j]
                                 && board[i][j] == board[i + 2][j] && board[i][j] == board[i + 3][j]) {
                             count++;
+                            if (i == 1 || i == 2) {
+                                count += 2;
+                            }
                         }
                         if (board[i][j] != 0 && (i == 3 || i == 4 || i == 5 || i == 6) && (j == 0 || j == 1 || j == 2 || j == 3)
                                 && board[i][j] == board[i - 1][j + 1] && board[i][j] == board[i - 2][j + 2] && board[i][j] == board[i - 3][j + 3]) {
                             count++;
+                            if ((i == 3 || i == 4) && (j == 1 && j == 2)) {
+                                count += 2;
+                            }
                         }
                         if (board[i][j] != 0 && ((i == 0 || i == 1 || i == 2 || i == 3) && (j == 0 || j == 1 || j == 2) || (i == 2 && j == 2))
                                 && board[i][j] == board[i + 1][j + 1] && board[i][j] == board[i + 2][j + 2] && board[i][j] == board[i + 3][j + 3]) {
                             count++;
+                            if ((i == 1 || i == 2) && (j == 1 && j == 2)) {
+                                count += 2;
+                            }
                         }
                     }
                 }
@@ -301,18 +342,30 @@ public class Game {
                         if (board[i][j] != 0 && (j == 0 || j == 1 || j == 2 || j == 3) && board[i][j] == board[i][j + 1]
                                 && board[i][j] == board[i][j + 2] && board[i][j] == board[i][j + 3]) {
                             count--;
+                            if (j == 1 || j == 2) {
+                                count -= 2;
+                            }
                         }
                         if (board[i][j] != 0 && (i == 0 || i == 1 || i == 2 || i == 3) && board[i][j] == board[i + 1][j]
                                 && board[i][j] == board[i + 2][j] && board[i][j] == board[i + 3][j]) {
                             count--;
+                            if (i == 1 || i == 2) {
+                                count -= 2;
+                            }
                         }
                         if (board[i][j] != 0 && (i == 3 || i == 4 || i == 5 || i == 6) && (j == 0 || j == 1 || j == 2 || j == 3)
                                 && board[i][j] == board[i - 1][j + 1] && board[i][j] == board[i - 2][j + 2] && board[i][j] == board[i - 3][j + 3]) {
                             count--;
+                            if ((i == 3 || i == 4) && (j == 1 && j == 2)) {
+                                count -= 2;
+                            }
                         }
                         if (board[i][j] != 0 && ((i == 0 || i == 1 || i == 2 || i == 3) && (j == 0 || j == 1 || j == 2) || (i == 2 && j == 2))
                                 && board[i][j] == board[i + 1][j + 1] && board[i][j] == board[i + 2][j + 2] && board[i][j] == board[i + 3][j + 3]) {
                             count--;
+                            if ((i == 1 || i == 2) && (j == 1 && j == 2)) {
+                                count -= 2;
+                            }
                         }
                     }
                 }
