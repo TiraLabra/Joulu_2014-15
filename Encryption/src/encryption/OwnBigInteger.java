@@ -491,12 +491,15 @@ public class OwnBigInteger {
             expRes = tmpres[0];
             if ( tmpres[1].equals(ONE)){
                 result = result.multiply(base);
+            }else if ( tmpres[1].equals(OwnBigInteger.valueOf(2L))){
+                // Means that expRes = 0
+                // 1 / 2 = 0, but returns the 2 as a remainder.
+                result = result.multiply(base);
             }
             
             base = base.multiply(base);
         }
-        result = result.multiply(base);
-
+        
         return result;
     }
 
