@@ -133,6 +133,10 @@ public class UnitTestOwnBigInteger {
         long tmp1 = 5736;
         long tmp2 = 234;
         long tmp3 = 534832;
+        // Below are values used in cormen's book. 
+//        long tmp1 = 7;
+//        long tmp2 = 560;
+//        long tmp3 = 561;
         
         OwnBigInteger test1 = OwnBigInteger.valueOf(tmp1);
         OwnBigInteger test2 = OwnBigInteger.valueOf(tmp2);

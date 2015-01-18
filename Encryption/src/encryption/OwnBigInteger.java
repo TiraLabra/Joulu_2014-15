@@ -444,9 +444,20 @@ public class OwnBigInteger {
     public OwnBigInteger modPow(OwnBigInteger exponent, OwnBigInteger modulus){
         
         String expString = convertToBinary(exponent);
-        
+       
         OwnBigInteger result = new OwnBigInteger(ONE);
+        OwnBigInteger tmp = new OwnBigInteger(this);
         
+        int pos = 0;
+        
+        for ( ; pos < expString.length(); pos++ ){
+            result = result.multiply(result).mod(modulus);
+            if ( expString.charAt(pos) == '1' ){
+                result = result.multiply(tmp).mod(modulus);
+            }
+        }
+        
+        /*
         OwnBigInteger base = new OwnBigInteger(this);
         base = base.mod(modulus);
         
@@ -465,7 +476,7 @@ public class OwnBigInteger {
             base = base.multiply(base).mod(modulus);
             //tmpExp = OwnBigInteger.convertToDecimal(expString.substring(0, position));
         }
-        
+        */
         return result;
     }
     
@@ -631,9 +642,9 @@ public class OwnBigInteger {
             
             array = tmp.divideAndRemainder(divider);
             if ( array[1].equals(ONE) ){
-                returnValue = returnValue + "1";
-            }else if ( array[1].equals(ZERO)){
-                returnValue = returnValue + "0";
+                returnValue = "1" + returnValue;
+            }else {
+                returnValue = "0" + returnValue;
             }
             
             tmp = array[0];
