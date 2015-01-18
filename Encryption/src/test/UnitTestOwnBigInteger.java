@@ -215,6 +215,7 @@ public class UnitTestOwnBigInteger {
     }
     
     public static void main(String [] args){
+        
         /*
         TestAdding(); 
         TestSubtracting(); // Simple test
@@ -224,10 +225,10 @@ public class UnitTestOwnBigInteger {
         TestStringCreation();
         TestPower();
         TestDivideRemainder2();
-        */
-        //TestModPower();
-        //TestModPow2();
+        TestModPower();
+        TestModPow2();
         TestGCD();
+        */
         
     }
 }

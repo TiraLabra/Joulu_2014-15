@@ -556,11 +556,12 @@ public class OwnBigInteger {
      * @param value modulus value.
      * @return new OwnBigInteger value.
      */
-    public OwnBigInteger modInverse(OwnBigInteger value){
-        //byte [] newValue = new byte[Integer.MAX_VALUE];
+    public OwnBigInteger modInverse(OwnBigInteger value) throws Exception{
         
+        OwnBigInteger t = ZERO;
+
         
-        return new OwnBigInteger("12");
+        return t;
     }
     
     /**
