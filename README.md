@@ -20,12 +20,16 @@ Tämä on yhdistetty määrittely- / totetutusdokumentti
 ```
 returns the number of items in the vector
 
+running time: O(1)
+
 ***
 
 ```java
     public T peek ();
 ```
 returns the last value in vector
+
+running time: O(log32(n))
 
 ***
 
@@ -34,12 +38,16 @@ returns the last value in vector
 ```
 returns a new PersistentVector<T> that is the old vector minus the last value
 
+running time: O(log32(n))
+
 ***
 
 ```java
     public PersistentVector<T> conj (T value);
 ```
 returns a new PersistentVector with the given value appended to it
+
+running time: O(log32(n))
 
 ***
 
@@ -48,12 +56,16 @@ returns a new PersistentVector with the given value appended to it
 ```
 returns a new PersistentVector that associates the given index with the given value
 
+running time: O(log32(n))
+
 ***
 
 ```java
     public T get(int index);
 ```
 returns the value associated with the given index
+
+running time: O(log32(n))
 
 ## Implementation
 
@@ -124,7 +136,10 @@ version of it for clojure.
 ```java
     public int count ();
 ```
+
 returns the number of items in the PersistentHashMap
+
+running time: O(1)
 
 ***
 
@@ -133,6 +148,8 @@ returns the number of items in the PersistentHashMap
 ```
 returns a new PersistentHashMap that associates the given index with the given value
 
+running time: O(log32(n))
+
 ***
 
 ```java
@@ -140,12 +157,16 @@ returns a new PersistentHashMap that associates the given index with the given v
 ```
 returns a new PersistentHashMap without the given key
 
+running time: O(log32(n))
+
 ***
 
 ```java
     public V get(K key);
 ```
 returns the value associated with the given key
+
+running time: O(log32(n))
 
 ## Implementation
 
