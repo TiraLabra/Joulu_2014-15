@@ -43,7 +43,8 @@ public class OwnBigInteger {
      * @param value 
      */
     public OwnBigInteger(OwnBigInteger value){
-        this.data = value.data;
+        this.data = new ArrayList<>();
+        this.data.addAll(value.data);
     }
     
     /**
@@ -412,7 +413,7 @@ public class OwnBigInteger {
         array[0] = this.divide(value);
         
         if ( array[0].equals(ZERO)){
-            array[1] = value;
+            array[1] = this;
         }else{
             // formula for remainder: this - array[0] * value
             array[1] = this.subtract(value.multiply(array[0]));
@@ -453,14 +454,16 @@ public class OwnBigInteger {
         int position = expString.length()-1;
         while ( position > 0 ){
             
-            OwnBigInteger modResult = tmpExp.mod(OwnBigInteger.valueOf(2L));
+            OwnBigInteger [] array = tmpExp.divideAndRemainder(OwnBigInteger.valueOf(2L));
+            tmpExp = array[0];
+            OwnBigInteger modResult = array[1];
             if ( modResult.equals(ONE)){
                 result = result.multiply(base).mod(modulus);
             }
             
             position--;
             base = base.multiply(base).mod(modulus);
-            tmpExp = OwnBigInteger.convertToDecimal(expString.substring(0, position));
+            //tmpExp = OwnBigInteger.convertToDecimal(expString.substring(0, position));
         }
         
         return result;
@@ -491,11 +494,12 @@ public class OwnBigInteger {
             expRes = tmpres[0];
             if ( tmpres[1].equals(ONE)){
                 result = result.multiply(base);
-            }else if ( tmpres[1].equals(OwnBigInteger.valueOf(2L))){
+            }
+            /*else if ( tmpres[1].equals(OwnBigInteger.valueOf(2L))){
                 // Means that expRes = 0
                 // 1 / 2 = 0, but returns the 2 as a remainder.
                 result = result.multiply(base);
-            }
+            }*/
             
             base = base.multiply(base);
         }

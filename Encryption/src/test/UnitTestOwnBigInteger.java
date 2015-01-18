@@ -128,6 +128,51 @@ public class UnitTestOwnBigInteger {
     }
     
     @Test
+    public static void TestModPower(){
+        
+        long tmp1 = 5736;
+        long tmp2 = 234;
+        long tmp3 = 534832;
+        
+        OwnBigInteger test1 = OwnBigInteger.valueOf(tmp1);
+        OwnBigInteger test2 = OwnBigInteger.valueOf(tmp2);
+        OwnBigInteger test3 = OwnBigInteger.valueOf(tmp3);
+        
+        BigInteger check1 = BigInteger.valueOf(tmp1);
+        BigInteger check2 = BigInteger.valueOf(tmp2);
+        BigInteger check3 = BigInteger.valueOf(tmp3);
+        
+        check1 = check1.modPow(check2, check3);
+        
+        test1 = test1.modPow(test2, test3);
+        
+        String res1 = check1.toString();
+        String res2 = test1.toString();
+        
+        Assert.assertTrue(res1.equals(res2));
+    }
+    
+    @Test
+    public static void TestModPow2(){
+        
+        long tmp1 = 265944;
+        long tmp2 = 534832;
+        
+        OwnBigInteger test1 = OwnBigInteger.valueOf(tmp1);
+        test1 = test1.multiply(test1);
+        test1 = test1.mod(OwnBigInteger.valueOf(tmp2));
+        
+        BigInteger check1 = BigInteger.valueOf(tmp1);
+        check1 = check1.multiply(check1);
+        check1 = check1.mod(BigInteger.valueOf(tmp2));
+        
+        String res1 = test1.toString();
+        String res2 = check1.toString();
+        
+        Assert.assertTrue(res1.equals(res2));
+    }
+    
+    @Test
     public static void TestDivideRemainder2(){
         long tmp1 = 33;
         long tmp2 = 2;
@@ -147,6 +192,7 @@ public class UnitTestOwnBigInteger {
     }
     
     public static void main(String [] args){
+        /*
         TestAdding(); 
         TestSubtracting(); // Simple test
         TestMultiply(); // Simple test
@@ -155,5 +201,8 @@ public class UnitTestOwnBigInteger {
         TestStringCreation();
         TestPower();
         TestDivideRemainder2();
+        */
+        TestModPower();
+        //TestModPow2();
     }
 }
