@@ -195,6 +195,25 @@ public class UnitTestOwnBigInteger {
         Assert.assertTrue(test1.equals(OwnBigInteger.valueOf(result)));
     }
     
+    @Test
+    public static void TestGCD(){
+        long tmp1 = 49807342;
+        long tmp2 = 23450954;
+        
+        BigInteger check1 = BigInteger.valueOf(tmp1);
+        BigInteger check2 = BigInteger.valueOf(tmp2);
+        BigInteger res = check1.gcd(check2);
+        
+        OwnBigInteger test1 = OwnBigInteger.valueOf(tmp1);
+        OwnBigInteger test2 = OwnBigInteger.valueOf(tmp2);
+        OwnBigInteger res2 = test1.gcd(test2);
+        
+        String r1 = res.toString();
+        String r2 = res2.toString();
+        Assert.assertTrue(r1.equals(r2));
+        
+    }
+    
     public static void main(String [] args){
         /*
         TestAdding(); 
@@ -206,7 +225,9 @@ public class UnitTestOwnBigInteger {
         TestPower();
         TestDivideRemainder2();
         */
-        TestModPower();
+        //TestModPower();
         //TestModPow2();
+        TestGCD();
+        
     }
 }

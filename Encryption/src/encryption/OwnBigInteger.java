@@ -279,14 +279,8 @@ public class OwnBigInteger {
             }
             
             int resultInt = first - second;
-            // if the result in the first position is 0, we don't add it into the string.
-            // we should also check that first position doesn't contain zeroes.
-            if ( endPos == 0 && resultInt == 0 ){
-                
-            }
-            else{           
-                sb.insert(0, resultInt);
-            }
+         
+            sb.insert(0, resultInt);
             
             pos1--;
             pos2--;
@@ -417,6 +411,9 @@ public class OwnBigInteger {
         }else{
             // formula for remainder: this - array[0] * value
             array[1] = this.subtract(value.multiply(array[0]));
+            if ( array[1] == null ){
+                array[1] = new OwnBigInteger(ZERO);
+            }
         }
         
         return array;
@@ -456,27 +453,6 @@ public class OwnBigInteger {
                 result = result.multiply(tmp).mod(modulus);
             }
         }
-        
-        /*
-        OwnBigInteger base = new OwnBigInteger(this);
-        base = base.mod(modulus);
-        
-        OwnBigInteger tmpExp = new OwnBigInteger(exponent);
-        int position = expString.length()-1;
-        while ( position > 0 ){
-            
-            OwnBigInteger [] array = tmpExp.divideAndRemainder(OwnBigInteger.valueOf(2L));
-            tmpExp = array[0];
-            OwnBigInteger modResult = array[1];
-            if ( modResult.equals(ONE)){
-                result = result.multiply(base).mod(modulus);
-            }
-            
-            position--;
-            base = base.multiply(base).mod(modulus);
-            //tmpExp = OwnBigInteger.convertToDecimal(expString.substring(0, position));
-        }
-        */
         return result;
     }
     
@@ -506,11 +482,6 @@ public class OwnBigInteger {
             if ( tmpres[1].equals(ONE)){
                 result = result.multiply(base);
             }
-            /*else if ( tmpres[1].equals(OwnBigInteger.valueOf(2L))){
-                // Means that expRes = 0
-                // 1 / 2 = 0, but returns the 2 as a remainder.
-                result = result.multiply(base);
-            }*/
             
             base = base.multiply(base);
         }
@@ -603,8 +574,14 @@ public class OwnBigInteger {
         OwnBigInteger tmp2 = new OwnBigInteger(value);
         
         OwnBigInteger [] array = null;
+        if ( tmp.compareTo(tmp2) < 0 ){
+            OwnBigInteger swap = tmp;
+            tmp = tmp2;
+            tmp2 = swap;
+        }
         
         do{
+            
             if ( tmp.compareTo(tmp2) > 0 )
             {
                 array = tmp.divideAndRemainder(tmp2);
@@ -618,9 +595,9 @@ public class OwnBigInteger {
                 tmp = array[1];
             } 
             
-        }while ( !array[0].equals(ZERO) );
+        }while ( !(tmp.equals(ZERO)||tmp2.equals(ZERO)) );
         
-        return array[1];
+        return tmp;
     }
     
     /**
