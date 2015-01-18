@@ -44,6 +44,8 @@ public class PersistentVector<T> implements IPersistentVector<T> {
      */
     @Override
     public PersistentVector<T> pop () {
+        if (this.count < 1) return this;
+
         Node newRoot = doAssoc(null, this.depth * SHIFT, this.root, this.count - 1);
 
         // check if one level can be removed

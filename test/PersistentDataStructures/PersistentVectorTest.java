@@ -38,6 +38,12 @@ public class PersistentVectorTest {
     }
 
     @Test
+    public void testPopOnEmptyVector() {
+        v = v.pop();
+        assertEquals(0, v.count());
+    }
+
+    @Test
     public void testCountOnEmptyVector() {
         assertEquals(0, v.count());
     }
