@@ -1,16 +1,4 @@
-### Huom!
-Lukiessanne tätä tekstiä huomannette kaksi asiaa.
-
-1. Teksti on englanniksi.
-
-   En viitsinyt käyttää aikaa suomennosten keksimiseen/etsimiseen.
-   Jos on pakko, niin suomennan.
-   
-2. Teksti on kirjoitettu tutoriaalin muotoon. Tähän on kaksi syytä.
-
-   Ensiksikin toivon, että se helpottaa ohjaajaa/vertaisarvioijaa ymmärtämään harjoitustyön aiheen ja motivaation helpommin.
-   Toiseksi, kirjoitin sen samalla kun opiskelin itse tietorakennetta, ja huomaan että opin parhaiten,
-   kun kirjoitan itselleni ikään kuin *muistiinpanot* tähän muotoon.
+Tämä on yhdistetty määrittely- / totetutusdokumentti
 
 # Persistent Data Structures
    PersistentVector and PersistentHashMap are built-in data structures in the clojure programming language.
