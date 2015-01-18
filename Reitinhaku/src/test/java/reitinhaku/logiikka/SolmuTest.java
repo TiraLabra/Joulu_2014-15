@@ -5,10 +5,6 @@
  */
 package reitinhaku.logiikka;
 
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -17,29 +13,16 @@ import static org.junit.Assert.*;
  * @author Samuel
  */
 public class SolmuTest {
-    
-    public SolmuTest() {
-    }
-    
-    @BeforeClass
-    public static void setUpClass() {
-    }
-    
-    @AfterClass
-    public static void tearDownClass() {
-    }
-    
-    @Before
-    public void setUp() {
-    }
-    
-    @After
-    public void tearDown() {
-    }
 
-    // TODO add test methods here.
-    // The methods must be annotated with annotation @Test. For example:
-    //
-    // @Test
-    // public void hello() {}
+    @Test
+    public void testaaSolmu() {
+        Solmu solmu = new Solmu(5, 2, 1);
+        Solmu maali = new Solmu(10, 2, 2);
+        assertTrue(solmu.getArvio() == Integer.MAX_VALUE);
+        Heuristiikka uusi = new Heuristiikka(maali);
+        solmu.setKustannus(10);
+        uusi.arvio(solmu, maali);
+        assertTrue(solmu.getArvio() == 5);
+        assertTrue(solmu.getAlkuusPlusLoppuun() == 15);
+    }
 }

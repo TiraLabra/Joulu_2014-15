@@ -24,32 +24,39 @@ public class HeuristiikkaTest {
     }
 
     @Test
-    public void comparePienempi() {
+    public void asetaArvio() {
         Solmu s1 = v.getSolmu(0, 0);
         s1.setKustannus(0);
-        Solmu s2 = v.getSolmu(5, 3);
-        s2.setKustannus(10);
-        assertEquals(eva.vertaa(s1, s2), 1);
+        Solmu s2 = v.getSolmu(5, 1);
+        eva.arvio(s1, s2);
+        assertTrue(s1.getAlkuusPlusLoppuun() == 6);
 
     }
 
     @Test
-    public void compareSuurempi() {
-        Solmu s1 = v.getSolmu(0, 0);
-        s1.setKustannus(10);
-        Solmu s2 = v.getSolmu(5, 3);
-        s2.setKustannus(10);
-        assertEquals(eva.vertaa(s1, s2), -1);
+    public void asetaArvioEuklid() {
+        Solmu s1 = v.getSolmu(1, 1);
+        s1.setKustannus(1);
+        Solmu s2 = v.getSolmu(5, 2);
+        eva.setHeuristiikka(1);
+        eva.arvio(s1, s2);
+        assertTrue(Math.abs(s1.getAlkuusPlusLoppuun() - 5.123) < 0.01);
     }
 
     @Test
-    public void etaisyysOikein() {
-        assertEquals(eva.manhattanEtaisyys(v.getSolmu(0, 0), v.getSolmu(2, 2)), 4);
+    public void etaisyysOikeinManhattan() {
+        assertEquals((int) eva.manhattanEtaisyys(v.getSolmu(0, 0), v.getSolmu(2, 2)), 4);
 
     }
 
     @Test
-    public void etaisyysOikein2() {
+    public void etaisyysOikeinDijkstra() {
+        assertEquals((int) eva.dijkstra(v.getSolmu(0, 0), v.getSolmu(2, 2)), 0);
+
+    }
+
+    @Test
+    public void etaisyysOikeinEuklid() {
         assertTrue(Math.abs(eva.euklidinenEtaisyys(v.getSolmu(1, 1), v.getSolmu(5, 2)) - 4.123) < 0.01);
 
     }

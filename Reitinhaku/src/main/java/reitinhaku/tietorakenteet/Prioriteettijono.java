@@ -14,8 +14,9 @@ public class Prioriteettijono {
     private Heuristiikka heur;
 
     /**
-     * @param koko prioriteettijono maksimi koko. ei muuta funktiota, kuin antaa Solmu listalle koko.
-     * @param evaluoija heuristiikka olio, jota kÃ¤ytetÃ¤Ã¤n arvioimaan solmujen vÃ¤listÃ¤ prioriteettia
+     * @param koko prioriteettijono maksimi koko. ei muuta funktiota, kuin asettaa keon koko.
+     * @param evaluoija heuristiikka olio, jota kÃ¤ytetÃ¤Ã¤n arvioimaan solmujen
+     * vÃ¤listÃ¤ prioriteettia
      */
     public Prioriteettijono(int koko, Heuristiikka evaluoija) {
         this.heapsize = 0;
@@ -25,21 +26,25 @@ public class Prioriteettijono {
 
     /**
      * lisÃ¤Ã¤ solmun prioriteettijonoon
+     *
      * @param solmu lisattÃ¤vÃ¤ solmu
      */
     public void lisaa(Solmu solmu) {
         this.heapsize += 1;
         int i = this.heapsize;
-        while (i > 1 && heur.vertaa(keko[parent(i)], solmu) == -1) {
+        while (i > 1 && keko[parent(i)].getAlkuusPlusLoppuun() > solmu.getAlkuusPlusLoppuun()) {
             vaihda(i, parent(i));
             i = parent(i);
         }
         keko[i] = solmu;
+        keko[i].setIndeksi(i);
     }
 
     /**
-     * poistaa ja palauttaa prioriteettijonon pienimmÃ¤n kustannuksen omaavan solmun
-     * @return  
+     * poistaa ja palauttaa prioriteettijonon pienimmÃ¤n kustannuksen omaavan
+     * solmun
+     *
+     * @return
      */
     public Solmu popMin() {
         Solmu min = keko[1];
@@ -48,22 +53,31 @@ public class Prioriteettijono {
             heapsize -= 1;
             heapify(1);
         }
+        min.setIndeksi(-1);
         return min;
     }
 
     /**
-     * vaihtaa kahden  solmun paikkaa keossa
-     * @param s1 ensimmÃ¤isen solmun indeksi
-     * @param s2 toisen solmun indeksi
+     * vaihtaa kahden solmun paikkaa keossa
+     *
+     * @param i1 ensimmÃ¤isen solmun indeksi
+     * @param i2 toisen solmun indeksi
      */
-    public void vaihda(int s1, int s2) {
-        Solmu vaihto = keko[s1];
-        keko[s1] = keko[s2];
-        keko[s2] = vaihto;
+    public void vaihda(int i1, int i2) {
+        Solmu vaihto = keko[i1];
+        keko[i1] = keko[i2];
+        keko[i2] = vaihto;
+        if (keko[i1] != null) {
+            keko[i1].setIndeksi(i1);
+        }
+        if (keko[i2] != null) {
+            keko[i2].setIndeksi(i2);
+        }
     }
-    
+
     /**
      * korjaa kekoehdon solmun i kohdalla, jos rikki
+     * toimii log(n) ajassa
      * @param i
      */
     public void heapify(int i) {
@@ -71,16 +85,16 @@ public class Prioriteettijono {
         int r = right(i);
         int s;
         if (r <= heapsize) {
-            if (heur.vertaa(keko[l], keko[r]) == 1) {
+            if (keko[l].getAlkuusPlusLoppuun()< keko[r].getAlkuusPlusLoppuun()) {
                 s = l;
             } else {
                 s = r;
             }
-            if (heur.vertaa(keko[s], keko[i]) == 1) {
+            if (keko[s].getAlkuusPlusLoppuun()< keko[i].getAlkuusPlusLoppuun()) {
                 vaihda(i, s);
                 heapify(s);
             }
-        } else if (l == heapsize && heur.vertaa(keko[l], keko[i]) == 1) {
+        } else if (l == heapsize && keko[l].getAlkuusPlusLoppuun() < keko[i].getAlkuusPlusLoppuun()) {
             vaihda(l, i);
 
         }
@@ -88,15 +102,17 @@ public class Prioriteettijono {
 
     /**
      * palauttaa solmun vanhemman indeksin
+     *
      * @param i solmun indeksi
      * @return vanhemman indeksin
      */
     public int parent(int i) {
-        return i/2;
+        return i / 2;
     }
 
     /**
      * palauttaa solmun vasemman lapsen indeksin
+     *
      * @param i solmun indeksi
      * @return lapsen indeksin
      */
@@ -106,6 +122,7 @@ public class Prioriteettijono {
 
     /**
      * palauttaa solmun oikean lapsen indeksin
+     *
      * @param i solmun indeksi
      * @return lapsen indeksin
      */
@@ -115,18 +132,32 @@ public class Prioriteettijono {
 
     /**
      * tarkistaa onko keko tyhjÃ¤
+     *
      * @return true jos tyhjÃ¤
      */
     public boolean isEmpty() {
         return heapsize == 0;
     }
-    
+
     /**
-     * 
+     *
      * @return
      */
     public int getHeapSize() {
         return heapsize;
+    }
+
+    /**
+     * Solmun arvon pienentämisen jälkeen asettaa solmun oikeaan paikkaan keossa
+     * toimii log(n) ajassa
+     * @param solmu
+     */
+    public void korjaaPienennys(Solmu solmu) {
+        int indeksi = solmu.getIndeksi();
+        while (indeksi > 1 && keko[parent(indeksi)].getAlkuusPlusLoppuun() > keko[indeksi].getAlkuusPlusLoppuun()) {
+            vaihda(indeksi, parent(indeksi));
+            indeksi = parent(indeksi);
+        }
     }
 
 }

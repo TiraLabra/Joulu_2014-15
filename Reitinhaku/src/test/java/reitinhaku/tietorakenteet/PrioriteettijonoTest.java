@@ -40,6 +40,12 @@ public class PrioriteettijonoTest {
         s4.setKustannus(7);
         s5.setKustannus(9);
         s6.setKustannus(12);
+        s1.setArvio(1);
+        s2.setArvio(2);
+        s3.setArvio(100);
+        s4.setArvio(2);
+        s5.setArvio(1);
+        s6.setArvio(5);
 
     }
 
@@ -51,13 +57,39 @@ public class PrioriteettijonoTest {
     }
 
     @Test
+    public void poistaSolmuja() {
+        keko.lisaa(s1);
+        keko.lisaa(s2);
+        keko.lisaa(s3);
+        keko.popMin();
+        keko.popMin();
+        keko.popMin();
+        assertTrue(keko.getHeapSize() == 0);
+        assertTrue(keko.isEmpty());
+    }
+
+    @Test
+    public void pienennaArvoa() {
+        keko.lisaa(s2);
+        keko.lisaa(s1);
+        keko.lisaa(s3);
+        s3.setArvio(0);
+        s3.setKustannus(0);
+        keko.korjaaPienennys(s3); 
+        assertTrue(keko.popMin().getPaino()==1);
+    }
+
+    @Test
     public void popMinimi() {
         keko.lisaa(s2);
         keko.lisaa(s1);
         keko.lisaa(s3);
-        assertTrue(keko.popMin().getPaino() == 1);
         assertTrue(keko.popMin().getPaino() == 4);
         assertTrue(keko.popMin().getPaino() == 6);
+        assertTrue(keko.popMin().getPaino() == 1);
+        keko.lisaa(s4);
+        keko.lisaa(s5);
+        assertTrue(keko.popMin().getPaino() == 7);
     }
 
 }

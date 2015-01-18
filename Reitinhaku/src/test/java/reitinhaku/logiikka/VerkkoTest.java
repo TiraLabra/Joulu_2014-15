@@ -5,7 +5,6 @@
  */
 package reitinhaku.logiikka;
 
-
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -33,11 +32,16 @@ public class VerkkoTest {
 
     @Test
     public void solmut() {
-        assertTrue(verkko.getSolmu(0, 0).getPaino()==2);
+        assertTrue(verkko.getSolmu(0, 0).getPaino() == 2);
     }
 
     @Test
     public void kulmaSolunNaapurit() {
-        assertTrue(verkko.getNaapurit(verkko.getSolmu(0, 0)).getKoko()==2);
+        assertTrue(verkko.getNaapurit(verkko.getSolmu(0, 0)).getKoko() == 2);
+    }
+
+    @Test
+    public void kaikkiSolmut() {
+        assertTrue( verkko.getKaikkiSolmut().getKoko() == 28);
     }
 }
