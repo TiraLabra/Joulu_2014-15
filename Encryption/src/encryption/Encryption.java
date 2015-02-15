@@ -25,22 +25,28 @@ public class Encryption {
     private static String input = new String();
     
     // Integer that is created from input string.
-    private static BigInteger muodostettuLuku;
+    //private static BigInteger muodostettuLuku;
+    private static NewOwnBigInteger muodostettuLuku;
     
     // Small modulus for transforming bigInteger to a String or vice versa.
-    private static final BigInteger modulusLuku = BigInteger.valueOf(256L);
+    //private static final BigInteger modulusLuku = BigInteger.valueOf(256L);
+    private static final NewOwnBigInteger modulusLuku = NewOwnBigInteger.valueOf(256L);
     
     // Encrypted data read from encrypted file.
-    private static BigInteger luettu;
+    //private static BigInteger luettu;
+    private static NewOwnBigInteger luettu;
     
     // Common Big modulus for public and private keys.
-    private static BigInteger nModulus;
+    //private static BigInteger nModulus;
+    private static NewOwnBigInteger nModulus;
     
     // Public exponent for encryption, currently it's 17.
-    private static BigInteger eExponent;
+    //private static BigInteger eExponent;
+    private static NewOwnBigInteger eExponent;
     
     // Private exponent for decryption.
-    private static BigInteger dExponent;
+    //private static BigInteger dExponent;
+    private static NewOwnBigInteger dExponent;
     
     // Private filehandler for handling reading and writing.
     private static FileHandler fileHandler;
@@ -49,18 +55,22 @@ public class Encryption {
      * Generates integers from the read data.
      * NOT IN USE.
      */
+    /*
     private static void generateInt2(){
         if ( !input.isEmpty() ){
             int i = 0; // character position
             int j = 0; // exponent
-            BigInteger [] array = new BigInteger[10]; // start from 10, increase if needed.
+            //BigInteger [] array = new BigInteger[10]; // start from 10, increase if needed.
+            NewOwnBigInteger [] array = new NewOwnBigInteger[10];
             int k = 0; // array position, how many big integers have been created.
             
             while ( i < input.length() ){
                 
                 String ch = "" + input.charAt(i);
-                BigInteger tmp = new BigInteger(ch.getBytes());
-                BigInteger power = modulusLuku;
+                //BigInteger tmp = new BigInteger(ch.getBytes());
+                NewOwnBigInteger tmp = new NewOwnBigInteger();
+                //BigInteger power = modulusLuku;
+                NewOwnBigInteger power = modulusLuku;
                 power = power.pow(j);
                 j++;
                 tmp = tmp.multiply(power);
@@ -91,7 +101,7 @@ public class Encryption {
            fileHandler.writeFile2(new File("encrypted.txt"), array, k);
         }
     }
-    
+    */
     /**
      * Generates the integer from read data.
      */
@@ -101,14 +111,17 @@ public class Encryption {
             
             while ( i < input.length() ){
                 
-                String ch = ""+input.charAt(i);
-                BigInteger tmp = new BigInteger(ch.getBytes());
+                //String ch = ""+input.charAt(i);
+                char ch = input.charAt(i);
+                NewOwnBigInteger tmp = NewOwnBigInteger.valueOf((long)ch);
+                //BigInteger tmp = new BigInteger(ch.getBytes());
                 
-                BigInteger power = modulusLuku;
-                power = power.pow(i);
+                //BigInteger power = modulusLuku;
+                NewOwnBigInteger power = modulusLuku;
+                power = power.pow(NewOwnBigInteger.valueOf((long)i));
                 tmp = tmp.multiply(power);
                 if ( muodostettuLuku == null ){
-                    muodostettuLuku = new BigInteger(tmp.toByteArray());
+                    muodostettuLuku = new NewOwnBigInteger(tmp);//new BigInteger(tmp.toByteArray());
                 }else {
                     muodostettuLuku = muodostettuLuku.add(tmp);
                 }
@@ -133,6 +146,7 @@ public class Encryption {
      * NOT IN USE yet
      * @param fileToDecrypt, file containing encrypted integers.
      */
+    /*
     private static void generateString2(File fileToDecrypt){
         String [] array = new String [10];
         int i = 0; // position counter
@@ -171,7 +185,7 @@ public class Encryption {
             fileHandler.writeDecrypted(decryptedText);
         }
     }
-    
+    */
     /**
      * Decrypts the data from integer strings.
      * @param longNumber
@@ -179,13 +193,15 @@ public class Encryption {
      */
     private static String generateStringFromBigIntegerString(String longNumber){
         String returnString = "";
-        BigInteger bigInt = new BigInteger(longNumber);
+        //BigInteger bigInt = new BigInteger(longNumber);
+        NewOwnBigInteger bigInt = new NewOwnBigInteger(longNumber);
         
         bigInt = bigInt.modPow(dExponent, nModulus);
         
         while ( true ){
-            BigInteger jakojaannos = bigInt.mod(modulusLuku);
-            String tmp = new String(jakojaannos.toByteArray());
+            NewOwnBigInteger jakojaannos = bigInt.mod(modulusLuku);
+//            BigInteger jakojaannos = bigInt.mod(modulusLuku);
+            String tmp = new String(jakojaannos.toString());
             bigInt = bigInt.subtract(jakojaannos);
             returnString = returnString + tmp;
             bigInt = bigInt.divide(modulusLuku);
@@ -204,15 +220,19 @@ public class Encryption {
         
         String array_str = "";
         
-        BigInteger dataFromFile = fileHandler.readEncryptedData(fileToDecrypt);
+        //BigInteger dataFromFile = fileHandler.readEncryptedData(fileToDecrypt);
+        NewOwnBigInteger dataFromFile = fileHandler.readEncryptedData(fileToDecrypt);
         
         if ( dataFromFile != null ){
+            
             
             dataFromFile = dataFromFile.modPow(dExponent, nModulus);
             
             while ( true ){
-                BigInteger jakojaannos = dataFromFile.mod(modulusLuku);
-                String tmp = new String(jakojaannos.toByteArray());
+                //BigInteger jakojaannos = dataFromFile.mod(modulusLuku);
+                NewOwnBigInteger jakojaannos = dataFromFile.mod(modulusLuku);
+                
+                String tmp = jakojaannos.toString();//new String(jakojaannos.toByteArray());
                 dataFromFile = dataFromFile.subtract(jakojaannos);
                 array_str = array_str + tmp;
                 dataFromFile = dataFromFile.divide(modulusLuku);
@@ -262,6 +282,7 @@ public class Encryption {
         
         return returnValue;
     }
+    
     /**
      * Generates BigInteger keys.
      * public exponent e, picked from wikipedia, some nice primenumber.
@@ -275,30 +296,36 @@ public class Encryption {
         
         Random rnd = new Random(System.nanoTime());
         
-        BigInteger p = BigInteger.probablePrime(512, rnd);
-        BigInteger q = BigInteger.probablePrime(512, rnd);
+        NewOwnBigInteger p = NewOwnBigInteger.probablePrime(512, rnd);//BigInteger p = BigInteger.probablePrime(512, rnd);
+        NewOwnBigInteger q = NewOwnBigInteger.probablePrime(512, rnd); //BigInteger q = BigInteger.probablePrime(512, rnd);
         
         while ( p.equals(q)){
             
-            q = BigInteger.probablePrime(512, rnd);
+            q = NewOwnBigInteger.probablePrime(512, rnd);
         }
         
-        BigInteger n = p.multiply(q);
+        //BigInteger n = p.multiply(q);
+        NewOwnBigInteger n = p.multiply(q);
         
-        BigInteger fii = p.subtract(BigInteger.ONE).multiply(q.subtract(BigInteger.ONE));
-        BigInteger e = BigInteger.valueOf(17L);//BigInteger.valueOf(65537L);
+        //BigInteger fii = p.subtract(BigInteger.ONE).multiply(q.subtract(BigInteger.ONE));
+        NewOwnBigInteger fii = p.subtract(NewOwnBigInteger.ONE).multiply(q.subtract(NewOwnBigInteger.ONE));
         
-        BigInteger [] debugVariable = fii.divideAndRemainder(e);
+        NewOwnBigInteger e = NewOwnBigInteger.valueOf(17L);
+        //BigInteger e = BigInteger.valueOf(17L);//BigInteger.valueOf(65537L);
         
-        if ( debugVariable[0].compareTo(BigInteger.ZERO) == 0){
+        //BigInteger [] debugVariable = fii.divideAndRemainder(e);
+        NewOwnBigInteger [] debugVariable = fii.divideAndRemainder(e);
+        
+        if ( debugVariable[0].compareTo(NewOwnBigInteger.ZERO) == 0){
             generationFailed = true;
         }
         
-        if ( debugVariable[1].compareTo(BigInteger.ZERO) == 0 ){
+        if ( debugVariable[1].compareTo(NewOwnBigInteger.ZERO) == 0 ){
             generationFailed = true;
         }
         
-        BigInteger d = null;
+        //BigInteger d = null;
+        NewOwnBigInteger d = null;
         try{
             d = e.modInverse(fii);    
             
@@ -308,12 +335,13 @@ public class Encryption {
             System.out.println("Please wait, trying again...");
         }
         
-        BigInteger test = null;
+        //BigInteger test = null;
+        NewOwnBigInteger test = null;
         if ( d != null ){
             test = d.multiply(e).mod(fii);
         }
 
-        if ( test != null && test.equals(BigInteger.ONE)){
+        if ( test != null && test.equals(NewOwnBigInteger.ONE)){
             System.out.println("d*e mod n = 1. OK Numbers");
         }
         
@@ -376,11 +404,11 @@ public class Encryption {
             }
             
             // private exponent
-            dExponent = new BigInteger(array[0]);
+            dExponent = new NewOwnBigInteger(array[0]);
             // public exponent
-            eExponent = new BigInteger(array[0]);
+            eExponent = new NewOwnBigInteger(array[0]);
             // common modulus
-            nModulus = new BigInteger(array[1]);
+            nModulus = new NewOwnBigInteger(array[1]);
             
         }catch ( IOException ex ){
             System.out.println("Error...");
@@ -394,7 +422,7 @@ public class Encryption {
     public static void main(String[] args) {
         
         fileHandler = new FileHandler();
-        
+        /*
         if ( args.length == 0 ){
             System.out.println("Generate public and private keys with command: -generate_keys");
             System.out.println("Encrypt the file with command: -encrypt <public.key> <file>");
@@ -413,35 +441,35 @@ public class Encryption {
         if ( args.length == 3 ){
             if ( args[0].equals("-encrypt")){
                 System.out.println("Ecrypting...");
-                
+         */       
                 try {
-                    //readFileExponentModulus(new File("G:\\GITREPO\\Joulu_2014-15\\Encryption\\public.key"));
+                    readFileExponentModulus(new File("G:\\GITREPO\\Joulu_2014-15\\Encryption\\public.key"));
                     //readContents(new File("G:\\GITREPO\\Joulu_2014-15\\Encryption\\dist\\README.TXT"));
-                    readFileExponentModulus(new File(args[1]));
+                    //readFileExponentModulus(new File(args[1]));
                     
-                    //input = fileHandler.readContents(new File("G:\\GITREPO\\Joulu_2014-15\\Encryption\\testi.txt"));
-                    input = fileHandler.readContents(new File(args[2]));
+                    input = fileHandler.readContents(new File("G:\\GITREPO\\Joulu_2014-15\\Encryption\\testi.txt"));
+                    //input = fileHandler.readContents(new File(args[2]));
                     //generateInt2();
                     generateInt();
                 }catch (Exception ex) {
                     System.out.println(ex.getMessage());
                 }  
-            }
+            //}
 
-            if ( args[0].equals("-decrypt")){
+            //if ( args[0].equals("-decrypt")){
                 System.out.println("Decrypting...");
-                //readFileExponentModulus(new File("G:\\GITREPO\\Joulu_2014-15\\Encryption\\private.key"));
-                //generateString(new File("G:\\GITREPO\\Joulu_2014-15\\Encryption\\encrypted.txt"));                
-                readFileExponentModulus(new File(args[1]));
+                readFileExponentModulus(new File("G:\\GITREPO\\Joulu_2014-15\\Encryption\\private.key"));
+                generateString(new File("G:\\GITREPO\\Joulu_2014-15\\Encryption\\encrypted.txt"));                
+                //readFileExponentModulus(new File(args[1]));
 
                 //generateString2(new File(args[2]));
                 //generateString2(new File("G:\\GITREPO\\Joulu_2014-15\\Encryption\\encrypted.txt"));                
-                generateString(new File(args[2]));
-            }
+                //generateString(new File(args[2]));
+          //  }
 
             if ( args[1].equals("-sign")){
                 System.out.println("Signing... Not yet implemented");
             }
-        }
+        //}
     } 
 }

@@ -24,7 +24,7 @@ public class FileHandler {
      * @param fileToWrite file where data is written into
      * @param encryptedInt to write into the file
      */
-    public void writeFile(File fileToWrite, BigInteger encryptedInt ){
+    public void writeFile(File fileToWrite, NewOwnBigInteger encryptedInt ){
         
         try{
             FileWriter fw = new FileWriter(fileToWrite);
@@ -44,7 +44,7 @@ public class FileHandler {
      * @param array containing bigIntegers
      * @param count how many bigIntegers there are to write.
      */
-    public void writeFile2(File fileToWrite, BigInteger[] array, int count){
+    public void writeFile2(File fileToWrite, NewOwnBigInteger[] array, int count){
         
         try{
             FileWriter fw = new FileWriter(fileToWrite);
@@ -67,8 +67,8 @@ public class FileHandler {
      * @param modulus modulus bytearray
      */
     public void writeFileExponentModulus(File fileToWrite, 
-            BigInteger exponent, 
-            BigInteger modulus ){
+            NewOwnBigInteger exponent, 
+            NewOwnBigInteger modulus ){
         try{
             FileWriter fwr = new FileWriter(fileToWrite);
             try(BufferedWriter bfw = new BufferedWriter(fwr)){
@@ -132,9 +132,9 @@ public class FileHandler {
      * @param fileToRead file that contains encrypted data
      * @return BigInteger that was created from the file content
      */
-    public BigInteger readEncryptedData(File fileToRead){
+    public NewOwnBigInteger readEncryptedData(File fileToRead){
         
-        BigInteger returnValue = null;
+        NewOwnBigInteger returnValue = null;
         
         try {
             FileReader fr = new FileReader(fileToRead);
@@ -143,7 +143,7 @@ public class FileHandler {
                 read = bfr.readLine();
             }
 
-            returnValue = new BigInteger(read);
+            returnValue = new NewOwnBigInteger(read);
             
         }catch ( IOException ex ){
             System.out.println("Error...");
