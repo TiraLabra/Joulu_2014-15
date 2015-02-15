@@ -256,6 +256,29 @@ public class UnitTestNewOwnBigInteger {
     }
     
     @Test
+    public static void TestDivideAndRemainder2(){
+                long tmp1 = 234549;
+        long tmp2 = 43;
+        
+        NewOwnBigInteger test1 = NewOwnBigInteger.valueOf(tmp1);
+        NewOwnBigInteger test2 = NewOwnBigInteger.valueOf(tmp2);
+        
+        NewOwnBigInteger [] res = test1.divideAndRemainder(test2);
+        
+        long result = tmp1 / tmp2;
+        long remainder = tmp1 % tmp2;
+        
+        boolean correct = false;
+        if ( res.length == 2 ){
+            if ( res[0].equals(NewOwnBigInteger.valueOf(result)) && res[1].equals(NewOwnBigInteger.valueOf(remainder))){
+                correct = true;
+            }
+        }
+        
+        Assert.assertTrue(correct);
+    }
+    
+    @Test
     public static void TestModPower(){
         
         long tmp1 = 5736;
@@ -395,41 +418,67 @@ public class UnitTestNewOwnBigInteger {
         }
     }
     
+    public static void TestBinaryformation(){
+        // This is one crypted test text.
+        String test = "587399426394915955791725834093933366180703965978669552"+
+                "855359256598278884222638806658102172351599875090938686970449"+
+                "288421635629016768918243186882306597459473391374538881452876"+
+                "780954848615024028954249241532830083401205095625367903409776"+
+                "746124340467978899144627618067890482961818670447176576315458"+
+                "15769688285982";
+        
+        String test2 = "65537";
+        
+        String test3 = "239485723458716238927345";
+        
+        NewOwnBigInteger testing = new NewOwnBigInteger(test);
+        String check = NewOwnBigInteger.convertToBinary(testing);
+        
+        // Lets try hexadecimal presentation also! Should be a bit faster
+        //String doubleCheck = NewOwnBigInteger.convertToHexdecimal(testing);
+        
+        //System.out.println(check);
+        System.out.println(check);
+    }
+    
     public static void main(String [] args){
         
-        // Addition tests
-        TestAdding();
-        TestAdding2();
-        TestAdding3();
-        TestAdding4();
+//        // Addition tests
+//        TestAdding();
+//        TestAdding2();
+//        TestAdding3();
+//        TestAdding4();
+//        
+//        // Substract tests 
+//        TestSubtracting(); // Simple test
+//        TestSubtracting2(); // Simple test
+//        TestSubtracting3();
+//        TestSubtracting4();
+//        TestSubtracting5();
+//        
+//        
+//        // Multiply tests
+//        TestMultiply(); // Simple test
+//        TestMultiply2();
+//        TestMultiply3();
+//        
+//        
+//        TestDivision();
+//        TestDivideRemainder();
+//        TestDivideRemainder2();
+//        TestStringCreation();
+//        TestPower();
+//        TestModPower();
+//        TestModPow2();
+//        TestGCD();
+//        
+//        TestModInverse();
+//        
+//        TestProbablePrimes();
+//        
+//        TestDivisionLong();
         
-        // Substract tests 
-        TestSubtracting(); // Simple test
-        TestSubtracting2(); // Simple test
-        TestSubtracting3();
-        TestSubtracting4();
-        TestSubtracting5();
-        
-        
-        // Multiply tests
-        TestMultiply(); // Simple test
-        TestMultiply2();
-        TestMultiply3();
-        
-        
-        TestDivision();
-        TestDivideRemainder();
-        TestDivideRemainder2();
-        TestStringCreation();
-        TestPower();
-        TestModPower();
-        TestModPow2();
-        TestGCD();
-        
-        TestModInverse();
-        
-        TestProbablePrimes();
-        
-        TestDivisionLong();
+        //TestDivideAndRemainder2();
+        TestBinaryformation();
     }
 }

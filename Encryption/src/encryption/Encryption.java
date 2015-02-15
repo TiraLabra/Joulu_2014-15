@@ -201,7 +201,7 @@ public class Encryption {
         while ( true ){
             NewOwnBigInteger jakojaannos = bigInt.mod(modulusLuku);
 //            BigInteger jakojaannos = bigInt.mod(modulusLuku);
-            String tmp = new String(jakojaannos.toString());
+            String tmp = jakojaannos.toString();
             bigInt = bigInt.subtract(jakojaannos);
             returnString = returnString + tmp;
             bigInt = bigInt.divide(modulusLuku);
@@ -236,7 +236,7 @@ public class Encryption {
                 dataFromFile = dataFromFile.subtract(jakojaannos);
                 array_str = array_str + tmp;
                 dataFromFile = dataFromFile.divide(modulusLuku);
-                if ( dataFromFile.equals(BigInteger.valueOf(0L))){
+                if ( dataFromFile.equals(NewOwnBigInteger.ZERO)){
                     break;
                 }
             }
@@ -314,7 +314,7 @@ public class Encryption {
         //BigInteger e = BigInteger.valueOf(17L);//BigInteger.valueOf(65537L);
         
         //BigInteger [] debugVariable = fii.divideAndRemainder(e);
-        NewOwnBigInteger [] debugVariable = fii.divideAndRemainder(e);
+        NewOwnBigInteger [] debugVariable = fii.divideAndRemainder2(e);
         
         if ( debugVariable[0].compareTo(NewOwnBigInteger.ZERO) == 0){
             generationFailed = true;

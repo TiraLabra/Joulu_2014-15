@@ -372,6 +372,12 @@ public class NewOwnBigInteger {
                 return this;
             }
         }
+        if ( multiplier.equals(TEN)){
+            NewOwnBigInteger returnvalue = new NewOwnBigInteger(this);
+            returnvalue.data = returnvalue.data + "0";
+            
+            return returnvalue;
+        }
         
         String [] results = new String[multiplier.data.length()];
         
@@ -466,7 +472,54 @@ public class NewOwnBigInteger {
         // change the workings of divide, divede and remains
         // if this.signum == multiplier.signum, then signum will be 0
         // otherwise it will be -1.
-        return this.abs().divideAndRemainder(divider)[0];
+        return this.abs().divideAndRemainder2(divider)[0];
+    }
+    
+    /**
+     * Divides this NewOwnBigInteger with divider, that is multiplied with multiplier 
+     * enough many times, until the divider is only slightly smaller than this.
+     * @param divider
+     * @param multiplierForDivider
+     * @return array[2] of NewOwnBigInteger's
+     */
+    private NewOwnBigInteger[] divideWithMultiplier(NewOwnBigInteger divider, 
+            NewOwnBigInteger multiplierForDivider){
+        
+        NewOwnBigInteger tmp = this.abs();
+        NewOwnBigInteger diviMult = divider.abs();
+        
+        NewOwnBigInteger counter = new NewOwnBigInteger(ZERO);
+            
+        while ( tmp.data.length() > diviMult.data.length() + 5 ){
+
+            diviMult = diviMult.multiply(multiplierForDivider);
+            counter = counter.add(ONE);
+        }
+
+        NewOwnBigInteger result = new NewOwnBigInteger(ZERO);
+
+        while ( tmp.compareTo(diviMult) >= 0 ){
+            tmp = tmp.subtract(diviMult);
+            result = result.add(ONE);
+        }
+
+        while ( counter.compareTo(ZERO) > 0 ){
+            result = result.multiply(multiplierForDivider);
+            counter = counter.subtract(ONE);
+        }            
+
+        NewOwnBigInteger [] array = tmp.divideAndRemainder(divider);
+        result = result.add(array[0]);
+
+        if ( this.signum == divider.signum ){
+            result.signum = 0;
+        }
+        else{
+            result.signum = -1;
+        }
+        array[0] = result;
+
+        return array;
     }
     
     /**
@@ -488,77 +541,26 @@ public class NewOwnBigInteger {
         
         NewOwnBigInteger tmp = this.abs();
         NewOwnBigInteger divi = divider.abs();
-        NewOwnBigInteger diviMult = divi.abs();
         
-        if ( tmp.data.length() > divi.data.length() + 5){
-            NewOwnBigInteger doubler = NewOwnBigInteger.valueOf(10000L);
-            NewOwnBigInteger counter = new NewOwnBigInteger(ZERO);
+        if ( tmp.data.length() - divi.data.length() > 10 ){
             
-            while ( tmp.data.length() > diviMult.data.length() + 5 ){
-                
-                diviMult = diviMult.multiply(doubler);
-                counter = counter.add(ONE);
+            NewOwnBigInteger multiplier = new NewOwnBigInteger(ONE);
+            for (int i = 0; i < tmp.data.length() - divi.data.length() - 1; i++ ){
+                multiplier = multiplier.multiply(TEN);
             }
             
-            NewOwnBigInteger result = new NewOwnBigInteger(ZERO);
+            return tmp.divideWithMultiplier(divider, multiplier);
+        }
+        else if ( tmp.data.length() > divi.data.length() + 5){
             
-            while ( tmp.compareTo(diviMult) >= 0 ){
-                tmp = tmp.subtract(diviMult);
-                result = result.add(ONE);
-            }
+            NewOwnBigInteger multiplier = NewOwnBigInteger.valueOf(10000L);
             
-            while ( counter.compareTo(ZERO) > 0 ){
-                result = result.multiply(doubler);
-                counter = counter.subtract(ONE);
-            }            
-            
-            NewOwnBigInteger [] array = tmp.divideAndRemainder(divider);
-            result = result.add(array[0]);
-            
-            if ( this.signum == divider.signum ){
-                result.signum = 0;
-            }
-            else{
-                result.signum = -1;
-            }
-            array[0] = result;
-
-            return array;
+            return tmp.divideWithMultiplier(divider, multiplier);
         }
         else if (tmp.data.length() > divi.data.length() + 1){
+            
             NewOwnBigInteger doubler = NewOwnBigInteger.valueOf(2L);
-            NewOwnBigInteger counter = new NewOwnBigInteger(ZERO);
-            
-            while ( tmp.data.length() > diviMult.data.length() + 1 ){
-                
-                diviMult = diviMult.multiply(doubler);
-                counter = counter.add(ONE);
-            }
-            
-            NewOwnBigInteger result = new NewOwnBigInteger(ZERO);
-            
-            while ( tmp.compareTo(diviMult) >= 0 ){
-                tmp = tmp.subtract(diviMult);
-                result = result.add(ONE);
-            }
-            
-            while ( counter.compareTo(ZERO) > 0 ){
-                result = result.multiply(doubler);
-                counter = counter.subtract(ONE);
-            }            
-            
-            NewOwnBigInteger [] array = tmp.divideAndRemainder(divider);
-            result = result.add(array[0]);
-            
-            if ( this.signum == divider.signum ){
-                result.signum = 0;
-            }
-            else{
-                result.signum = -1;
-            }
-            array[0] = result;
-
-            return array;
+            return tmp.divideWithMultiplier(divider, doubler);
         }
         else
         {
@@ -584,6 +586,63 @@ public class NewOwnBigInteger {
         }
     }
     
+    public NewOwnBigInteger [] divideAndRemainder2(NewOwnBigInteger divider){
+        
+        if ( this.abs().compareTo(divider.abs()) < 0 ){
+            NewOwnBigInteger [] array = new NewOwnBigInteger[2];
+            array[0] = ZERO;
+            array[1] = this;
+            return array;
+        }
+        
+        NewOwnBigInteger [] array = new NewOwnBigInteger[2];
+        StringBuilder sb = new StringBuilder();
+        NewOwnBigInteger calculationValue = this.abs();
+        
+        // let's get enough numbers from divisible (this) for calculations.
+        NewOwnBigInteger divisible = new NewOwnBigInteger(
+                this.data.substring(0, divider.data.length()));
+        
+        
+        // we need to know where we continue next iteration.
+        int pos = divider.data.length();
+        if ( divisible.compareTo(divider) < 0){
+            // we need extra number still.
+            pos++;
+            divisible = new NewOwnBigInteger(this.data.substring(0, pos));
+        }
+        divisible.signum = 0;
+        
+        while ( pos <= this.data.length() ){ // something is bigger then divider
+            
+            int i = 0;
+            while ( divisible.compareTo(divider) >= 0 ){
+                
+                divisible = divisible.subtract(divider.abs());
+                
+                i++;
+            }
+            sb.append(i);
+            pos++;
+            if ( pos <= calculationValue.data.length() ){
+                String tmp = divisible.data + calculationValue.data.charAt(pos-1);
+                divisible = new NewOwnBigInteger(tmp);
+            }
+        }
+        
+        array[0] = new NewOwnBigInteger(sb.toString());
+        if ( this.signum != divider.signum ){
+            array[0].signum = -1;
+        }else
+        {
+            array[0].signum = 0;
+        }
+        
+        array[1] = new NewOwnBigInteger(divisible);
+        
+        return array;
+    } 
+    
     /**
      * Modulus function for NewOwnBigInteger
      * @param modulo modulus
@@ -596,7 +655,7 @@ public class NewOwnBigInteger {
             throw new ArithmeticException("Modulo can't be negative");
         }
         
-        return this.abs().divideAndRemainder(modulo)[1];
+        return this.abs().divideAndRemainder2(modulo)[1];
     }
     
     /**
@@ -618,9 +677,11 @@ public class NewOwnBigInteger {
         int pos = 0;
         
         for ( ; pos < expString.length(); pos++ ){
-            result = result.multiply(result).mod(modulus);
+            result = result.multiply(result);
+            result = result.mod(modulus);
             if ( expString.charAt(pos) == '1' ){
-                result = result.multiply(tmp).mod(modulus);
+                result = result.multiply(tmp);
+                result = result.mod(modulus);
             }
         }
         
@@ -653,7 +714,7 @@ public class NewOwnBigInteger {
         
         while ( !expRes.equals(ZERO) ){
             
-            NewOwnBigInteger [] tmpres = expRes.divideAndRemainder(NewOwnBigInteger.valueOf(2L));
+            NewOwnBigInteger [] tmpres = expRes.divideAndRemainder2(NewOwnBigInteger.valueOf(2L));
             expRes = tmpres[0];
             if ( tmpres[1].equals(ONE)){
                 result = result.multiply(base);
@@ -663,7 +724,7 @@ public class NewOwnBigInteger {
         }
         
         if ( this.signum == -1 ){
-            if ( exponent.abs().divideAndRemainder(valueOf(2L))[1].equals(ONE)){
+            if ( exponent.abs().divideAndRemainder2(valueOf(2L))[1].equals(ONE)){
                 // result.signum = -1 // negative
                 result.signum = -1;
                 // exponent is odd, so result will be negative.
@@ -810,13 +871,13 @@ public class NewOwnBigInteger {
         do{
             if ( tmp.compareTo(tmp2) > 0 )
             {
-                NewOwnBigInteger [] array = tmp.divideAndRemainder(tmp2);
+                NewOwnBigInteger [] array = tmp.divideAndRemainder2(tmp2);
                 tmp = tmp2;
                 tmp2 = array[1];
             }
             else if ( tmp.compareTo(tmp2) < 0 )
             {
-                NewOwnBigInteger [] array = tmp2.divideAndRemainder(tmp);
+                NewOwnBigInteger [] array = tmp2.divideAndRemainder2(tmp);
                 tmp2 = tmp;
                 tmp = array[1];
             } 
@@ -826,13 +887,34 @@ public class NewOwnBigInteger {
         return tmp;
     }
     
+    public static String convertToHexdecimal(NewOwnBigInteger value){
+        String returnValue = "";
+        
+        NewOwnBigInteger tmp = new NewOwnBigInteger(value);
+        NewOwnBigInteger [] array;
+        
+        NewOwnBigInteger divider = NewOwnBigInteger.valueOf(16L);
+        
+        String hexvalues = "0123456789ABCDEF";
+        
+        while ( !tmp.equals(ZERO)){
+            
+            array = tmp.divideAndRemainder2(divider);
+            String hex = array[1].toString();
+            int pos = Integer.parseInt(hex);
+            
+            returnValue = hexvalues.charAt(pos) + returnValue;
+        }
+        
+        return returnValue;
+    }
     /**
      * Converts a given NewOwnBigInteger to binary representation.
      * This is used for modular exponention to make it faster.
      * @param valueToConvert
      * @return Binary representation of the parameter value.
      */
-    private String convertToBinary(NewOwnBigInteger value){
+    public static String convertToBinary(NewOwnBigInteger value){
         
         String returnValue = "";
         
@@ -843,7 +925,7 @@ public class NewOwnBigInteger {
         
         while ( !tmp.equals(ZERO) ){
             
-            array = tmp.divideAndRemainder(divider);
+            array = tmp.divideAndRemainder2(divider);
             if ( array[1].equals(ONE) ){
                 returnValue = "1" + returnValue;
             }else {
@@ -861,7 +943,7 @@ public class NewOwnBigInteger {
      * @param binaryPresentation
      * @return NewOwnBigInteger, decimal representation of the parameter value.
      */
-    private NewOwnBigInteger convertToDecimal(String binaryPresentation){
+    public NewOwnBigInteger convertToDecimal(String binaryPresentation){
         
         NewOwnBigInteger result = new NewOwnBigInteger(ZERO);
         NewOwnBigInteger two = NewOwnBigInteger.valueOf(2L);
