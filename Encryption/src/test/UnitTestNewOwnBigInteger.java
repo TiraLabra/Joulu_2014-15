@@ -418,6 +418,13 @@ public class UnitTestNewOwnBigInteger {
         }
     }
     
+    public static void TestPrimalGeneration(){
+        Random rnd = new Random(System.nanoTime());
+        NewOwnBigInteger tmp = NewOwnBigInteger.probablePrime(512, rnd);
+        
+        System.out.println(tmp.toString());
+    }
+    
     public static void TestBinaryformation(){
         // This is one crypted test text.
         String test = "587399426394915955791725834093933366180703965978669552"+
@@ -428,16 +435,13 @@ public class UnitTestNewOwnBigInteger {
                 "15769688285982";
         
         String test2 = "65537";
-        
+        String test4 = "19";
         String test3 = "239485723458716238927345";
         
-        NewOwnBigInteger testing = new NewOwnBigInteger(test);
+        NewOwnBigInteger testing = new NewOwnBigInteger(test4);
+        
         String check = NewOwnBigInteger.convertToBinary(testing);
-        
-        // Lets try hexadecimal presentation also! Should be a bit faster
-        //String doubleCheck = NewOwnBigInteger.convertToHexdecimal(testing);
-        
-        //System.out.println(check);
+
         System.out.println(check);
     }
     
@@ -479,6 +483,7 @@ public class UnitTestNewOwnBigInteger {
 //        TestDivisionLong();
         
         //TestDivideAndRemainder2();
-        TestBinaryformation();
+        //TestBinaryformation();
+        TestPrimalGeneration();
     }
 }

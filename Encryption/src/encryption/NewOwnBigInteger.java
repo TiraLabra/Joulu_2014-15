@@ -145,28 +145,58 @@ public class NewOwnBigInteger {
      * @param generator, Random generator that is used to generate those bits.
      * @return 
      */
-    public static NewOwnBigInteger probablePrime(int wantedBitLength, Random generator){
-  
-        int maxLength = wantedBitLength / 4; // 0 - 9 is 4 bits max.
+    public static NewOwnBigInteger probablePrime(int wantedBitLength, Random generator){ 
         
-        String tmp = "";
-        for ( int i = 0; i < maxLength; i++ ){
-            int next = generator.nextInt(9); // max 1 decimal integer 0 - 9. but the first has to be with or 8.
-            
-            if ( i == 0 ){
-                next = next | 0x08; // highest bit has to be 1.
-            }
-            if ( i == maxLength - 1 ){
-                next = next | 0x01; // Lowest bit has to be 1.
-                if ( next == 5 ){ // 5 is not good for last number
-                    next = generator.nextInt(9) | 0x01;
-                }
-            }
-            tmp = tmp + next;
+        StringBuilder sb = new StringBuilder();
+        sb.append(1);
+        for ( int i = 1; i < wantedBitLength-1; i++ ){
+            int next = generator.nextInt(2);
+            sb.append(next);
+        }
+        sb.append(1);
+        
+        NewOwnBigInteger tst = NewOwnBigInteger.convertToDecimal(sb.toString());
+        
+        // check for pseudo primality
+        //NewOwnBigInteger two = NewOwnBigInteger.valueOf(2L);
+        //NewOwnBigInteger result = two.modPow(tst.subtract(ONE), tst, sb.toString());
+        
+        if ( !testProbability(tst)){
+            tst = probablePrime(wantedBitLength, generator);
         }
         
-        return new NewOwnBigInteger(tmp);
+        return tst;
     }
+    
+    private static boolean testProbability(NewOwnBigInteger valueToTest){
+        
+        NewOwnBigInteger two = NewOwnBigInteger.valueOf(2L);
+        NewOwnBigInteger three = NewOwnBigInteger.valueOf(3L);
+        
+        NewOwnBigInteger res = valueToTest.mod(two);
+        NewOwnBigInteger res2 = valueToTest.mod(three);
+        if ( res.equals(ZERO) || res2.equals(ZERO) ) {
+            return false;
+        }
+        else {
+            
+            NewOwnBigInteger five = NewOwnBigInteger.valueOf(5L);
+            NewOwnBigInteger six = NewOwnBigInteger.valueOf(6L);
+            
+            while ( five.multiply(five).compareTo(valueToTest) <= 0){
+                NewOwnBigInteger tres = valueToTest.mod(five);
+                NewOwnBigInteger tres2 = valueToTest.mod(five.add(two));
+                
+                if ( tres.equals(ZERO) || tres2.equals(ZERO) ){
+                    return false;
+                }
+                
+                five = five.add(six);
+            }
+            return true;
+        }
+    }
+    
     
     /**
      * Adds parameter NewOwnBigInteger into this value and returns a new NewOwnBigInteger.
@@ -689,6 +719,36 @@ public class NewOwnBigInteger {
     }
     
     /**
+     * Private modPow that has additional String for binary representation.
+     * This is used for now with primality test, we create prime numbers in
+     * binary format so we don't need to convert it again back and forth.
+     * @param exponent exponent value
+     * @param modulus modulus value
+     * @param expString binary representation
+     * @return 
+     */
+    private NewOwnBigInteger modPow(NewOwnBigInteger exponent, NewOwnBigInteger modulus, String expString){
+
+        // modulus can't be negative.
+        // exponent can't be negative. (could be, but don't know yet how to handle that)
+        NewOwnBigInteger result = new NewOwnBigInteger(ONE);
+        NewOwnBigInteger tmp = new NewOwnBigInteger(this);
+        
+        int pos = 0;
+        
+        for ( ; pos < expString.length(); pos++ ){
+            result = result.multiply(result);
+            result = result.mod(modulus);
+            if ( expString.charAt(pos) == '1' ){
+                result = result.multiply(tmp);
+                result = result.mod(modulus);
+            }
+        }
+        
+        return result;
+    }
+    
+    /**
      * Power function for OwnBigInteger.
      * @param exponent exponent value.
      * @return new OwnBigInteger representation.
@@ -887,36 +947,15 @@ public class NewOwnBigInteger {
         return tmp;
     }
     
-    public static String convertToHexdecimal(NewOwnBigInteger value){
-        String returnValue = "";
-        
-        NewOwnBigInteger tmp = new NewOwnBigInteger(value);
-        NewOwnBigInteger [] array;
-        
-        NewOwnBigInteger divider = NewOwnBigInteger.valueOf(16L);
-        
-        String hexvalues = "0123456789ABCDEF";
-        
-        while ( !tmp.equals(ZERO)){
-            
-            array = tmp.divideAndRemainder2(divider);
-            String hex = array[1].toString();
-            int pos = Integer.parseInt(hex);
-            
-            returnValue = hexvalues.charAt(pos) + returnValue;
-        }
-        
-        return returnValue;
-    }
     /**
      * Converts a given NewOwnBigInteger to binary representation.
      * This is used for modular exponention to make it faster.
-     * @param valueToConvert
+     * @param value Value to convert to binary format.
      * @return Binary representation of the parameter value.
      */
     public static String convertToBinary(NewOwnBigInteger value){
         
-        String returnValue = "";
+        StringBuilder sb = new StringBuilder();
         
         NewOwnBigInteger tmp = new NewOwnBigInteger(value);
         
@@ -927,15 +966,16 @@ public class NewOwnBigInteger {
             
             array = tmp.divideAndRemainder2(divider);
             if ( array[1].equals(ONE) ){
-                returnValue = "1" + returnValue;
+                sb.insert(0, 1);
             }else {
-                returnValue = "0" + returnValue;
+                sb.insert(0, 0);
             }
             
             tmp = array[0];
         }
         
-        return returnValue;
+        //return returnValue;
+        return sb.toString();
     }
     
     /**
@@ -943,7 +983,7 @@ public class NewOwnBigInteger {
      * @param binaryPresentation
      * @return NewOwnBigInteger, decimal representation of the parameter value.
      */
-    public NewOwnBigInteger convertToDecimal(String binaryPresentation){
+    public static NewOwnBigInteger convertToDecimal(String binaryPresentation){
         
         NewOwnBigInteger result = new NewOwnBigInteger(ZERO);
         NewOwnBigInteger two = NewOwnBigInteger.valueOf(2L);

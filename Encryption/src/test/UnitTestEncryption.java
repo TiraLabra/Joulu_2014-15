@@ -12,4 +12,10 @@ import org.junit.Test;
  */
 public class UnitTestEncryption {
     
+    
+    
+    public static void main(){
+        
+    }
+    
 }

@@ -232,9 +232,9 @@ public class Encryption {
                 //BigInteger jakojaannos = dataFromFile.mod(modulusLuku);
                 NewOwnBigInteger jakojaannos = dataFromFile.mod(modulusLuku);
                 
-                String tmp = jakojaannos.toString();//new String(jakojaannos.toByteArray());
+                int tmp = Integer.parseInt(jakojaannos.toString());//new String(jakojaannos.toByteArray());
                 dataFromFile = dataFromFile.subtract(jakojaannos);
-                array_str = array_str + tmp;
+                array_str = array_str + (char)tmp;
                 dataFromFile = dataFromFile.divide(modulusLuku);
                 if ( dataFromFile.equals(NewOwnBigInteger.ZERO)){
                     break;
@@ -426,50 +426,62 @@ public class Encryption {
         if ( args.length == 0 ){
             System.out.println("Generate public and private keys with command: -generate_keys");
             System.out.println("Encrypt the file with command: -encrypt <public.key> <file>");
-            System.out.println("Decrypt the file with command: -decrypt <secret.key> <file>");
-            System.out.println("Sign the file with command: -sign <secret.key> <file>");
+            System.out.println("Decrypt the file with command: -decrypt <private.key> <file>");
+            System.out.println("Sign the file with command: -sign <private.key> <file>");
             return; 
         }
-        
-        if ( args.length == 1 ){
-            if ( args[0].equals("-generate_keys")){
-                System.out.println("Generating keys.");
-                generateKeys();
-            }
+        */
+        //if ( args.length == 1 ){
+        //    if ( args[0].equals("-generate_keys")){
+        //        System.out.println("Generating keys.");
+        //        generateKeys();
+        //    }
+        //}
+        try{
+            readFileExponentModulus(new File("G:\\GITREPO\\Joulu_2014-15\\Encryption\\public.key"));
+            input = fileHandler.readContents(new File("G:\\GITREPO\\Joulu_2014-15\\Encryption\\testi.txt"));
+            generateInt();
+            readFileExponentModulus(new File("G:\\GITREPO\\Joulu_2014-15\\Encryption\\private.key"));
+            generateString(new File("G:\\GITREPO\\Joulu_2014-15\\Encryption\\encrypted.txt"));   
+        }catch (Exception ex){
+            
         }
 
+        //readFileExponentModulus(new File("G:\\GITREPO\\Joulu_2014-15\\Testausta\\private.key"));
+        //generateString(new File("G:\\GITREPO\\Joulu_2014-15\\Testausta\\encrypted.txt"));   
+        /*
         if ( args.length == 3 ){
             if ( args[0].equals("-encrypt")){
                 System.out.println("Ecrypting...");
-         */       
+               
                 try {
-                    readFileExponentModulus(new File("G:\\GITREPO\\Joulu_2014-15\\Encryption\\public.key"));
+                    //readFileExponentModulus(new File("G:\\GITREPO\\Joulu_2014-15\\Encryption\\public.key"));
                     //readContents(new File("G:\\GITREPO\\Joulu_2014-15\\Encryption\\dist\\README.TXT"));
-                    //readFileExponentModulus(new File(args[1]));
+                    readFileExponentModulus(new File(args[1]));
                     
-                    input = fileHandler.readContents(new File("G:\\GITREPO\\Joulu_2014-15\\Encryption\\testi.txt"));
-                    //input = fileHandler.readContents(new File(args[2]));
+                    //input = fileHandler.readContents(new File("G:\\GITREPO\\Joulu_2014-15\\Encryption\\testi.txt"));
+                    input = fileHandler.readContents(new File(args[2]));
                     //generateInt2();
                     generateInt();
                 }catch (Exception ex) {
                     System.out.println(ex.getMessage());
                 }  
-            //}
+            }
 
-            //if ( args[0].equals("-decrypt")){
+            if ( args[0].equals("-decrypt")){
                 System.out.println("Decrypting...");
-                readFileExponentModulus(new File("G:\\GITREPO\\Joulu_2014-15\\Encryption\\private.key"));
-                generateString(new File("G:\\GITREPO\\Joulu_2014-15\\Encryption\\encrypted.txt"));                
-                //readFileExponentModulus(new File(args[1]));
+            //    readFileExponentModulus(new File("G:\\GITREPO\\Joulu_2014-15\\Encryption\\private.key"));
+            //    generateString(new File("G:\\GITREPO\\Joulu_2014-15\\Encryption\\encrypted.txt"));                
+                readFileExponentModulus(new File(args[1]));
 
                 //generateString2(new File(args[2]));
                 //generateString2(new File("G:\\GITREPO\\Joulu_2014-15\\Encryption\\encrypted.txt"));                
-                //generateString(new File(args[2]));
-          //  }
+                generateString(new File(args[2]));
+            }
 
             if ( args[1].equals("-sign")){
                 System.out.println("Signing... Not yet implemented");
             }
-        //}
+        } */
     } 
 }
