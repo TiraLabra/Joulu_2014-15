@@ -1,4 +1,4 @@
-Joulu_2014-15
+Tic-Tac-Toe
 =============
 
-Vuodenvaihde 2014-15 Tiralabra. Ohjaajat Toni Annala sekä Kristiina Paloheimo
+An artificial intelligence (minmax algorithm) for the game of tic-tac-toe (board sizes of 3x3, 5x5 and 7x7). Made for a software project at University of Helsinki.
